@@ -1,0 +1,12 @@
+{
+
+    "extName": {
+        "message": "EyeWire Scouts' Log",
+        "description": "Name of the extension"
+    },
+    "extDescription": {
+        "message": "This extension allows scouts, scythes, and admins to track cell/cube issues within EyeWire.",
+        "description": "Description for extension manifest"
+    }
+
+}
