@@ -199,9 +199,6 @@ function nice_number(n) {
 			var dt = new Date();
 			data.timestamp = dt.toLocaleString();
 
-			// Append data to history
-			S.history.push(data);
-
 			// Send submission data to server
 			setTimeout(function() {
 				document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
