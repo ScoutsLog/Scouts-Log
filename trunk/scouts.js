@@ -40,10 +40,8 @@ function nice_number(n) {
 		return final;
 	}
 
-
 (function(S) {
 	S.flagEditActions = false;
-	S.flagRealActions = false;
 	
 	S.images = {};
 	S.imagesCount = 0;
@@ -70,64 +68,16 @@ function nice_number(n) {
 			} else {
 				S.flagEditActions = false;
 			}
-			
-			//if (jQuery("#realActions").length) {
-			//	if (S.flagRealActions == false) {
-			//		S.flagRealActions = true;
-			//		
-			//		S.setRealActions();
-			//	}
-			//} else {
-			//	S.flagRealActions = false;
-			//}
-			
 		});
 		
 		// Hook window resize event for main window 
-		jQuery(window).resize(function() {
-			jQuery('#content strong div.gameBoard').css('top', '90px');
-			jQuery('#content strong div.gameBoard').height(jQuery(window).height() - 160);
-			
-			var h = (jQuery('.gameBoard').height() * 0.80) - 20;
+		jQuery(window).resize(function() {		
+			var pH = (jQuery('.gameBoard').height() * 0.80) - 20;
 			
 			if (jQuery('#slPanel').is(':visible')) {				
-				jQuery('#slPanel div.slPanelContent').height(h);
+				jQuery('#slPanel div.slPanelContent').height(pH);
 			}
-			
-			if (jQuery('#slTaskPanel').is(':visible')) {
-				jQuery('#slTaskPanel').height(h);
-			}
-			
 		});
-		
-		// Hook inspect panel
-		setTimeout(function() {
-			jQuery('#cubeInspectorFloatingControls div.controls').append('<div class="control scoutslog"><div class="children translucent flat"></div><button class="cube translucent flat minimalButton" title="Scouts\' Log">L</button><div class="parents translucent flat"></div></div>');
-			jQuery("#cubeInspectorFloatingControls div.controls div.scoutslog button").click(function() {
-				if (jQuery(this).hasClass("active") && jQuery(this).hasClass("on")) {
-					// Get current cube/task
-					var target = window.tomni.getTarget();
-					var t = target.id;
-					
-					if (typeof t == 'undefined') {
-						t = window.tomni.task.id;
-					}
-					
-					var test = 'task-' + t;
-					
-					// Check window state
-					if (S.windowState == test || S.windowState == 'task') {
-						// Same task window is open, close instead
-						
-						jQuery('#slPanel').hide();
-						S.windowState = '';
-					} else {
-						// Show log entries for currently selected cube
-						S.getTaskEntriesInspect();
-					}
-				}
-			});
-		}, 2000);
 		
 		// Hook document keypress
 		jQuery(window).keyup(function(k) {
@@ -137,14 +87,13 @@ function nice_number(n) {
 					S.windowState = '';
 				}
 				
-				if (jQuery('#slTaskPanelButton').is(':visible')) {
-					jQuery('#slTaskPanelButton').hide();
+				if (jQuery('#sl-task-details').is(':visible')) {
+					jQuery('#sl-task-details').hide();
+					jQuery('#sl-task-entry').hide();
 				}
 				
 				S.flagEditActions = false;
 				S.flagRealActions = false;
-				
-				jQuery('#cubeInspectorFloatingControls div.controls div.scoutslog button').removeClass("active").removeClass("on");
 			}
 		});
 		
@@ -227,9 +176,7 @@ function nice_number(n) {
 		S.imagesCount++;
 		
 		if (S.imagesCount == 3) {
-			S.setTopHeader();
-			
-			S.setTaskPanel();
+			S.setFloatingPanel();
 		}
 	}
 	
@@ -314,9 +261,18 @@ function nice_number(n) {
 		var status = '';
 		
 		switch (s) {
+			case 'need-admin':
+				status = 'Need Admin';
+				
+				break;
+			case 'need-scythe':
+				status = 'Need Scythe';
+				
+				break;
 			case 'missing-nub':
 				status = 'Missing Nub List'
-				break;
+				
+					break;
 			case 'missing-branch':
 				status = 'Missing Branch List';
 				
@@ -763,50 +719,10 @@ function nice_number(n) {
 	
 	S.setEditActions = function() {
 		if (S.flagEditActions == true) {
-			if (jQuery("#editActions #logEntryAction").length == 0) {
-				jQuery("#editActions").append('<button class="blueButton smallButton" id="logEntryAction" title="Create a new Scouts\' Log entry for this cube" style="display: inline-block;">Log Entry</button>');
-				
-				jQuery("#logEntryAction").click(function() {
-					// Prepare display window
-					S.prepareTaskActionWindow();
-					
-					// Capture 3D image data
-					S.capture3D();
-					
-					// Get task summary
-					S.getTaskSummary();
-				});
-			}
-			
-			jQuery('#slTaskPanelButton').show();
-			
-			jQuery('#cubeInspectorFloatingControls div.controls div.scoutslog button').addClass("active").addClass("on");
+			jQuery('#sl-task-details').show();
+			jQuery('#sl-task-entry').show();
 		}
-	}
-	
-	S.setRealActions = function() {
-		if (S.flagRealActions == true) {
-			if (jQuery("#realActions #logEntryAction").length == 0) {
-				jQuery("#realActions").append('<button class="blueButton" id="logEntryAction" title="Create a new Scouts\' Log entry for this cube">Log Entry</button>');
-				
-				jQuery("#logEntryAction").click(function() {
-					// Prepare display window
-					S.prepareTaskActionWindow();
-					
-					// Capture 3D image data
-					S.capture3D();
-					
-					// Get task summary
-					S.getTaskSummary();
-				});
-			}
-			
-			jQuery('#slTaskPanelButton').show();
-			
-			jQuery('#cubeInspectorFloatingControls div.controls div.scoutslog button').addClass("active").addClass("on");
-		}
-	}
-	
+	}	
 	
 	
 	S.setLinks = function(o) {
@@ -868,18 +784,30 @@ function nice_number(n) {
 			});
 		});
 	};
+
 	
-	
-	S.setTaskPanel = function() {
-		// Create task panel button
-		var panel = '';
-		panel += '<div id="slTaskPanelButton" style="display: none;">';
-		panel += '<a href="javascript:void(0);"><img src="' + S.images.logo + '"/></a>';
+	S.setFloatingPanel = function() {
+		var panel = '<div id="scoutsLogFloatingControls">';
+		panel += '<img src="' + S.images.logo + '" style="float: left;" />';
+		panel += '<a class="translucent flat minimalButton active cell-list">Cell List</a>';
+		panel += '<a class="translucent flat minimalButton active need-admin">Need Admin <span id="need-admin-badge" class="badge">0</span></a>';
+		panel += '<a class="translucent flat minimalButton active need-scythe">Need Scythe <span id="need-scythe-badge" class="badge">0</span></a>';
+		panel += '<a class="translucent flat minimalButton active watch">Watch List <span id="watch-badge" class="badge">0</span></a>';
+		panel += '<a class="translucent flat minimalButton active task" id="sl-task-details" style="display: none;">Cube Details</a>';
+		panel += '<a class="translucent flat minimalButton active task" id="sl-task-entry" style="display: none;">Log Entry</a>';
 		panel += '</div>';
 		
+		// Add panel to game board
 		jQuery("#content .gameBoard").append(panel);
+		jQuery('#scoutsLogFloatingControls').draggable({container: 'parent'});
 		
-		jQuery('#slTaskPanelButton a').click(function() {
+		// Add events to links
+		jQuery('#scoutsLogFloatingControls a.cell-list').click(S.showCells);
+		jQuery('#scoutsLogFloatingControls a.need-admin').click(S.showAdmin);
+		jQuery('#scoutsLogFloatingControls a.need-scythe').click(S.showScythe);
+		jQuery('#scoutsLogFloatingControls a.watch').click(S.showWatch);
+		
+		jQuery('#sl-task-details').click(function() {
 			// Get current cube/task
 			var target = window.tomni.getTarget();
 			var t = target.id;
@@ -901,52 +829,36 @@ function nice_number(n) {
 				window.scoutsLog.getTaskEntriesInspect();
 			}
 		});
+		
+		jQuery("#sl-task-entry").click(function() {
+			// Prepare display window
+			S.prepareTaskActionWindow();
+			
+			// Capture 3D image data
+			S.capture3D();
+			
+			// Get task summary
+			S.getTaskSummary();
+		});
+
+		// Set stats refresh function
+		S.doPanelStats();
 	}
 	
-	
-	S.setTopHeader = function() {
-		// Create top header
-		var header = '<div id="slPageHeader">';
-		header += '<ul>';
-		header += '<li><img src="' + S.images.logo + '" style="float:left;"/> <a href="javascript:void(0);" class="slLogo">Scouts\' Log</a></li>';
-		header += '<li><a class="cell-list">Cell List</a></li>';
-		header += '<li><a class="need-admin">Need Admin <span id="need-admin-badge" class="badge">0</span></a></li>';
-		header += '<li><a class="need-scythe">Need Scythe <span id="need-scythe-badge" class="badge">0</span></a></li>';
-		header += '<li><a class="watch">Watch List <span id="watch-badge" class="badge">0</span></a></li>';
-		header += '<li><a class="popout"><img src="' + S.images.popout + '"/> Popout</a></li>';
-		header += '</ul></div>';
-		jQuery(header).insertAfter('#pageHeader');
-		
-		// Add events to links
-		jQuery('#slPageHeader a.cell-list').click(S.showCells);
-		jQuery('#slPageHeader a.need-admin').click(S.showAdmin);
-		jQuery('#slPageHeader a.need-scythe').click(S.showScythe);
-		jQuery('#slPageHeader a.watch').click(S.showWatch);
-		jQuery('#slPageHeader a.popout').click(S.doPopout);
-		
-		// Adjust height of game board
-		jQuery('#content strong div.gameBoard').css('top', '90px');
-		jQuery('#content strong div.gameBoard').height(jQuery(window).height() - 160);
-		
-		
-		// Set header stats refresh function
-		S.doTopHeaderStats();
-	};
-
-	S.doTopHeaderStats = function() {
-		setTimeout("window.scoutsLog.doTopHeaderStats()", 60000);
+	S.doPanelStats = function() {
+		setTimeout("window.scoutsLog.doPanelStats()", 60000);
 		
 		setTimeout(function() {
 		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
 		        detail: {
 		        	"url": "http://scoutslog.org/1.0/stats/header",
-		        	"callback": "window.scoutsLog.doTopHeaderStatsCallback"
+		        	"callback": "window.scoutsLog.doPanelStatsCallback"
 		        }
 		    }));
 		}, 0);
 	};
 		
-	S.doTopHeaderStatsCallback = function(D) {
+	S.doPanelStatsCallback = function(D) {
 		var a = D['task_summary']['need-admin'].tasks;
 		var s = D['task_summary']['need-scythe'].tasks;
 		var w = D['task_summary'].watch.tasks;
@@ -987,6 +899,7 @@ function nice_number(n) {
 	
 	
 	
+	
 	S.capture3D = function() {
 		if (jQuery('#threeD canvas').length == 1) {
 			// Get 3D canvas object
@@ -999,7 +912,7 @@ function nice_number(n) {
 			jQuery('#sl-action-image').val(c.toDataURL());
 			
 			// Update image status
-			jQuery('#sl-action-image-status').html('<a class="preview">Preview</a> | <a class="capture">Re-Capture</a>');
+			jQuery('#sl-action-image-status').html('<a class="preview">Preview</a> | <a class="capture">Re-Capture</a> | <a class="remove">Remove</a>');
 			
 			// Assign click functions
 			jQuery('#sl-action-image-status a.preview').click(function() {
@@ -1019,6 +932,18 @@ function nice_number(n) {
 				
 				setTimeout(window.scoutsLog.capture3D, 1000);
 			});
+			
+			jQuery('#sl-action-image-status a.remove').click(function() {
+				jQuery('#sl-action-image').val('');
+							
+				jQuery('#sl-action-image-status').html('(none) | <a class="capture">Capture</a>');
+				
+				jQuery('#sl-action-image-status a.capture').click(function() {
+					jQuery('#sl-action-image-status').html('Processing...');
+					
+					setTimeout(window.scoutsLog.capture3D, 1000);
+				});
+			})
 			
 		}
 		
@@ -1040,24 +965,6 @@ function nice_number(n) {
 	
 	S.showWatch = function() {
 		S.getStatusEntries('watch');
-	}
-	
-	S.doPopout = function() {
-		setTimeout(function() {
-		    document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
-		        detail: {
-		        	"url": "http://scoutslog.org/1.0/internal/account/session",
-		        	"data": "",
-		        	"callback": "window.scoutsLog.doPopoutCallback"
-		        }
-		    }));
-		}, 0);
-	}
-	
-	S.doPopoutCallback = function(d) {
-		if (d.success) {
-			window.open('http://scoutslog.org/');
-		}
 	}
 	
 
