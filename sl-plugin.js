@@ -1,13 +1,11 @@
 
 // Inject sl-scouts.js into page
-	var s = document.createElement('script');
+var s = document.createElement('script');
 	
-	s.src = chrome.extension.getURL('sl-scouts.js');
+s.src = chrome.extension.getURL('sl-scouts.js');
+s.onload = function() {
+    this.parentNode.removeChild(this);
+};
 	
-	s.onload = function() {
-	    this.parentNode.removeChild(this);
-	};
-	
-	(document.head||document.documentElement).appendChild(s);
-	
+(document.head||document.documentElement).appendChild(s);
 	
