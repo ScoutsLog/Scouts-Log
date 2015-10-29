@@ -41,38 +41,72 @@ function nice_number(n) {
 	}
 
 (function(S) {
-	S.flagEditActions = false;
-	
 	S.images = {};
 	S.imagesCount = 0;
 	
 	S.windowState = '';
+
+	S.historyType = '';
+	S.historyPosition = 0;
+	S.historyDisplay = 10;
+	
+	
+	// Create listener for SLEW_AUTH event (in response to SLEW_REGISTER)
+	document.addEventListener('SLEW_AUTH', function() {
+		var panel = '';
+		panel += '<div id="scoutsLogAuthPanel">';
+		panel += '<h2>Scouts\' Log Authorization</h2>';
+		panel += '<p>In order to use the Scouts\'s Log extension, you must authorize the application to use your EyeWire account.</p>';
+		panel += '<p>Please click the link below to authorize the application:</p>';
+		panel += '<p style="text-align:center;"><a class="task" href="http://scoutslog.org/?do=extension-auth" target="_blank">scoutslog.org</a></p>';
+		panel += '<p>Once the authorization process is completed, please <a class="cell" href="javascript:document.location.reload();">re-load</a> this page.</p>';
+		panel += '</div>';
+		
+		jQuery("#content .gameBoard").append(panel);
+	});
+
+	// Create listener for SLEW_UPDATE event (in response to SLEW_REGISTER)
+	document.addEventListener('SLEW_UPDATE', function() {
+		var panel = '';
+		panel += '<div id="scoutsLogAuthPanel">';
+		panel += '<h2>Scouts\' Log Extension</h2>';
+		panel += '<p>Your extension is out of date!</p>';
+		panel += '<p>Please upgrade now to continue using the extension.</p>';
+		panel += '<p style="text-align:center;"><a class="cell" href="javascript:void(0);">Close</a></p>';
+		panel += '</div>';
+		
+		jQuery("#content .gameBoard").append(panel);
+
+		jQuery('#scoutsLogAuthPanel a.cell').click(function() {
+			jQuery('#scoutsLogAuthPanel').remove();
+		});
+	});
+	
+	// Create listener for SLEW_INIT event (in response to SLEW_REGISTER)
+	document.addEventListener('SLEW_INIT', function() {
+		S.init();
+	});
 	
 	
 	S.init = function() {
-		// Create log box (inspect mode)
-		var panel = '<div id="slPanel" style="display: none;">';
-		panel += '<div class="slPanelContent"></div>';
-		panel += '</div>';
-		jQuery("#content .gameBoard").append(panel);
-
-
 		// Hook game control modes
 		jQuery(window).on(InspectorPanel.Events.ModelFetched, function() {
-			if (jQuery("#editActions").length) {
-				if (S.flagEditActions == false) {
-					S.flagEditActions = true;
-					
-					S.setEditActions();
-				}
-			} else {
-				S.flagEditActions = false;
+			var ea = jQuery("#gameControls #editActions").length;
+			var ci = jQuery("#gameControls #cubeInspector").length;
+			var ra = jQuery("#gameControls #realActions").length;
+			
+			if (ea > 0 || ci > 0) {
+				jQuery('#sl-task-details').show();
+				jQuery('#sl-task-entry').show();
+			} else if (ra > 0) {
+				jQuery('#sl-task-details').show();
+				jQuery('#sl-task-entry').hide();
 			}
 		});
 		
 		// Hook window resize event for main window 
 		jQuery(window).resize(function() {		
-			var pH = (jQuery('.gameBoard').height() * 0.80) - 20;
+			var pH = (jQuery('.gameBoard').height() * 0.80) - 30;
 			
 			if (jQuery('#slPanel').is(':visible')) {				
 				jQuery('#slPanel div.slPanelContent').height(pH);
@@ -94,6 +128,14 @@ function nice_number(n) {
 				
 				S.flagEditActions = false;
 				S.flagRealActions = false;
+			}
+		});
+
+
+		// Hook chat window
+		jQuery('body').on('DOMNodeInserted', '#content .gameBoard .chatMsgContainer', function(e) {
+			if ($(e.target).attr('class') === 'chatMsg') {
+				S.setChatLinks(e.target);
 			}
 		});
 		
@@ -126,6 +168,51 @@ function nice_number(n) {
 			
 			var fn = eval(cb);
 			fn(res);
+		});
+
+		// Create listener for ScoutsLogEyeWire.getPanelPosition response event
+		document.addEventListener('SLEW_getPanelPosition', function(e) {
+		    // Extract data
+			var cb = e.detail.callback;		// Callback function
+			var pos = e.detail.position;	// Response object
+			
+			var fn = eval(cb);
+			fn(pos);
+		});
+
+		// Create listener for cube submission data
+		jQuery(document).on('cube-submission-data', function(e, data) {
+			// Get current cube/task
+			var target = window.tomni.getTarget();
+			var t = target.id;
+			var c = target.cell;
+		
+			if (typeof t == 'undefined') {
+				t = window.tomni.task.id;
+				c = window.tomni.task.cell;
+			}
+
+			// Update data object
+			data.cell = c;
+			data.task = t;
+
+			var dt = new Date();
+			data.timestamp = dt.toLocaleString();
+
+			// Append data to history
+			S.history.push(data);
+
+			// Send submission data to server
+			setTimeout(function() {
+				document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
+					detail: {
+						"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/submit",
+						"data": "data=" + encodeURIComponent(JSON.stringify(data)),
+						"callback": ""
+					}
+				}));
+			}, 0);
+
 		});
 		
 		
@@ -176,6 +263,7 @@ function nice_number(n) {
 		S.imagesCount++;
 		
 		if (S.imagesCount == 3) {
+			S.setMainPanel();
 			S.setFloatingPanel();
 		}
 	}
@@ -190,7 +278,7 @@ function nice_number(n) {
 		setTimeout(function() {
 		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
 		        detail: {
-		        	"url": "http://scoutslog.org/1.0/stats",
+		        	"url": "http://scoutslog.org/1.1/stats",
 		        	"callback": "window.scoutsLog.getCellSummaryCallback"
 		        }
 		    }));
@@ -215,42 +303,58 @@ function nice_number(n) {
 		S.setLinks('#slPanel');
 	};
 	
-	S.getCellEntries = function(c) {
+	S.getCellEntries = function(c, s) {
 		// Prepare display window
 		S.prepareCellEntriesWindow();
 		
 		// Update window state
 		S.windowState = 'cell-entries-' + c;
 		
+		// Update status display
+		jQuery('#slPanel div.slOptions select').val(s);
+
+		// Generate request URL
+		var url = 'http://scoutslog.org/1.1/cell/' + encodeURIComponent(c) + '/tasks';
+
+		if (s != '') {
+			url += '/status/' + encodeURIComponent(s);
+		}
+		
 		// Initiate request
 		setTimeout(function() {
 		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
 		        detail: {
-		        	"url": "http://scoutslog.org/1.0/actions?cell=" + encodeURIComponent(c),
-		        	"callback": "window.scoutsLog.getCellEntriesCallback"
+		        	'url': url,
+		        	'callback': 'window.scoutsLog.getCellEntriesCallback'
 		        }
 		    }));
 		}, 0);
 	};
 
 	S.getCellEntriesCallback = function(d) {
-		jQuery("#slMainTable h2 small").text(d[0].cellName + " (" + d[0].cell + ")");
+		jQuery("#slPanel h2 small").text(d.cellName + " (" + d.cell + ")");
 		jQuery("#slMainTable table tbody").empty();
 
-		for (var c in d) {
-			var s = d[c];
-
-			var row = '<tr>';
-			row += '<td><a class="task" data-task="' + s.task + '">' + s.task + '</a> | <a class="jumpTask" data-task="' + s.task + '">Jump</a></td>';
-			row += '<td class="' + s.status + '">' + s.statusText + '</td>';
-			row += '<td>' + s.lastUser + '</td>';
-			row += '<td>' + s.lastUpdated + '</td>';
-			row += '</tr>';
-
-			jQuery("#slMainTable table tbody").append(row);
+		if (d.tasks.length > 0) {	
+			for (var c in d.tasks) {
+				var s = d.tasks[c];
+	
+				var row = '<tr>';
+				row += '<td><a class="task" data-task="' + s.task + '">' + s.task + '</a> | <a class="jumpTask" data-task="' + s.task + '">Jump</a></td>';
+				row += '<td class="' + s.status + '">' + s.statusText + '</td>';
+				row += '<td>' + s.lastUser + '</td>';
+				row += '<td>' + s.lastUpdated + '</td>';
+				row += '</tr>';
+	
+				jQuery("#slMainTable table tbody").append(row);
+			}
+	
+			S.setLinks('#slPanel');
+		} else {
+			// No entries found
+			
+			jQuery("#slMainTable table tbody").append('<tr><td colspan="4">No tasks found for this cell/status</td></tr>');
 		}
-
-		S.setLinks('#slPanel');
 	};
 	
 	S.getStatusEntries = function(s) {
@@ -298,7 +402,7 @@ function nice_number(n) {
 			setTimeout(function() {
 			    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
 			        detail: {
-			        	"url": "http://scoutslog.org/1.0/actions?status=" + encodeURIComponent(s),
+			        	"url": "http://scoutslog.org/1.1/status/" + encodeURIComponent(s),
 			        	"callback": "window.scoutsLog.getStatusEntriesCallback"
 			        }
 			    }));
@@ -309,8 +413,8 @@ function nice_number(n) {
 	S.getStatusEntriesCallback = function(d) {
 		jQuery("#slMainTable table tbody").empty();
 
-		for (var c in d) {
-			var s = d[c];
+		for (var c in d.tasks) {
+			var s = d.tasks[c];
 
 			var row = '<tr>';
 			row += '<td><a class="task" data-task="' + s.task + '">' + s.task + '</a> | <a class="jumpTask" data-task="' + s.task + '">Jump</a></td>';
@@ -329,7 +433,7 @@ function nice_number(n) {
 	
 	S.getTaskEntries = function(t) {
 		// Prepare display window
-		S.prepareTaskWindow();
+		S.prepareTaskWindow(t);
 		
 		// Update window state
 		S.windowstate = 'task-' + t;
@@ -338,7 +442,7 @@ function nice_number(n) {
 		setTimeout(function() {
 		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
 		        detail: {
-		        	"url": "http://scoutslog.org/1.0/actions?task=" + encodeURIComponent(t),
+		        	"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/actions",
 		        	"callback": "window.scoutsLog.getTaskEntriesCallback"
 		        }
 		    }));
@@ -358,13 +462,13 @@ function nice_number(n) {
 		S.windowstate = 'task-' + t;
 		
 		// Prepare display window
-		S.prepareTaskWindow();
+		S.prepareTaskWindow(t);
 		
 		// Initiate request
 		setTimeout(function() {
 		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
 		        detail: {
-		        	"url": "http://scoutslog.org/1.0/actions?task=" + encodeURIComponent(t),
+		        	"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/actions",
 		        	"callback": "window.scoutsLog.getTaskEntriesCallback"
 		        }
 		    }));
@@ -434,7 +538,7 @@ function nice_number(n) {
 		setTimeout(function() {
 		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
 		        detail: {
-		        	"url": "http://scoutslog.org/1.0/actions?task=" + encodeURIComponent(t),
+		        	"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t),
 		        	"callback": "window.scoutsLog.getTaskSummaryCallback"
 		        }
 		    }));
@@ -455,6 +559,9 @@ function nice_number(n) {
 			vstyle = ' class="sl-admin"';
 		}
 		
+		// Update title
+		jQuery("#slPanel h2 small").text('Task #' + d.task);
+		
 		// Display task summary
 		jQuery("#slSummaryTable table tbody").empty();
 		jQuery("#slSummaryTable table tbody").append('<tr><td><strong>Cell:</strong></td><td><a class="cell" data-cell="' + d.cell + '">' + d.cellName + ' (' + d.cell + ')</a></td></tr>');
@@ -467,6 +574,104 @@ function nice_number(n) {
 		// Set links
 		S.setLinks('#slPanel');
 	}
+
+	S.getHistory = function() {
+		// Prepare history window
+		if (S.windowState != 'history') {
+			S.prepareHistoryWindow();
+		}
+
+		// Generate request URL
+		var url = 'http://scoutslog.org/1.1/history/';
+		url += encodeURIComponent(S.historyPosition) + '/' + encodeURIComponent(S.historyDisplay);
+
+		if (S.historyType != '') {
+			url += '/type/' + encodeURIComponent(S.historyType);
+		}
+
+		// Initiate request
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	"url": url,
+		        	"callback": "window.scoutsLog.getHistoryCallback"
+		        }
+		    }));
+		}, 0);
+	}
+
+	S.getHistoryCallback = function(d) {
+		// Update history position
+		S.historytype = d.type;
+		S.historyPosition = d.start + d.limit;
+		S.historyDisplay = d.limit;
+
+		// Display history data
+		if (d.tasks.length > 0) {
+			for (var i in d.tasks) {
+				var h = d.tasks[i];
+
+				var a = h.accuracy * 100;
+				a = a.toFixed(2);
+
+				if (a == 100.00) {
+					a = '<span style="color:#0f0;font-weight:bold;">' + a + '%</span>';
+				} else if (a >= 90.00) {
+					a = '<span style="color:#0c0;">' + a + '%</span>';
+				} else if (a <= 50.00) {
+					a = '<span style="color:#f33;font-weight:bold;">' + a + '%</span>';
+				} else {
+					a += '%';
+				}
+	
+				var row = '<tr>';
+				row += '<td><a class="task" data-task="' + h.task + '">' + h.task + '</a> | <a class="jumpTask" data-task="' + h.task + '">Jump</a></td>';
+				row += '<td><a class="cell" data-cell="' + h.cell + '">' + h.cellName + ' (' + h.cell + ')</a></td>';
+				row += '<td>' + h.type + '</td>';
+
+				if (h.type == "scythed" || h.trailblazer == 1) {
+					row += '<td>' + h.score + ' pts</td>';
+				} else {
+					row += '<td>' + h.score + ' pts / ' + a + '</td>';
+				}
+
+				if (h.trailblazer == 1) {
+					row += '<td>Yes</td>';
+				} else {
+					row += '<td>No</td>';
+				}
+
+				row += '<td>' + h.timestamp + '</td>';
+				row += '</tr>';
+
+				jQuery("#slMainTable table tbody").append(row);
+			}
+
+			if (d.tasks.length < d.limit) {
+				jQuery('#slPanel a.more').remove();
+			}
+		} else {
+			jQuery('#slPanel a.more').remove();
+		}
+
+		// Set links
+		S.setLinks('#slPanel');
+	}
+
+	S.submitTaskActionCallback = function(d) {
+		if (d.result == true) {
+			// Success
+
+			jQuery('#slActionButtons button.submit').remove();
+			jQuery('#slActionButtons button').prop('disabled', false);
+			jQuery('#slActionButtons p').html('Success! Saved.');
+		} else {
+			// Error
+
+			jQuery('#slActionButtons button').prop('disabled', false);
+			jQuery('#slActionButtons p').html('Sorry, there was an error while submitting. Please try again.');
+		}
+	}
 	
 	
 	S.prepareCellWindow = function() {
@@ -475,7 +680,6 @@ function nice_number(n) {
 		
 		// Prepare display window
 		var doc = '';
-		doc += '<a href="javascript:void(0);" class="close-window" style="float: right;" title="Close window"><img src="' + S.images.close + '"/></a>';
 		doc += '<h2>Scouts\' Log<small/></h2>';
 		
 		doc += '<div id="slMainTable">';
@@ -498,7 +702,7 @@ function nice_number(n) {
 		jQuery("#slPanel").show();
 					
 		// Make sure content panel height is updated
-		var h = (jQuery('.gameBoard').height() * 0.80) - 20;
+		var h = (jQuery('.gameBoard').height() * 0.80) - 30;
 		jQuery('#slPanel div.slPanelContent').height(h);
 	}
 
@@ -508,7 +712,6 @@ function nice_number(n) {
 		
 		// Prepare display window
 		var doc = '';
-		doc += '<a href="javascript:void(0);" class="close-window" style="float: right;" title="Close window"><img src="' + S.images.close + '"/></a>';
 		doc += '<h2>Scouts\' Log<small/></h2>';
 		
 		doc += '<div id="slMainTable">';
@@ -535,7 +738,7 @@ function nice_number(n) {
 		jQuery("#slPanel").show();
 					
 		// Make sure content panel height is updated
-		var h = (jQuery('.gameBoard').height() * 0.80) - 20;
+		var h = (jQuery('.gameBoard').height() * 0.80) - 30;
 		jQuery('#slPanel div.slPanelContent').height(h);
 	}
 	
@@ -545,14 +748,13 @@ function nice_number(n) {
 		
 		// Prepare display window
 		var doc = '';
-		doc += '<a href="javascript:void(0);" class="close-window" style="float: right;" title="Close window"><img src="' + S.images.close + '"/></a>';
 		doc += '<h2>Scouts\' Log<small/></h2>';
 		
 		doc += '<div class="slOptions">';
 		doc += '<select>';
 		doc += '<option value="" selected>Open</option>';
 		doc += '<option value="all">All</option>';
-		doc += '<option value="" disabled>---------------</option>';
+		doc += '<option value="-" disabled>---------------</option>';
 		doc += '<option value="missing-nub">Missing Nub</option>';
 		doc += '<option value="missing-branch">Missing Branch</option>';
 		doc += '<option value="merger">Merger</option>';
@@ -566,7 +768,6 @@ function nice_number(n) {
 		doc += '<option value="good">Good</option>';
 		doc += '<option value="note">Note</option>';
 		doc += '</select>';
-		doc += ' <button type="button" class="blueButton">New Action</button><br />';
 		doc += '</div><br />';
 		
 		doc += '<div id="slMainTable">';
@@ -591,18 +792,25 @@ function nice_number(n) {
 		jQuery("#slPanel").show();
 					
 		// Make sure content panel height is updated
-		var h = (jQuery('.gameBoard').height() * 0.80) - 20;
-		jQuery('#slPanel div.slPanelContent').height(h);		
+		var h = (jQuery('.gameBoard').height() * 0.80) - 30;
+		jQuery('#slPanel div.slPanelContent').height(h);
+		
+		// Set handler for display option dropdown
+		jQuery('#slPanel div.slOptions select').change(function() {
+			var cell = window.scoutsLog.windowState.split('-')[2];
+			var status = jQuery('#slPanel div.slOptions select').val();
+			
+			S.getCellEntries(cell, status);
+		});
 	}
 
-	S.prepareTaskWindow = function() {
+	S.prepareTaskWindow = function(t) {
 		// Set window state
 		S.windowState = 'task';
 		
 		// Prepare display window
 		var doc = '';
-		doc += '<a href="javascript:void(0);" class="close-window" style="float: right;" title="Close window"><img src="' + S.images.close + '"/></a>';
-		doc += '<h2>Scouts\' Log<small/></h2>';
+		doc += '<h2>Scouts\' Log<small>Task #' + t + '</small></h2>';
 		
 		doc += '<div id="slSummaryTable">';
 		doc += '<table class="slTable">';
@@ -616,7 +824,7 @@ function nice_number(n) {
 		doc += '</table>';
 		doc += '</div><br />';
 		
-		doc += '<button type="button" class="blueButton">New Action</button><br />';
+		doc += '<button type="button" class="blueButton new-action">New Action</button><br />';
 		
 		doc += '<div id="slMainTable">';
 		doc += '<table class="slTable">';
@@ -640,15 +848,27 @@ function nice_number(n) {
 		doc += '</table>';
 		doc += '</div><br />';
 		
-		doc += '<button type="button" class="blueButton">New Action</button><br />';
+		doc += '<button type="button" class="blueButton new-action">New Action</button><br />';
 		
 
 		jQuery("#slPanel div.slPanelContent").html(doc);
 		jQuery("#slPanel").show();
 					
 		// Make sure content panel height is updated
-		var h = (jQuery('.gameBoard').height() * 0.80) - 20;
+		var h = (jQuery('.gameBoard').height() * 0.80) - 30;
 		jQuery('#slPanel div.slPanelContent').height(h);
+		
+		// Set handler for new action buttons
+		jQuery("#slPanel button.new-action").click(function() {
+			// Prepare display window
+			S.prepareTaskActionWindow();
+			
+			// Capture 3D image data
+			S.capture3D();
+			
+			// Get task summary
+			S.getTaskSummary();
+		});
 	}
 
 	S.prepareTaskActionWindow = function() {
@@ -657,8 +877,7 @@ function nice_number(n) {
 		
 		// Prepare display window
 		var doc = '';
-		doc += '<a href="javascript:void(0);" class="close-window" style="float: right;" title="Close window"><img src="' + S.images.close + '"/></a>';
-		doc += '<h2>New Log Entry</h2>';
+		doc += '<h2>New Log Entry<small /></h2>';
 		
 		doc += '<div id="slSummaryTable">';
 		doc += '<table class="slTable">';
@@ -701,28 +920,132 @@ function nice_number(n) {
 		doc += '</tr>';
 		doc += '<tr><td><strong>Reaped?</strong></td><td><input type="radio" name="reaped" value="1" /> Yes&nbsp;&nbsp;&nbsp;<input type="radio" name="reaped" value="0" checked />No</td></tr>';
 		doc += '<tr><td><strong>Image:</strong></td><td><input type="hidden" id="sl-action-image" name="image-data" value="" /><div id="sl-action-image-status">Processing...</div></td></tr>';
-		doc += '<tr><td><strong>Notes:</strong></td><td><textarea name="notes" rows="4" cols="75"></textarea></td></tr>';
+		doc += '<tr><td><strong>Notes:</strong></td><td><textarea name="notes" id="sl-action-notes" rows="4" cols="75"></textarea></td></tr>';
 		doc += '</tbody>';
 		doc += '</table>';
 		doc += '</div>';
+
+		doc += '<div id="slActionButtons" style="text-align:center;">';
+		doc += '<button type="button" class="submit greenButton">Submit</button> ';
+		doc += '<button type="button" class="cancel redButton">Cancel</button> ';
+		doc += '</div>';
+		doc += '</form>';
 		
 		jQuery("#slPanel div.slPanelContent").html(doc);
 		jQuery("#slPanel").show();
 					
 		// Make sure content panel height is updated
-		var h = (jQuery('.gameBoard').height() * 0.80) - 20;
+		var h = (jQuery('.gameBoard').height() * 0.80) - 30;
 		jQuery('#slPanel div.slPanelContent').height(h);
+
+		// Set handlers for buttons
+		jQuery('#slPanel button.cancel').click(function() {
+			jQuery('#slPanel').hide();
+			S.windowState = '';
+		});
+
+		jQuery('#slPanel button.submit').click(function() {
+			// Set interface
+			jQuery('#slActionButtons button').prop('disabled', true);
+			jQuery('#slActionButtons').append('<p>Saving...</p>');
+
+			// Get current cube/task
+			var target = window.tomni.getTarget();
+			var t = target.id;
+		
+			if (typeof t == 'undefined') {
+				var t = window.tomni.task.id;
+			}
+
+			// Prepare data object
+			var data = {
+				cell: window.tomni.cell,
+				task: t,
+				status: jQuery('#sl-action-status').val(),
+				reaped: jQuery('#slActionTable input:radio[name=reaped]:checked').val(),
+				notes: jQuery('#sl-action-notes').val(),
+				image: jQuery('#sl-action-image').val()
+			};
+
+			// Initiate request through plugin
+			var url = "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/action/create";
+
+			setTimeout(function() {
+			    document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
+			        detail: {
+			        	"url": url,
+					"data": "data=" + encodeURIComponent(JSON.stringify(data)),
+			        	"callback": "window.scoutsLog.submitTaskActionCallback"
+			        }
+			    }));
+			}, 0);
+		});
+	}
+
+	S.prepareHistoryWindow = function() {
+		// Set window state
+		S.windowState = 'history';
+		S.historyPosition = 0;
+		
+		// Prepare display window
+		var doc = '';
+		doc += '<h2>Scouts\' Log<small>Cube Submission History</small></h2>';
+
+		doc += '<div id="slOptions">';
+		doc += '<select id="sl-history-type">';
+		doc += '<option value="">All Types</option>';
+		doc += '<option value="normal">Normal Submissions</option>';
+		doc += '<option value="scythed">Scythed</option>';
+		doc += '<option value="trailblazer">Normal Trailblaze</option>';
+		doc += '</select>';
+		doc += '</div><br />';
+		
+		doc += '<div id="slMainTable">';
+		doc += '<table class="slTable">';
+		doc += '<col style="width: 15%" />';
+		doc += '<col style="width: 25%" />';
+		doc += '<col style="width: 10%" />';
+		doc += '<col style="width: 15%" />';
+		doc += '<col style="width: 10%" />';
+		doc += '<col style="width: 25%" />';
+		doc += '<thead><tr>';
+		doc += '<th>Cube</th>';
+		doc += '<th>Cell</th>';
+		doc += '<th>Type</th>';
+		doc += '<th>Score</th>';
+		doc += '<th>Trailblazer</th>';
+		doc += '<th>Timestamp</th>';
+		doc += '</tr></thead>';
+		doc += '<tbody>';
+		doc += '</tbody>';
+		doc += '</table>';
+		doc += '</div>';
+		doc += '<p style="text-align: center;"><a class="more" href="javascript:void(0);">&#10836; more &#10836;</a></p>';
+
+		jQuery("#slPanel div.slPanelContent").html(doc);
+		jQuery("#slPanel").show();
+					
+		// Make sure content panel height is updated
+		var h = (jQuery('.gameBoard').height() * 0.80) - 30;
+		jQuery('#slPanel div.slPanelContent').height(h);
+
+		// Set handler for more link
+		jQuery('#slPanel div.slPanelContent a.more').click(function() {
+			S.getHistory();
+		});
+
+		// Set default value for type option
+		jQuery('#sl-history-type').val(S.historyType);
+
+		// Set change handler for type option
+		jQuery('#sl-history-type').change(function() {
+			S.historyType = jQuery('#sl-history-type').val();
+			S.windowState = '';
+
+			S.getHistory();
+		});
 	}
 	
-	
-	
-	
-	S.setEditActions = function() {
-		if (S.flagEditActions == true) {
-			jQuery('#sl-task-details').show();
-			jQuery('#sl-task-entry').show();
-		}
-	}	
 	
 	
 	S.setLinks = function(o) {
@@ -749,9 +1072,8 @@ function nice_number(n) {
 						return;
 					}
 
-					if (jQuery('#slPanel').is(':visible')) {
-						jQuery('#slPanel').hide();
-					}
+					jQuery('#slPanel').hide();
+					window.scoutsLog.windowState = '';
 
 					window.tomni.ui.jumpToTask(d);
 				});
@@ -774,39 +1096,108 @@ function nice_number(n) {
 			jQuery(this).attr("title", "Click to view open tasks for this cell");
 			
 			jQuery(this).click(function() {	
-				S.getCellEntries(c);
+				S.getCellEntries(c, '');
 			});
 		});
 		
-		jQuery(o).find('a.close-window').each(function() {
-			jQuery(this).click(function() {
-				jQuery('#slPanel').hide();
-			});
-		});
 	};
 
+	S.setChatLinks = function(o) {
+		// Get actual chat text
+		var t = jQuery(o).children('.actualText').html();
+
+		// Search for cube links
+		var text = t.replace(/#([0-9]+)/g, '<a class="jumpTask" data-task="$1">#$1</a>');
+
+		// Replace chat text
+		jQuery(o).children('.actualText').html(text);
+
+		// Refresh chat links
+		S.setLinks(o);
+
+	}
+
+
+	S.setMainPanel = function() {
+		var panel = '<div id="slPanel" style="display: none;">';
+		panel += '<a href="javascript:void(0);" class="close-window" title="Close window"><img src="' + S.images.close + '"/></a>';
+		panel += '<div class="slPanelContent"></div>';
+		panel += '</div>';
+		jQuery("#content .gameBoard").append(panel);
+
+		jQuery('#slPanel a.close-window').click(function() {
+			jQuery('#slPanel').hide();
+			S.windowState = '';
+		});
+	}
 	
 	S.setFloatingPanel = function() {
-		var panel = '<div id="scoutsLogFloatingControls">';
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetPanelPosition', {
+		        detail: {
+		        	"callback": "window.scoutsLog.setFloatingPanelCallback"
+		        }
+		    }));
+		}, 0);
+	}
+
+	S.setFloatingPanelCallback = function(pos) {
+		var style = '';
+
+		if (pos) {
+			var t = pos.top;
+			var l = Math.abs(pos.left);
+
+			if (l > (jQuery(window).width() - 50)) {
+				l = jQuery(window).width() - 50;
+			}
+
+			if (t > (jQuery(window).height() - 50)) {
+				t = jQuery(window).height() - 50;
+			}
+
+			if (t < - 50) {
+				t = 0;
+			}
+
+			style = ' style="top:' + t + 'px;left:' + l + 'px;"';
+		}
+
+		var panel = '<div id="scoutsLogFloatingControls"' + style + '>';
 		panel += '<img src="' + S.images.logo + '" style="float: left;" />';
 		panel += '<a class="translucent flat minimalButton active cell-list">Cell List</a>';
 		panel += '<a class="translucent flat minimalButton active need-admin">Need Admin <span id="need-admin-badge" class="badge">0</span></a>';
 		panel += '<a class="translucent flat minimalButton active need-scythe">Need Scythe <span id="need-scythe-badge" class="badge">0</span></a>';
 		panel += '<a class="translucent flat minimalButton active watch">Watch List <span id="watch-badge" class="badge">0</span></a>';
+		panel += '<a class="translucent flat minimalButton active history">History</a>';
 		panel += '<a class="translucent flat minimalButton active task" id="sl-task-details" style="display: none;">Cube Details</a>';
 		panel += '<a class="translucent flat minimalButton active task" id="sl-task-entry" style="display: none;">Log Entry</a>';
 		panel += '</div>';
 		
 		// Add panel to game board
-		jQuery("#content .gameBoard").append(panel);
-		jQuery('#scoutsLogFloatingControls').draggable({container: 'parent'});
+		jQuery(panel).appendTo('#content .gameBoard');
+		jQuery('#scoutsLogFloatingControls').draggable({
+			container: 'window',
+			stop: function(e, ui) {
+				// Update position in settings
+				setTimeout(function() {
+					document.dispatchEvent(new CustomEvent('SLEW_requestSetPanelPosition', {
+						detail: {
+							"position": ui.position
+						}
+					}));
+				}, 0);
+
+			}
+		});
 		
 		// Add events to links
 		jQuery('#scoutsLogFloatingControls a.cell-list').click(S.showCells);
 		jQuery('#scoutsLogFloatingControls a.need-admin').click(S.showAdmin);
 		jQuery('#scoutsLogFloatingControls a.need-scythe').click(S.showScythe);
 		jQuery('#scoutsLogFloatingControls a.watch').click(S.showWatch);
-		
+		jQuery('#scoutsLogFloatingControls a.history').click(S.showHistory);
+
 		jQuery('#sl-task-details').click(function() {
 			// Get current cube/task
 			var target = window.tomni.getTarget();
@@ -966,11 +1357,19 @@ function nice_number(n) {
 	S.showWatch = function() {
 		S.getStatusEntries('watch');
 	}
+
+	S.showHistory = function() {
+		S.getHistory();
+	}
 	
 
 }(window.scoutsLog = window.scoutsLog || {}));
 
 jQuery(document).ready(function() {
-	window.scoutsLog.init();
+	
+	setTimeout(function() {
+	    document.dispatchEvent(new CustomEvent('SLEW_REGISTER'));
+	}, 0);
+	
 });
 
