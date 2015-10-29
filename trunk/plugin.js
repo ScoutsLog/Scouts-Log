@@ -274,6 +274,7 @@ function ScoutsLogEyeWire() {
 	document.addEventListener('SLEW_requestSetPanelPosition', function(e) {
 		// Extract data
 		var pos = e.detail.position;
+		pos.vertical = e.detail.vertical;
 		
 		// Update position setting
 		chrome.storage.local.set({'position': pos});
