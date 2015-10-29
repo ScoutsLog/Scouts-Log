@@ -47,6 +47,8 @@ function nice_number(n) {
 	S.windowState = '';
 
 	S.historyType = '';
+	S.historyCell = 0;
+	S.historyAccuracy = 1;
 	S.historyPosition = 0;
 	S.historyDisplay = 10;
 	
@@ -390,7 +392,7 @@ function nice_number(n) {
 		
 		if (status != '') {
 			// Update window state
-			S.windowState = 'status-' + status;
+			S.windowState = 'status-' + s;
 			
 			// Set window title
 			jQuery('#slPanel h2 small').html(status);
@@ -472,12 +474,27 @@ function nice_number(n) {
 		}, 0);
 	};
 	
+	
 	S.getTaskEntriesCallback = function(d) {
+		S.getTaskDetails(d.task, function(data) {
+			// Add task details to original data
+			d.cell = data.cell;
+			d.cellName = data.cellName;
+			d.weight = data.weight;
+			d.votes = data.votes;
+			d.votesMax = data.votesMax;
+			
+			// Trigger final callback to display info
+			S.getTaskEntriesCallback2(d);
+		});
+	}
+	
+	S.getTaskEntriesCallback2 = function(d) {
 		// Check for admin weight
 		var wstyle = '';
 		
 		if (d.weight >= 1000000) {
-			wstyle =' class="sl-admin';
+			wstyle =' class="sl-admin"';
 		}
 		
 		// Check for admin complete
@@ -519,8 +536,47 @@ function nice_number(n) {
 			jQuery("#slMainTable table tbody").append(row);
 		}
 		
+		// Check button status
+		if (d.status != '' && d.status != 'good') {
+			var btn = '<button type="button" class="greenButton good-action" style="margin-left: 10px;">Set to Good</button>';
+			
+			jQuery(btn).insertAfter("#slPanel button.new-action");
+
+			jQuery('#slPanel button.good-action').click(function() {
+				// Prepare data object
+				var data = {
+					cell: d.cell,
+					task: d.task,
+					status: 'good',
+					reaped: 0,
+					notes: '',
+					image: ''
+				};
+
+				// Initiate request through plugin
+				var url = "http://scoutslog.org/1.1/task/" + encodeURIComponent(d.task) + "/action/create";
+
+				setTimeout(function() {
+					document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
+						detail: {
+							"url": url,
+							"data": "data=" + encodeURIComponent(JSON.stringify(data)),
+							"callback": "window.scoutsLog.setTaskGoodCallback"
+						}
+					}));
+				}, 0);
+			});
+		}
+		
+		// Set links for panel
 		S.setLinks('#slPanel');
 	};
+
+	S.setTaskGoodCallback = function(d) {
+		// Refresh cube details
+		S.getTaskEntries(d.task);
+	}
+
 	
 	S.getTaskSummary = function(t) {
 		// Get current cube/task
@@ -543,11 +599,25 @@ function nice_number(n) {
 	}
 	
 	S.getTaskSummaryCallback = function(d) {
+		S.getTaskDetails(d.task, function(data) {
+			// Add task details to original data
+			d.cell = data.cell;
+			d.cellName = data.cellName;
+			d.weight = data.weight;
+			d.votes = data.votes;
+			d.votesMax = data.votesMax;
+			
+			// Trigger final callback to display info
+			S.getTaskSummaryCallback2(d);
+		});
+	}
+	
+	S.getTaskSummaryCallback2 = function(d) {
 		// Check for admin weight
 		var wstyle = '';
 		
 		if (d.weight >= 1000000) {
-			wstyle =' class="sl-admin';
+			wstyle =' class="sl-admin"';
 		}
 		
 		// Check for admin complete
@@ -571,10 +641,38 @@ function nice_number(n) {
 		// Set links
 		S.setLinks('#slPanel');
 	}
+	
+	S.getTaskDetails = function(id, callback) {
+		jQuery.getJSON('http://eyewire.org/1.0/task/' + encodeURIComponent(id), function(d1) {
+			var task = {
+				id: d1.id,
+				cell: d1.cell,
+				weight: d1.weightsum
+			};
+			
+			jQuery.getJSON('http://eyewire.org/1.0/task/' + encodeURIComponent(id) + '/aggregate', function(d2) {
+				var task2 = task;
+				
+				task2.votes = d2.votes.total;
+				task2.votesMax = d2.votes.max;
+				
+				jQuery.getJSON('http://eyewire.org/1.0/cell/' + encodeURIComponent(task2.cell), function(d3) {
+					task2.cellName = d3.name;
+					
+					// Send task data to callback
+					setTimeout(callback(task2), 0);
+				});
+			});
+
+		});
+	}
+	
 
 	S.getHistory = function() {
 		// Prepare history window
 		if (S.windowState != 'history') {
+			S.historyDisplay = 10;
+			
 			S.prepareHistoryWindow();
 		}
 
@@ -584,6 +682,14 @@ function nice_number(n) {
 
 		if (S.historyType != '') {
 			url += '/type/' + encodeURIComponent(S.historyType);
+		}
+		
+		if (S.historyCell > 0) {
+			url += '/cell/' + encodeURIComponent(S.historyCell);
+		}
+		
+		if (S.historyAccuracy < 1) {
+			url += '/accuracy/' + encodeURIComponent(S.historyAccuracy);
 		}
 
 		// Initiate request
@@ -599,9 +705,22 @@ function nice_number(n) {
 
 	S.getHistoryCallback = function(d) {
 		// Update history position
-		S.historytype = d.type;
+		S.historyType = d.type;
+		S.historyCell = d.cell;
+		S.historyAccuracy = d.accuracy;
 		S.historyPosition = d.start + d.limit;
 		S.historyDisplay = d.limit;
+		
+		// Set default values
+		jQuery('#sl-history-type').val(S.historyType);
+		
+		if (S.historyCell != 0) {
+			jQuery('#sl-history-cell').val(S.historyCell);
+		} else {
+			jQuery('#sl-history-cell').val('');
+		}
+		
+		jQuery('#sl-history-accuracy').val(S.historyAccuracy);
 
 		// Display history data
 		if (d.tasks.length > 0) {
@@ -644,10 +763,13 @@ function nice_number(n) {
 				jQuery("#slMainTable table tbody").append(row);
 			}
 
+			// Check for end of data
 			if (d.tasks.length < d.limit) {
 				jQuery('#slPanel a.more').remove();
 			}
 		} else {
+			// No more data
+			
 			jQuery('#slPanel a.more').remove();
 		}
 
@@ -935,6 +1057,11 @@ function nice_number(n) {
 		var h = (jQuery('.gameBoard').height() * 0.80) - 30;
 		jQuery('#slPanel div.slPanelContent').height(h);
 
+		// Prevent keystrokes for notes from bubbling
+		jQuery('#sl-action-notes').keydown(function(e) {
+			e.stopPropagation();
+		});
+		
 		// Set handlers for buttons
 		jQuery('#slPanel button.cancel').click(function() {
 			jQuery('#slPanel').hide();
@@ -983,18 +1110,34 @@ function nice_number(n) {
 		// Set window state
 		S.windowState = 'history';
 		S.historyPosition = 0;
+
 		
 		// Prepare display window
 		var doc = '';
 		doc += '<h2>Scouts\' Log<small>Cube Submission History</small></h2>';
 
 		doc += '<div id="slOptions">';
+		doc += '<div style="display:inline-block;margin-right:10px;">';
+		doc += '<label>Submission Type:</label><br />';
 		doc += '<select id="sl-history-type">';
 		doc += '<option value="">All Types</option>';
-		doc += '<option value="normal">Normal Submissions</option>';
-		doc += '<option value="scythed">Scythed</option>';
+		doc += '<option value="normal">Normal</option>';
 		doc += '<option value="trailblazer">Normal Trailblaze</option>';
+		doc += '<option value="scythed">Scythed</option>';
 		doc += '</select>';
+		doc += '</div>';
+		doc += '<div style="display:inline-block;margin-right:10px;">';
+		doc += '<label>Cell ID:</label><br />';
+		doc += '<input type="text" id="sl-history-cell" value="" size="12" />';
+		doc += '</div>';
+		doc += '<div style="display:inline-block;margin-right:10px;">';
+		doc += '<label>Consensus:</label><br />';
+		doc += '<select id="sl-history-accuracy">';
+		doc += '<option value="1">All Values</option>';
+		doc += '<option value="0.5">50% or less</option>';
+		doc += '<option value="0">No Agreement</option>';
+		doc += '</select>';
+		doc += '</div>';
 		doc += '</div><br />';
 		
 		doc += '<div id="slMainTable">';
@@ -1031,12 +1174,58 @@ function nice_number(n) {
 			S.getHistory();
 		});
 
-		// Set default value for type option
+		// Set default values
 		jQuery('#sl-history-type').val(S.historyType);
+		
+		if (S.historyCell != 0) {
+			jQuery('#sl-history-cell').val(S.historyCell);
+		} else {
+			jQuery('#sl-history-cell').val('');
+		}
+		
+		jQuery('#sl-history-accuracy').val(S.historyAccuracy);
+		
+		// Prevent bubbling for cell ID
+		jQuery('#sl-history-cell').keydown(function(e) {
+			e.stopPropagation();
+		});
+		
+		jQuery('#sl-history-cell').keyup(function(e) {
+			e.stopPropagation();
+		});
+		
+		
 
-		// Set change handler for type option
+		// Set option handlers
 		jQuery('#sl-history-type').change(function() {
 			S.historyType = jQuery('#sl-history-type').val();
+			S.windowState = '';
+
+			S.getHistory();
+		});
+		
+		jQuery('#sl-history-cell').blur(function() {
+			var c = parseInt(jQuery('#sl-history-cell').val(), 10);
+			
+			if (isNaN(c)) {
+				c = 0;
+				jQuery('#sl-history-cell').val('');
+			}
+			
+			S.historyCell = c;
+			S.windowState = '';
+
+			S.getHistory();
+		});
+		
+		jQuery('#sl-history-accuracy').change(function() {
+			var a = parseFloat(jQuery('#sl-history-accuracy').val());
+			
+			if (a > 1.00 || a < 0.00) {
+				a = 1;
+			}
+			
+			S.historyAccuracy = a;
 			S.windowState = '';
 
 			S.getHistory();
@@ -1158,21 +1347,38 @@ function nice_number(n) {
 			}
 
 			style = ' style="top:' + t + 'px;left:' + l + 'px;"';
+			
+			if (pos.vertical) {
+				style += ' class="vertical"';
+			}
 		}
 
 		var panel = '<div id="scoutsLogFloatingControls"' + style + '>';
 		panel += '<img src="' + S.images.logo + '" style="float: left;" />';
-		panel += '<a class="translucent flat minimalButton active cell-list">Cell List</a>';
-		panel += '<a class="translucent flat minimalButton active need-admin">Need Admin <span id="need-admin-badge" class="badge">0</span></a>';
-		panel += '<a class="translucent flat minimalButton active need-scythe">Need Scythe <span id="need-scythe-badge" class="badge">0</span></a>';
-		panel += '<a class="translucent flat minimalButton active watch">Watch List <span id="watch-badge" class="badge">0</span></a>';
-		panel += '<a class="translucent flat minimalButton active history">History</a>';
-		panel += '<a class="translucent flat minimalButton active task" id="sl-task-details" style="display: none;">Cube Details</a>';
-		panel += '<a class="translucent flat minimalButton active task" id="sl-task-entry" style="display: none;">Log Entry</a>';
+		
+		if (pos.vertical) {
+			panel += '<a class="translucent flat minimalButton active cell-list" title="Display list of uncompleted cells and a summary of open tasks">C</a>';
+			panel += '<a class="translucent flat minimalButton active need-admin" title="Display tasks requiring admin attention">A <span id="need-admin-badge" class="badge">0</span></a>';
+			panel += '<a class="translucent flat minimalButton active need-scythe" title="Display tasks requiring scythe attention">S <span id="need-scythe-badge" class="badge">0</span></a>';
+			panel += '<a class="translucent flat minimalButton active watch" title="Display tasks set to watch">W <span id="watch-badge" class="badge">0</span></a>';
+			panel += '<a class="translucent flat minimalButton active history" title="View details regarding your cubes submitted or scythed">H</a>';
+			panel += '<a class="translucent flat minimalButton active task" id="sl-task-details" title="View summary and log entries for this cube." style="display: none;">D</a>';
+			panel += '<a class="translucent flat minimalButton active task" id="sl-task-entry" title="Create a new log entry for this cube." style="display: none;">L</a>';
+		} else {
+			panel += '<a class="translucent flat minimalButton active cell-list" title="Display list of uncompleted cells and a summary of open tasks">Cell List</a>';
+			panel += '<a class="translucent flat minimalButton active need-admin" title="Display tasks requiring admin attention">Need Admin <span id="need-admin-badge" class="badge">0</span></a>';
+			panel += '<a class="translucent flat minimalButton active need-scythe" title="Display tasks requiring scythe attention">Need Scythe <span id="need-scythe-badge" class="badge">0</span></a>';
+			panel += '<a class="translucent flat minimalButton active watch" title="Display tasks set to watch">Watch List <span id="watch-badge" class="badge">0</span></a>';
+			panel += '<a class="translucent flat minimalButton active history" title="View details regarding your cubes submitted or scythed">History</a>';
+			panel += '<a class="translucent flat minimalButton active task" id="sl-task-details" title="View summary and log entries for this cube." style="display: none;">Cube Details</a>';
+			panel += '<a class="translucent flat minimalButton active task" id="sl-task-entry" title="Create a new log entry for this cube." style="display: none;">Log Entry</a>';			
+		}
+		
 		panel += '</div>';
 		
 		// Add panel to game board
 		jQuery(panel).appendTo('#content .gameBoard');
+		
 		jQuery('#scoutsLogFloatingControls').draggable({
 			container: 'window',
 			stop: function(e, ui) {
@@ -1180,7 +1386,8 @@ function nice_number(n) {
 				setTimeout(function() {
 					document.dispatchEvent(new CustomEvent('SLEW_requestSetPanelPosition', {
 						detail: {
-							"position": ui.position
+							"position": ui.position,
+							"vertical": jQuery('#scoutsLogFloatingControls').hasClass('vertical')
 						}
 					}));
 				}, 0);
@@ -1189,6 +1396,35 @@ function nice_number(n) {
 		});
 		
 		// Add events to links
+		jQuery('#scoutsLogFloatingControls img').dblclick(function() {
+			// Toggle floating panel display
+			
+			if (jQuery('#scoutsLogFloatingControls').hasClass('vertical')) {
+				jQuery('#scoutsLogFloatingControls').removeClass('vertical');
+		
+				jQuery('#scoutsLogFloatingControls a.cell-list').html('Cell List');
+				jQuery('#scoutsLogFloatingControls a.need-admin').html('Need Admin <span id="need-admin-badge" class="badge">0</span>');
+				jQuery('#scoutsLogFloatingControls a.need-scythe').html('Need Scythe <span id="need-scythe-badge" class="badge">0</span>');
+				jQuery('#scoutsLogFloatingControls a.watch').html('Watch List <span id="watch-badge" class="badge">0</span>');
+				jQuery('#scoutsLogFloatingControls a.history').html('History');
+				jQuery('#scoutsLogFloatingControls #sl-task-details').html('Cube Details');
+				jQuery('#scoutsLogFloatingControls #sl-task-entry').html('Log Entry');
+			} else {
+				jQuery('#scoutsLogFloatingControls').addClass('vertical');
+
+				jQuery('#scoutsLogFloatingControls a.cell-list').html('C');
+				jQuery('#scoutsLogFloatingControls a.need-admin').html('A <span id="need-admin-badge" class="badge">0</span>');
+				jQuery('#scoutsLogFloatingControls a.need-scythe').html('S <span id="need-scythe-badge" class="badge">0</span>');
+				jQuery('#scoutsLogFloatingControls a.watch').html('W <span id="watch-badge" class="badge">0</span>');
+				jQuery('#scoutsLogFloatingControls a.history').html('H');
+				jQuery('#scoutsLogFloatingControls #sl-task-details').html('D');
+				jQuery('#scoutsLogFloatingControls #sl-task-entry').html('L');
+			}
+			
+			setTimeout(S.doPanelStats(), 0);
+		});
+		
+		
 		jQuery('#scoutsLogFloatingControls a.cell-list').click(S.showCells);
 		jQuery('#scoutsLogFloatingControls a.need-admin').click(S.showAdmin);
 		jQuery('#scoutsLogFloatingControls a.need-scythe').click(S.showScythe);
@@ -1340,23 +1576,48 @@ function nice_number(n) {
 	
 	
 	S.showCells = function() {
-		S.getCellSummary();
+		if (S.windowState != 'cell') {
+			S.getCellSummary();
+		} else {
+			jQuery('#slPanel').hide();
+			S.windowState = '';
+		}
 	}
 	
 	S.showAdmin = function() {
-		S.getStatusEntries('need-admin');
+		if (S.windowState != 'status-need-admin') {
+			S.getStatusEntries('need-admin');
+		} else {
+			jQuery('#slPanel').hide();
+			S.windowState = '';
+		}
 	}
 	
 	S.showScythe = function() {
-		S.getStatusEntries('need-scythe');
+		if (S.windowState != 'status-need-scythe') {
+			S.getStatusEntries('need-scythe');
+		} else {
+			jQuery('#slPanel').hide();
+			S.windowState = '';
+		}
 	}
 	
 	S.showWatch = function() {
-		S.getStatusEntries('watch');
+		if (S.windowState != 'status-watch') {
+			S.getStatusEntries('watch');
+		} else {
+			jQuery('#slPanel').hide();
+			S.windowState = '';
+		}
 	}
 
 	S.showHistory = function() {
-		S.getHistory();
+		if (S.windowState != 'history') {
+			S.getHistory();
+		} else {
+			jQuery('#slPanel').hide();
+			S.windowState = '';
+		}
 	}
 	
 

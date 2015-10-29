@@ -97,6 +97,7 @@
 #scoutsLogFloatingControls a {
 	display: inline-block;
     height: 32px;
+    width: inital;
     border-color: initial;
     border-radius: 2px;
     padding: 12px 8px 0 8px;
@@ -106,6 +107,26 @@
 
 #scoutsLogFloatingControls img + a {
 	margin-left: 8px;
+}
+
+#scoutsLogFloatingControls.vertical {
+    height: initial;
+    width: 48px;
+}
+
+#scoutsLogFloatingControls.vertical img {
+	display: inline-block;
+}
+
+#scoutsLogFloatingControls.vertical a {
+	width: 32px;
+	margin-right: 2px;
+    margin-top: 8px;
+}
+
+#scoutsLogFloatingControls.vertical img + a {
+	margin-left: 0;
+	margin-bottom: 0;
 }
 
 
@@ -293,6 +314,7 @@
 .good {
 	color: #62c462 !important;
 }
+
 
 /* ----------------------------------------------------------- */
 
