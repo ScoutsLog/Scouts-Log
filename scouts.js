@@ -40,10 +40,9 @@ function nice_number(n) {
 		return final;
 	}
 
-////////////////////////////////////////////////////////////////////////////////
-
 (function(S) {
 	S.images = {};
+	S.imagesCount = 0;
 	
 	S.windowState = '';
 
@@ -52,54 +51,10 @@ function nice_number(n) {
 	S.historyAccuracy = 1;
 	S.historyPosition = 0;
 	S.historyDisplay = 10;
-
-	var baseDataURL = '';
 	
 	
-	/**
-	 * Routed Message Event Listener
-	 * 
-	 * This function routes messages from the main content script
-	 * to this page script.
-	 */
-	document.addEventListener('RoutedMessageCS', function(e) {
-		// Extract message parameters
-		var dst = e.detail.destination;
-		var data = e.detail.data;
-
-		if (S[dst]) {
-			S[dst](data);
-		}
-	});
-	
-	/**
-	 * Send Routed Message
-	 * 
-	 * This function routes a message from the main page script
-	 * to the main content script.
-	 */
-	S.sendMessage = function(dst, data, callback) {
-		var d = {detail: {
-			destination: dst,
-			data: data,
-			callback: callback
-		}};
-		
-		var ev = new CustomEvent('RoutedMessagePS', d);
-		
-		document.dispatchEvent(ev);
-	};
-	
-	
-	
-	
-	/**
-	 * Display Authorization Message
-	 * 
-	 * This function is triggered in response to slew_register()
-	 * when the user is not authorized for the application.
-	 */
-	S.slew_auth = function() {
+	// Create listener for SLEW_AUTH event (in response to SLEW_REGISTER)
+	document.addEventListener('SLEW_AUTH', function() {
 		var panel = '';
 		panel += '<div id="scoutsLogAuthPanel">';
 		panel += '<h2>Scouts\' Log Authorization</h2>';
@@ -110,21 +65,15 @@ function nice_number(n) {
 		panel += '</div>';
 		
 		jQuery("#content .gameBoard").append(panel);
-	};
+	});
 
-	/**
-	 * Display Extension Update Message
-	 * 
-	 * This function is triggered in response to slew_register()
-	 * when the extension is out of date.
-	 */
-	S.slew_update = function(e) {
+	// Create listener for SLEW_UPDATE event (in response to SLEW_REGISTER)
+	document.addEventListener('SLEW_UPDATE', function() {
 		var panel = '';
 		panel += '<div id="scoutsLogAuthPanel">';
 		panel += '<h2>Scouts\' Log Extension</h2>';
 		panel += '<p>Your extension is out of date!</p>';
-		panel += '<p>Don\'t panic, Google Chrome should update automatically.</p>';
-		panel += '<p>If you continue to see this message, please re-install the extension <a href="' + e.detail.url + '" class="task">here</a>.</p>';
+		panel += '<p>Please upgrade now to continue using the extension.</p>';
 		panel += '<p style="text-align:center;"><a class="cell" href="javascript:void(0);">Close</a></p>';
 		panel += '</div>';
 		
@@ -133,29 +82,15 @@ function nice_number(n) {
 		jQuery('#scoutsLogAuthPanel a.cell').click(function() {
 			jQuery('#scoutsLogAuthPanel').remove();
 		});
-	};
+	});
 	
-	/**
-	 * Extension Initialization
-	 * 
-	 * This function is triggered in response to slew_register()
-	 * when all pre-checks have been passed.	This function initializes
-	 * the local page object and creates the UI.
-	 */
-	S.slew_init = function(msg) {
-		S.baseDataURL = msg.baseDataURL;
-
-		S.init_ui();
-	};
+	// Create listener for SLEW_INIT event (in response to SLEW_REGISTER)
+	document.addEventListener('SLEW_INIT', function() {
+		S.init();
+	});
 	
-	/**
-	 * Initialialize User Interface (UI)
-	 * 
-	 * This function loads resouces from the extension,
-	 * adds necessary HTML elements, and hooks into the
-	 * various parts of the EyeWire web application.
-	 */
-	S.init_ui = function() {
+	
+	S.init = function() {
 		// Hook game control modes
 		jQuery(window).on(InspectorPanel.Events.ModelFetched, function() {
 			var ea = jQuery("#gameControls #editActions").length;
@@ -185,6 +120,7 @@ function nice_number(n) {
 			if (k.keyCode === Keycodes.codes.esc) {
 				if (jQuery('#slPanel').is(':visible')) {
 					jQuery('#slPanel').hide();
+					S.windowState = '';
 				}
 				
 				if (jQuery('#sl-task-details').is(':visible')) {
@@ -210,9 +146,50 @@ function nice_number(n) {
 
 		// Hook chat window
 		jQuery('body').on('DOMNodeInserted', '#content .gameBoard .chatMsgContainer', function(e) {
-			if (jQuery(e.target).attr('class') === 'chatMsg') {
+			if ($(e.target).attr('class') === 'chatMsg') {
 				S.setChatLinks(e.target);
 			}
+		});
+		
+		
+		// Create listener for ScoutsLogEyeWire.getJSON response event
+		document.addEventListener('SLEW_getJSON', function(e) {
+		    // Extract data
+			var cb = e.detail.callback;		// Callback function
+			var res = e.detail.response;	// Response object
+			
+			var fn = eval(cb);
+			fn(res);
+		});
+		
+		// Create listener for ScoutsLogEyeWire.getResource response event
+		document.addEventListener('SLEW_getResource', function(e) {
+			// Extract data
+			var cb = e.detail.callback;		// Callback function
+			var res = e.detail.response;	// Response object
+			
+			var fn = eval(cb);
+			fn(res);
+		});
+		
+		// Create listener for ScoutsLogEyeWire.postRequest response event
+		document.addEventListener('SLEW_postRequest', function(e) {
+			// Extract data
+			var cb = e.detail.callback;		// Callback function
+			var res = e.detail.response;	// Response object
+			
+			var fn = eval(cb);
+			fn(res);
+		});
+
+		// Create listener for ScoutsLogEyeWire.getPanelPosition response event
+		document.addEventListener('SLEW_getPanelPosition', function(e) {
+		    // Extract data
+			var cb = e.detail.callback;		// Callback function
+			var pos = e.detail.position;	// Response object
+			
+			var fn = eval(cb);
+			fn(pos);
 		});
 
 		// Create listener for cube submission data
@@ -235,55 +212,99 @@ function nice_number(n) {
 			data.timestamp = dt.toLocaleString();
 
 			// Send submission data to server
-			S.sendMessage(
-				"postRequest",
-				{
-					url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/submit",
-					data: "data=" + encodeURIComponent(JSON.stringify(data))
-				},
-				""
-			);
+			setTimeout(function() {
+				document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
+					detail: {
+						"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/submit",
+						"data": "data=" + encodeURIComponent(JSON.stringify(data)),
+						"callback": ""
+					}
+				}));
+			}, 0);
+
 		});
 		
 		
 		// Load image resources
 		S.loadImages();
-
-		// Load UI
-		S.setMainPanel();
-		S.setFloatingPanel();
-		S.setGameTools();
 	};
 
-	/**
-	 * Load Image Resources
-	 */
 	S.loadImages = function() {
-		S.images = {
-			logo: S.baseDataURL + "images/icon48.png",
-			close: S.baseDataURL + "images/close.png"
-		};
-	};
+		S.images = {};
+		S.imagesCount = 0;
+		
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetResource', {
+		        detail: {
+		        	"name": "logo",
+		        	"url": "images/icon48.png",
+		        	"callback": "window.scoutsLog.loadImagesCallback"
+		        }
+		    }));
+		}, 0);
+		
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetResource', {
+		        detail: {
+		        	"name": "popout",
+		        	"url": "images/popout.png",
+		        	"callback": "window.scoutsLog.loadImagesCallback"
+		        }
+		    }));
+		}, 0);
+		
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetResource', {
+		        detail: {
+		        	"name": "close",
+		        	"url": "images/close.png",
+		        	"callback": "window.scoutsLog.loadImagesCallback"
+		        }
+		    }));
+		}, 0);
 
-
-	/**
-	 * Get Summary of Cells (Cell List)
-	 */
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetResource', {
+		        detail: {
+		        	"name": "minimize",
+		        	"url": "images/minimize.png",
+		        	"callback": "window.scoutsLog.loadImagesCallback"
+		        }
+		    }));
+		}, 0);
+	}
+	
+	S.loadImagesCallback = function(res) {
+		var name = res.name;
+		var data = res.data;
+		
+		S.images[name] = data;
+		S.imagesCount++;
+		
+		if (S.imagesCount == 4) {
+			S.setMainPanel();
+			S.setFloatingPanel();
+			S.setGameTools();
+		}
+	}
+	
+	
+	
 	S.getCellSummary = function() {
 		// Prepare display window
 		S.prepareCellWindow();
 		
 		// Initiate request through plugin
-		S.sendMessage(
-			"getJSON",
-			{ url: "http://scoutslog.org/1.1/stats" },
-			"getCellSummaryCallback"
-		);
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	"url": "http://scoutslog.org/1.1/stats",
+		        	"callback": "window.scoutsLog.getCellSummaryCallback"
+		        }
+		    }));
+		}, 0);
 	};
 	
-	/**
-	 * Callback: Get Summary of Cells (Cell List)
-	 */
 	S.getCellSummaryCallback = function(d) {
 		jQuery("#slPanel h2 small").text('Cell Summary');
 		jQuery("#slMainTable table tbody").empty();
@@ -302,9 +323,6 @@ function nice_number(n) {
 		S.setLinks('#slPanel');
 	};
 	
-	/**
-	 * Get Task Entries for Cell
-	 */
 	S.getCellEntries = function(c, s) {
 		// Prepare display window
 		S.prepareCellEntriesWindow();
@@ -323,16 +341,16 @@ function nice_number(n) {
 		}
 		
 		// Initiate request
-		S.sendMessage(
-			"getJSON",
-			{ url: url },
-			"getCellEntriesCallback"
-		);
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	'url': url,
+		        	'callback': 'window.scoutsLog.getCellEntriesCallback'
+		        }
+		    }));
+		}, 0);
 	};
 
-	/**
-	 * Callback: Get Task Entries for Cell
-	 */
 	S.getCellEntriesCallback = function(d) {
 		jQuery("#slPanel h2 small").text(d.cellName + " (" + d.cell + ")");
 		jQuery("#slMainTable table tbody").empty();
@@ -359,9 +377,6 @@ function nice_number(n) {
 		}
 	};
 	
-	/**
-	 * Get Tasks set to a Given Status
-	 */
 	S.getStatusEntries = function(s) {
 		// Prepare display window
 		S.prepareSummaryWindow();
@@ -394,10 +409,6 @@ function nice_number(n) {
 				status = 'Watch List';
 				
 				break;
-			case 'open':
-				status = 'Open Tasks';
-
-				break;
 		}
 		
 		if (status != '') {
@@ -408,17 +419,17 @@ function nice_number(n) {
 			jQuery('#slPanel h2 small').html(status);
 			
 			// Initiate request through plugin
-			S.sendMessage(
-				"getJSON",
-				{ url: "http://scoutslog.org/1.1/status/" + encodeURIComponent(s) },
-				"getStatusEntriesCallback"
-			);
+			setTimeout(function() {
+			    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+			        detail: {
+			        	"url": "http://scoutslog.org/1.1/status/" + encodeURIComponent(s),
+			        	"callback": "window.scoutsLog.getStatusEntriesCallback"
+			        }
+			    }));
+			}, 0);
 		}
 	};
 	
-	/**
-	 * Callback: Get Tasks set to a Given Status
-	 */
 	S.getStatusEntriesCallback = function(d) {
 		jQuery("#slMainTable table tbody").empty();
 
@@ -439,9 +450,7 @@ function nice_number(n) {
 		S.setLinks('#slPanel');
 	};
 	
-	/**
-	 * Get Actions for a Given Task (UI)
-	 */
+	
 	S.getTaskEntries = function(t) {
 		// Prepare display window
 		S.prepareTaskWindow(t);
@@ -450,16 +459,16 @@ function nice_number(n) {
 		S.windowstate = 'task-' + t;
 		
 		// Initiate request
-		S.sendMessage(
-			"getJSON",
-			{ url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/actions" },
-			"getTaskEntriesCallback"
-		);
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/actions",
+		        	"callback": "window.scoutsLog.getTaskEntriesCallback"
+		        }
+		    }));
+		}, 0);
 	};
 	
-	/**
-	 * Get Actions for a Given Task (Inspect Mode)
-	 */
 	S.getTaskEntriesInspect = function() {
 		// Get current cube/task
 		var target = window.tomni.getTarget();
@@ -476,16 +485,17 @@ function nice_number(n) {
 		S.prepareTaskWindow(t);
 		
 		// Initiate request
-		S.sendMessage(
-			"getJSON",
-			{ url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/actions" },
-			"getTaskEntriesCallback"
-		);
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/actions",
+		        	"callback": "window.scoutsLog.getTaskEntriesCallback"
+		        }
+		    }));
+		}, 0);
 	};
 	
-	/**
-	 * Callback: Get Actions for a Given Task (Part 1/2)
-	 */
+	
 	S.getTaskEntriesCallback = function(d) {
 		S.getTaskDetails(d.task, function(data) {
 			// Add task details to original data
@@ -500,9 +510,6 @@ function nice_number(n) {
 		});
 	}
 	
-	/**
-	 * Callback: Get Actions for a Given Task (Part 2/2)
-	 */
 	S.getTaskEntriesCallback2 = function(d) {
 		// Check for admin weight
 		var wstyle = '';
@@ -568,14 +575,17 @@ function nice_number(n) {
 				};
 
 				// Initiate request through plugin
-				S.sendMessage(
-				"postRequest",
-				{
-					url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(d.task) + "/action/create",
-					data: "data=" + encodeURIComponent(JSON.stringify(data))
-				},
-				"setTaskGoodCallback"
-			);
+				var url = "http://scoutslog.org/1.1/task/" + encodeURIComponent(d.task) + "/action/create";
+
+				setTimeout(function() {
+					document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
+						detail: {
+							"url": url,
+							"data": "data=" + encodeURIComponent(JSON.stringify(data)),
+							"callback": "window.scoutsLog.setTaskGoodCallback"
+						}
+					}));
+				}, 0);
 			});
 		}
 		
@@ -583,37 +593,32 @@ function nice_number(n) {
 		S.setLinks('#slPanel');
 	};
 
-	/**
-	 * Callback: Set Task to Good
-	 */
 	S.setTaskGoodCallback = function(d) {
 		// Refresh cube details
 		S.getTaskEntries(d.task);
 	}
 
-	/**
-	 * Get Action Summary for a Given Task
-	 */
-	S.getTaskSummary = function() {
+	
+	S.getTaskSummary = function(t) {
 		// Get current cube/task
 		var target = window.tomni.getTarget();
 		var t = target.id;
 		
 		if (typeof t == 'undefined') {
-			t = window.tomni.task.id;
+			var t = window.tomni.task.id;
 		}
 		
 		// Initiate request
-		S.sendMessage(
-			"getJSON",
-			{ url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) },
-			"getTaskSummaryCallback"
-		);
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	"url": "http://scoutslog.org/1.1/task/" + encodeURIComponent(t),
+		        	"callback": "window.scoutsLog.getTaskSummaryCallback"
+		        }
+		    }));
+		}, 0);
 	}
 	
-	/**
-	 * Callback: Get Action Summary for a Given Task (Part 1/2)
-	 */
 	S.getTaskSummaryCallback = function(d) {
 		S.getTaskDetails(d.task, function(data) {
 			// Add task details to original data
@@ -628,9 +633,6 @@ function nice_number(n) {
 		});
 	}
 	
-	/**
-	 * Callback: Get Action Summary for a Given Task (Part 2/2)
-	 */
 	S.getTaskSummaryCallback2 = function(d) {
 		// Check for admin weight
 		var wstyle = '';
@@ -661,9 +663,6 @@ function nice_number(n) {
 		S.setLinks('#slPanel');
 	}
 	
-	/**
-	 * Get Full Details for a Given Task
-	 */
 	S.getTaskDetails = function(id, callback) {
 		jQuery.getJSON('http://eyewire.org/1.0/task/' + encodeURIComponent(id), function(d1) {
 			var task = {
@@ -682,16 +681,14 @@ function nice_number(n) {
 					task2.cellName = d3.name;
 					
 					// Send task data to callback
-					callback(task2);
+					setTimeout(callback(task2), 0);
 				});
 			});
 
 		});
 	}
 	
-	/**
-	 * Get History of User Submissions
-	 */
+
 	S.getHistory = function() {
 		// Prepare history window
 		if (S.windowState != 'history') {
@@ -717,16 +714,16 @@ function nice_number(n) {
 		}
 
 		// Initiate request
-		S.sendMessage(
-			"getJSON",
-			{ url: url },
-			"getHistoryCallback"
-		);
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	"url": url,
+		        	"callback": "window.scoutsLog.getHistoryCallback"
+		        }
+		    }));
+		}, 0);
 	}
 
-	/**
-	 * Callback: Get History of User Submissions
-	 */
 	S.getHistoryCallback = function(d) {
 		// Update history position
 		S.historyType = d.type;
@@ -801,15 +798,13 @@ function nice_number(n) {
 		S.setLinks('#slPanel');
 	}
 
-	/**
-	 * Callback: Submit New Task Action
-	 */
 	S.submitTaskActionCallback = function(d) {
 		if (d.result == true) {
 			// Success
 
-			jQuery('#slPanel').hide();
-			S.windowState = '';
+			jQuery('#slActionButtons button.submit').remove();
+			jQuery('#slActionButtons button').prop('disabled', false);
+			jQuery('#slActionButtons p').html('Success! Saved.');
 		} else {
 			// Error
 
@@ -818,9 +813,7 @@ function nice_number(n) {
 		}
 	}
 	
-	/**
-	 * UI: Prepare Window for Cell Summary
-	 */
+	
 	S.prepareCellWindow = function() {
 		// Set window state
 		S.windowState = 'cell';
@@ -853,9 +846,6 @@ function nice_number(n) {
 		jQuery('#slPanel div.slPanelContent').height(h);
 	}
 
-	/**
-	 * UI: Prepare Window for Task/Cell Summary
-	 */
 	S.prepareSummaryWindow = function() {
 		// Set window state
 		S.windowState = 'summary';
@@ -892,9 +882,6 @@ function nice_number(n) {
 		jQuery('#slPanel div.slPanelContent').height(h);
 	}
 	
-	/**
-	 * UI: Prepare Window for Cell Task Entries
-	 */
 	S.prepareCellEntriesWindow = function() {
 		// Set window state
 		S.windowState = 'cell-entries';
@@ -957,16 +944,13 @@ function nice_number(n) {
 		});
 	}
 
-	/**
-	 * UI: Prepare Window for Task Summary
-	 */
 	S.prepareTaskWindow = function(t) {
 		// Set window state
 		S.windowState = 'task';
 		
 		// Prepare display window
 		var doc = '';
-		doc += '<h2>Scouts\' Log | <a class="jumpTask" data-task="' + t + '">Task #' + t + '</a></h2>';
+		doc += '<h2>Scouts\' Log<small>Task #' + t + '</small></h2>';
 		
 		doc += '<div id="slSummaryTable">';
 		doc += '<table class="slTable">';
@@ -1027,9 +1011,6 @@ function nice_number(n) {
 		});
 	}
 
-	/**
-	 * UI: Prepare Window for Task Action
-	 */
 	S.prepareTaskActionWindow = function() {
 		// Set window state
 		S.windowState = 'action';
@@ -1105,6 +1086,7 @@ function nice_number(n) {
 		// Set handlers for buttons
 		jQuery('#slPanel button.cancel').click(function() {
 			jQuery('#slPanel').hide();
+			S.windowState = '';
 		});
 
 		jQuery('#slPanel button.submit').click(function() {
@@ -1131,20 +1113,20 @@ function nice_number(n) {
 			};
 
 			// Initiate request through plugin
-			S.sendMessage(
-				"postRequest",
-				{
-					 url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/action/create",
-					 data: "data=" + encodeURIComponent(JSON.stringify(data))
-				},
-				"submitTaskActionCallback"
-			);
+			var url = "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/action/create";
+
+			setTimeout(function() {
+			    document.dispatchEvent(new CustomEvent('SLEW_requestPostRequest', {
+			        detail: {
+			        	"url": url,
+					"data": "data=" + encodeURIComponent(JSON.stringify(data)),
+			        	"callback": "window.scoutsLog.submitTaskActionCallback"
+			        }
+			    }));
+			}, 0);
 		});
 	}
 
-	/**
-	 * UI: Prepare Window for User Submission History
-	 */
 	S.prepareHistoryWindow = function() {
 		// Set window state
 		S.windowState = 'history';
@@ -1176,9 +1158,6 @@ function nice_number(n) {
 		doc += '<option value="0.5">50% or less</option>';
 		doc += '<option value="0">No Agreement</option>';
 		doc += '</select>';
-		doc += '</div>';
-		doc += '<div style="display:inline-block;margin-right:10px;">';
-		doc += '<button type="button" id="sl-history-refresh" class="blueButton">Refresh</button>';
 		doc += '</div>';
 		doc += '</div><br />';
 		
@@ -1238,10 +1217,15 @@ function nice_number(n) {
 		
 		
 
-		// Set event handlers
-		jQuery('#sl-history-refresh').click(function() {
+		// Set option handlers
+		jQuery('#sl-history-type').change(function() {
 			S.historyType = jQuery('#sl-history-type').val();
+			S.windowState = '';
 
+			S.getHistory();
+		});
+		
+		jQuery('#sl-history-cell').blur(function() {
 			var c = parseInt(jQuery('#sl-history-cell').val(), 10);
 			
 			if (isNaN(c)) {
@@ -1250,7 +1234,12 @@ function nice_number(n) {
 			}
 			
 			S.historyCell = c;
+			S.windowState = '';
 
+			S.getHistory();
+		});
+		
+		jQuery('#sl-history-accuracy').change(function() {
 			var a = parseFloat(jQuery('#sl-history-accuracy').val());
 			
 			if (a > 1.00 || a < 0.00) {
@@ -1258,8 +1247,6 @@ function nice_number(n) {
 			}
 			
 			S.historyAccuracy = a;
-
-
 			S.windowState = '';
 
 			S.getHistory();
@@ -1267,9 +1254,7 @@ function nice_number(n) {
 	}
 	
 	
-	/**
-	 * Utils: Set Links for Common Items
-	 */
+	
 	S.setLinks = function(o) {
 		jQuery(o).find('a.jumpTask').each(function() {
 			var task = jQuery(this).attr('data-task');
@@ -1324,9 +1309,6 @@ function nice_number(n) {
 		
 	};
 
-	/**
-	 * Utils: Set Common Links in Chat Window
-	 */
 	S.setChatLinks = function(o) {
 		// Get actual chat text
 		var t = jQuery(o).children('.actualText').html();
@@ -1342,38 +1324,42 @@ function nice_number(n) {
 
 	}
 
-	/**
-	 * UI: Create Main Window
-	 */
+
 	S.setMainPanel = function() {
 		var panel = '<div id="slPanel" style="display: none;">';
-		panel += '<a href="javascript:void(0);" class="close-window" title="Hide window"><img src="' + S.images.close + '"/></a>';
+		panel += '<a href="javascript:void(0);" class="minimize-window" title="Minimize window"><img src="' + S.images.minimize + '"/></a>';
+		panel += '<a href="javascript:void(0);" class="close-window" title="Close window"><img src="' + S.images.close + '"/></a>';
 		panel += '<div class="slPanelContent"></div>';
 		panel += '</div>';
 		jQuery("#content .gameBoard").append(panel);
 
 		jQuery('#slPanel a.close-window').click(function() {
 			jQuery('#slPanel').hide();
+			S.windowState = '';
+		});
+
+		jQuery('#slPanel a.minimize-window').click(function() {
+			jQuery('#slPanel').hide();
 		});
 	}
 	
-	/**
-	 * UI: Create Floating Panel
-	 */
 	S.setFloatingPanel = function() {
-		S.sendMessage("getPosition", {}, "setFloatingPanelCallback");
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetPanelPosition', {
+		        detail: {
+		        	"callback": "window.scoutsLog.setFloatingPanelCallback"
+		        }
+		    }));
+		}, 0);
 	}
 
-	/**
-	 * UI Callback: Create Floating Panel
-	 */
-	S.setFloatingPanelCallback = function(msg) {
+	S.setFloatingPanelCallback = function(pos) {
 		var style = '';
 		var vertical = false;
 
-		if (msg.position) {
-			var t = msg.position.top;
-			var l = Math.abs(msg.position.left);
+		if (pos) {
+			var t = pos.top;
+			var l = Math.abs(pos.left);
 
 			if (l > (jQuery(window).width() - 50)) {
 				l = jQuery(window).width() - 50;
@@ -1389,7 +1375,7 @@ function nice_number(n) {
 
 			style = ' style="top:' + t + 'px;left:' + l + 'px;"';
 			
-			if (msg.position.vertical) {
+			if (pos.vertical) {
 				style += ' class="vertical"';
 				vertical = true;
 			}
@@ -1400,7 +1386,6 @@ function nice_number(n) {
 		
 		if (vertical) {
 			panel += '<a class="translucent flat minimalButton active cell-list" title="Display list of uncompleted cells and a summary of open tasks">C</a>';
-			panel += '<a class="translucent flat minimalButton active open" title="Display list of open tasks">O</a>';
 			panel += '<a class="translucent flat minimalButton active need-admin" title="Display tasks requiring admin attention">A <span id="need-admin-badge" class="badge">0</span></a>';
 			panel += '<a class="translucent flat minimalButton active need-scythe" title="Display tasks requiring scythe attention">S <span id="need-scythe-badge" class="badge">0</span></a>';
 			panel += '<a class="translucent flat minimalButton active watch" title="Display tasks set to watch">W <span id="watch-badge" class="badge">0</span></a>';
@@ -1409,7 +1394,6 @@ function nice_number(n) {
 			panel += '<a class="translucent flat minimalButton active task" id="sl-task-entry" title="Create a new log entry for this cube." style="display: none;">L</a>';
 		} else {
 			panel += '<a class="translucent flat minimalButton active cell-list" title="Display list of uncompleted cells and a summary of open tasks">Cell List</a>';
-			panel += '<a class="translucent flat minimalButton active open" title="Display list of open tasks">Open Tasks</a>';
 			panel += '<a class="translucent flat minimalButton active need-admin" title="Display tasks requiring admin attention">Need Admin <span id="need-admin-badge" class="badge">0</span></a>';
 			panel += '<a class="translucent flat minimalButton active need-scythe" title="Display tasks requiring scythe attention">Need Scythe <span id="need-scythe-badge" class="badge">0</span></a>';
 			panel += '<a class="translucent flat minimalButton active watch" title="Display tasks set to watch">Watch List <span id="watch-badge" class="badge">0</span></a>';
@@ -1426,14 +1410,16 @@ function nice_number(n) {
 		jQuery('#scoutsLogFloatingControls').draggable({
 			container: 'window',
 			stop: function(e, ui) {
-				jQuery('#scoutsLogFloatingControls').css('width', '');
-
 				// Update position in settings
-				S.sendMessage(
-					"setPosition",
-					{ position: ui.position, vertical: jQuery('#scoutsLogFloatingControls').hasClass('vertical') },
-					""
-				);
+				setTimeout(function() {
+					document.dispatchEvent(new CustomEvent('SLEW_requestSetPanelPosition', {
+						detail: {
+							"position": ui.position,
+							"vertical": jQuery('#scoutsLogFloatingControls').hasClass('vertical')
+						}
+					}));
+				}, 0);
+
 			}
 		});
 		
@@ -1445,7 +1431,6 @@ function nice_number(n) {
 				jQuery('#scoutsLogFloatingControls').removeClass('vertical');
 		
 				jQuery('#scoutsLogFloatingControls a.cell-list').html('Cell List');
-				jQuery('#scoutsLogFloatingControls a.open').html('Open Tasks');
 				jQuery('#scoutsLogFloatingControls a.need-admin').html('Need Admin <span id="need-admin-badge" class="badge">0</span>');
 				jQuery('#scoutsLogFloatingControls a.need-scythe').html('Need Scythe <span id="need-scythe-badge" class="badge">0</span>');
 				jQuery('#scoutsLogFloatingControls a.watch').html('Watch List <span id="watch-badge" class="badge">0</span>');
@@ -1456,7 +1441,6 @@ function nice_number(n) {
 				jQuery('#scoutsLogFloatingControls').addClass('vertical');
 
 				jQuery('#scoutsLogFloatingControls a.cell-list').html('C');
-				jQuery('#scoutsLogFloatingControls a.open').html('O');
 				jQuery('#scoutsLogFloatingControls a.need-admin').html('A <span id="need-admin-badge" class="badge">0</span>');
 				jQuery('#scoutsLogFloatingControls a.need-scythe').html('S <span id="need-scythe-badge" class="badge">0</span>');
 				jQuery('#scoutsLogFloatingControls a.watch').html('W <span id="watch-badge" class="badge">0</span>');
@@ -1465,13 +1449,11 @@ function nice_number(n) {
 				jQuery('#scoutsLogFloatingControls #sl-task-entry').html('L');
 			}
 			
-			// Set timer to update panel stats
-			setInterval(function() { window.scoutsLog.doPanelStats(); }, 60000);
+			setTimeout(S.doPanelStats(), 0);
 		});
 		
 		
 		jQuery('#scoutsLogFloatingControls a.cell-list').click(S.showCells);
-		jQuery('#scoutsLogFloatingControls a.open').click(S.showOpen);
 		jQuery('#scoutsLogFloatingControls a.need-admin').click(S.showAdmin);
 		jQuery('#scoutsLogFloatingControls a.need-scythe').click(S.showScythe);
 		jQuery('#scoutsLogFloatingControls a.watch').click(S.showWatch);
@@ -1515,9 +1497,6 @@ function nice_number(n) {
 		S.doPanelStats();
 	}
 
-	/**
-	 * UI: Create Window Display Toggle Button
-	 */
 	S.setGameTools = function() {
 		var button = '<div title="Show Scouts\' Log Panel (alt + L)" id="scoutsLogPanelButton" class="menuButton"><img src="' + S.images.logo + '" height="20" width="20" /></div>';
 
@@ -1534,20 +1513,19 @@ function nice_number(n) {
 		});
 	}
 	
-	/**
-	 * Update Floating Panel Stats Values
-	 */
 	S.doPanelStats = function() {
-		S.sendMessage(
-			"getJSON",
-			{ url: "http://scoutslog.org/1.0/stats/header" },
-			"doPanelStatsCallback"
-		);
+		setTimeout("window.scoutsLog.doPanelStats()", 60000);
+		
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetJSON', {
+		        detail: {
+		        	"url": "http://scoutslog.org/1.0/stats/header",
+		        	"callback": "window.scoutsLog.doPanelStatsCallback"
+		        }
+		    }));
+		}, 0);
 	};
-	
-	/**
-	 * Callback: Update Floating Panel Stats Values
-	 */
+		
 	S.doPanelStatsCallback = function(D) {
 		var a = D['task_summary']['need-admin'].tasks;
 		var s = D['task_summary']['need-scythe'].tasks;
@@ -1589,9 +1567,7 @@ function nice_number(n) {
 	
 	
 	
-	/**
-	 * Utils: Capture Image Data from 3D Canvas
-	 */
+	
 	S.capture3D = function() {
 		if (jQuery('#threeD canvas').length == 1) {
 			// Get 3D canvas object
@@ -1622,7 +1598,7 @@ function nice_number(n) {
 			jQuery('#sl-action-image-status a.capture').click(function() {
 				jQuery('#sl-action-image-status').html('Processing...');
 				
-				setTimeout(function() { window.scoutsLog.capture3D(); }, 1000);
+				setTimeout(window.scoutsLog.capture3D, 1000);
 			});
 			
 			jQuery('#sl-action-image-status a.remove').click(function() {
@@ -1633,7 +1609,7 @@ function nice_number(n) {
 				jQuery('#sl-action-image-status a.capture').click(function() {
 					jQuery('#sl-action-image-status').html('Processing...');
 					
-					setTimeout(function() { window.scoutsLog.capture3D(); }, 1000);
+					setTimeout(window.scoutsLog.capture3D, 1000);
 				});
 			})
 			
@@ -1642,99 +1618,60 @@ function nice_number(n) {
 	}
 	
 	
-	/**
-	 * Button: Display Cell List
-	 */
+	
 	S.showCells = function() {
 		if (S.windowState != 'cell') {
 			S.getCellSummary();
 		} else {
-			if (jQuery('#slPanel').is(':visible')) {
-				jQuery('#slPanel').hide();
-			} else {
-				jQuery('#slPanel').show();
-			}
-		}
-	}
-
-	/**
-	 * Button: Display Open Tasks List
-	 */
-	S.showOpen = function() {
-		if (S.windowState != 'status-open') {
-			S.getStatusEntries('open');
-		} else {
-			if (jQuery('#slPanel').is(':visible')) {
-				jQuery('#slPanel').hide();
-			} else {
-				jQuery('#slPanel').show();
-			}
+			jQuery('#slPanel').hide();
+			S.windowState = '';
 		}
 	}
 	
-	/**
-	 * Button: Display 'Need Admin' Tasks
-	 */
 	S.showAdmin = function() {
 		if (S.windowState != 'status-need-admin') {
 			S.getStatusEntries('need-admin');
 		} else {
-			if (jQuery('#slPanel').is(':visible')) {
-				jQuery('#slPanel').hide();
-			} else {
-				jQuery('#slPanel').show();
-			}
+			jQuery('#slPanel').hide();
+			S.windowState = '';
 		}
 	}
 	
-	/**
-	 * Button: Display 'Need Scythe' Tasks
-	 */
 	S.showScythe = function() {
 		if (S.windowState != 'status-need-scythe') {
 			S.getStatusEntries('need-scythe');
 		} else {
-			if (jQuery('#slPanel').is(':visible')) {
-				jQuery('#slPanel').hide();
-			} else {
-				jQuery('#slPanel').show();
-			}
+			jQuery('#slPanel').hide();
+			S.windowState = '';
 		}
 	}
 	
-	/**
-	 * Button: Display 'Watch List' Tasks
-	 */
 	S.showWatch = function() {
 		if (S.windowState != 'status-watch') {
 			S.getStatusEntries('watch');
 		} else {
-			if (jQuery('#slPanel').is(':visible')) {
-				jQuery('#slPanel').hide();
-			} else {
-				jQuery('#slPanel').show();
-			}
+			jQuery('#slPanel').hide();
+			S.windowState = '';
 		}
 	}
 
-	/**
-	 * Button: Display User Submission History
-	 */
 	S.showHistory = function() {
 		if (S.windowState != 'history') {
 			S.getHistory();
 		} else {
-			if (jQuery('#slPanel').is(':visible')) {
-				jQuery('#slPanel').hide();
-			} else {
-				jQuery('#slPanel').show();
-			}
+			jQuery('#slPanel').hide();
+			S.windowState = '';
 		}
 	}
+	
 
 }(window.scoutsLog = window.scoutsLog || {}));
 
 jQuery(document).ready(function() {
-	window.scoutsLog.sendMessage("register", {}, "");
+	
+	setTimeout(function() {
+	    document.dispatchEvent(new CustomEvent('SLEW_REGISTER'));
+	}, 0);
+	
 });
 

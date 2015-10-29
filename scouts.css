@@ -289,15 +289,15 @@
 	color: #afa !important;
 }
 
-.sl-admin,
-.need-admin {
+.sl-admin {
 	color: #ff0 !important;
 }
 
 
 .missing-nub,
 .missing-branch,
-.merger {
+.merger,
+.need-admin {
 	color: #ee6f6b !important;
 }
 

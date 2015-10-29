@@ -1,4 +1,4 @@
 
 jQuery(document).ready(function() {
-	jQuery('.btn-plugin').hide();
+	jQuery('#chrome-plugin').hide();
 });
