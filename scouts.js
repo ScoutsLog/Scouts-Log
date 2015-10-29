@@ -1329,6 +1329,7 @@ function nice_number(n) {
 
 	S.setFloatingPanelCallback = function(pos) {
 		var style = '';
+		var vertical = false;
 
 		if (pos) {
 			var t = pos.top;
@@ -1350,13 +1351,14 @@ function nice_number(n) {
 			
 			if (pos.vertical) {
 				style += ' class="vertical"';
+				vertical = true;
 			}
 		}
 
 		var panel = '<div id="scoutsLogFloatingControls"' + style + '>';
 		panel += '<img src="' + S.images.logo + '" style="float: left;" />';
 		
-		if (pos.vertical) {
+		if (vertical) {
 			panel += '<a class="translucent flat minimalButton active cell-list" title="Display list of uncompleted cells and a summary of open tasks">C</a>';
 			panel += '<a class="translucent flat minimalButton active need-admin" title="Display tasks requiring admin attention">A <span id="need-admin-badge" class="badge">0</span></a>';
 			panel += '<a class="translucent flat minimalButton active need-scythe" title="Display tasks requiring scythe attention">S <span id="need-scythe-badge" class="badge">0</span></a>';
