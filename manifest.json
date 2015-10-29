@@ -1,9 +1,10 @@
 {
 	"manifest_version": 2,
-	"name": "EyeWire Scouts' Log",
-	"description": "This extension allows scouts, scythes, and admins to track cell/cube issues within EyeWire.",
-	"version": "0.1.7",
+	"name": "__MSG_extName__",
+	"description": "__MSG_extDescription__",
+	"version": "0.2.1",
 	"minimum_chrome_version": "43",
+	"default_locale": "en",
 	
 	"icons": {
 		"16": "images/icon16.png",
@@ -23,21 +24,22 @@
   
 	"content_scripts": [
 		{
-			"js": [ "plugin.js" ],
-			"css": [ "scouts.css" ],
+			"js": [ "js/plugin.js" ],
+			"css": [ "css/scouts.css" ],
 			"matches": [ "http://eyewire.org/*" ]
 		},
 		{
-			"js": [ "sl-plugin.js" ],
+			"js": [ "js/sl-plugin.js" ],
 			"matches": [ "http://scoutslog.org/*" ]
 		}
 	],
   
 	"web_accessible_resources": [
-		"scouts.js",
-		"scouts.css",
-		"sl-scouts.js",
+		"css/*",
+		"js/*",
 		"images/*",
+		"_locales/*",
+		"composite.htm",
 		"http://scoutslog.org/*"
 	]
 	

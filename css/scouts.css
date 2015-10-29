@@ -109,28 +109,28 @@
 	margin-left: 8px;
 }
 
-#scoutsLogFloatingControls.vertical {
+#scoutsLogFloatingControls.sl-vertical {
     height: initial;
     width: 48px;
 }
 
-#scoutsLogFloatingControls.vertical img {
+#scoutsLogFloatingControls.sl-vertical img {
 	display: inline-block;
 }
 
-#scoutsLogFloatingControls.vertical a {
+#scoutsLogFloatingControls.sl-vertical a {
 	width: 32px;
 	margin-right: 2px;
     margin-top: 8px;
 }
 
-#scoutsLogFloatingControls.vertical img + a {
+#scoutsLogFloatingControls.sl-vertical img + a {
 	margin-left: 0;
 	margin-bottom: 0;
 }
 
 
-.badge {
+.sl-badge {
   display: inline-block;
   min-width: 10px;
   padding: 3px 7px;
@@ -179,13 +179,20 @@
 	padding: 10px;
 }
 
+div#sl-main-table,
+div#sl-action-table {
+	-webkit-user-select: text !important;
+	-moz-user-select: text !important;
+	user-select: text !important;
+}
 
-.slTable {
+
+.sl-table {
 	width: 100%;
 	background-color: rgb(27,27,27);
 }
 
-.slTable th {
+.sl-table th {
 	margin: 0;
 	padding: 4px 10px;
 	color: #eee;
@@ -194,7 +201,7 @@
 	border-bottom: 2px solid #eee;
 }
 
-.slTable td {
+.sl-table td {
 	margin: 0;
 	padding: 4px;
 	text-align: left;
@@ -202,17 +209,17 @@
 	color: #dcdcdc;
 }
 
-.slTable td a {
+.sl-table td a {
 	color: #0cf;
 	text-decoration: underline;
 	cursor: pointer;
 }
 
-.slTable tbody tr:nth-child(even) {
+.sl-table tbody tr:nth-child(even) {
 	background-color: rgb(33,33,33);
 }
 
-.slTable tbody tr:nth-child(odd) {
+.sl-table tbody tr:nth-child(odd) {
 	background-color: rgb(43,43,43);
 }
 
@@ -234,14 +241,14 @@
 	font-weight: normal;
 }
 
-#slPanel a.close-window {
+#slPanel a.sl-close-window {
 	position: absolute;
 	top: 10px;
 	right: 15px;
 	z-index: 100;
 }
 
-#slPanel a.minimize-window {
+#slPanel a.sl-minimize-window {
 	position: absolute;
 	top: 10px;
 	right: 39px;
@@ -268,7 +275,7 @@
 	overflow-y: auto;
 }
 
-#slPanel .slTable {
+#slPanel .sl-table {
 	background: none;
 }
 
@@ -277,48 +284,57 @@
 	padding: 2px 6px;
 }
 
+.sl-capture {
+	color: #d076d7 !important;
+}
+
+.sl-remove {
+	color: #f89406 !important;
+}
 
 
 
 
-.cell {
+
+.sl-cell,
+.sl-history-cell {
 	color: #aaf !important;
 }
 
-.task {
+.sl-task {
 	color: #afa !important;
 }
 
 .sl-admin,
-.need-admin {
+.sl-need-admin {
 	color: #ff0 !important;
 }
 
 
-.missing-nub,
-.missing-branch,
-.merger {
+.sl-missing-nub,
+.sl-missing-branch,
+.sl-merger {
 	color: #ee6f6b !important;
 }
 
-.need-scythe,
-.more {
+.sl-need-scythe,
+.sl-more {
 	color: #f89406 !important;
 }
 
-.watch,
-.note {
+.sl-watch,
+.sl-note {
 	color: #5bc0de !important;
 }
 
-.scythe-complete,
-.subtree-complete,
-.still-growing,
-.branch-checking {
+.sl-scythe-complete,
+.sl-subtree-complete,
+.sl-still-growing,
+.sl-branch-checking {
 	color: #d076d7 !important;
 }
 
-.good {
+.sl-good {
 	color: #62c462 !important;
 }
 
@@ -330,7 +346,7 @@
 	color: #5f8ff7;
 }
 
-#content .gameBoard .chatMsgContainer a.jumpTask {
+#content .gameBoard .chatMsgContainer a.sl-jump-task {
 	color: #afa !important;
 	text-decoration: underline;
 	cursor: pointer;
