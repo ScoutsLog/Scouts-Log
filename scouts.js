@@ -130,6 +130,16 @@ function nice_number(n) {
 				
 				S.flagEditActions = false;
 				S.flagRealActions = false;
+			} else if (k.keyCode === Keycodes.codes.l && (k.metaKey || k.altKey)) {
+				// Toggle scouts' log panel display
+
+				if (S.windowState != '') {
+					if (jQuery('#slPanel').is(':visible')) {
+						jQuery('#slPanel').hide();
+					} else {
+						jQuery('#slPanel').show();
+					}
+				}
 			}
 		});
 
@@ -252,6 +262,16 @@ function nice_number(n) {
 		        }
 		    }));
 		}, 0);
+
+		setTimeout(function() {
+		    document.dispatchEvent(new CustomEvent('SLEW_requestGetResource', {
+		        detail: {
+		        	"name": "minimize",
+		        	"url": "images/minimize.png",
+		        	"callback": "window.scoutsLog.loadImagesCallback"
+		        }
+		    }));
+		}, 0);
 	}
 	
 	S.loadImagesCallback = function(res) {
@@ -261,9 +281,10 @@ function nice_number(n) {
 		S.images[name] = data;
 		S.imagesCount++;
 		
-		if (S.imagesCount == 3) {
+		if (S.imagesCount == 4) {
 			S.setMainPanel();
 			S.setFloatingPanel();
+			S.setGameTools();
 		}
 	}
 	
@@ -943,7 +964,7 @@ function nice_number(n) {
 		doc += '</table>';
 		doc += '</div><br />';
 		
-		doc += '<button type="button" class="blueButton new-action">New Action</button><br />';
+		doc += '<button type="button" class="blueButton new-action">New Entry</button><br />';
 		
 		doc += '<div id="slMainTable">';
 		doc += '<table class="slTable">';
@@ -967,7 +988,7 @@ function nice_number(n) {
 		doc += '</table>';
 		doc += '</div><br />';
 		
-		doc += '<button type="button" class="blueButton new-action">New Action</button><br />';
+		doc += '<button type="button" class="blueButton new-action">New Entry</button><br />';
 		
 
 		jQuery("#slPanel div.slPanelContent").html(doc);
@@ -1259,7 +1280,7 @@ function nice_number(n) {
 					}
 
 					jQuery('#slPanel').hide();
-					window.scoutsLog.windowState = '';
+					//window.scoutsLog.windowState = '';
 
 					window.tomni.ui.jumpToTask(d);
 				});
@@ -1306,6 +1327,7 @@ function nice_number(n) {
 
 	S.setMainPanel = function() {
 		var panel = '<div id="slPanel" style="display: none;">';
+		panel += '<a href="javascript:void(0);" class="minimize-window" title="Minimize window"><img src="' + S.images.minimize + '"/></a>';
 		panel += '<a href="javascript:void(0);" class="close-window" title="Close window"><img src="' + S.images.close + '"/></a>';
 		panel += '<div class="slPanelContent"></div>';
 		panel += '</div>';
@@ -1314,6 +1336,10 @@ function nice_number(n) {
 		jQuery('#slPanel a.close-window').click(function() {
 			jQuery('#slPanel').hide();
 			S.windowState = '';
+		});
+
+		jQuery('#slPanel a.minimize-window').click(function() {
+			jQuery('#slPanel').hide();
 		});
 	}
 	
@@ -1469,6 +1495,22 @@ function nice_number(n) {
 
 		// Set stats refresh function
 		S.doPanelStats();
+	}
+
+	S.setGameTools = function() {
+		var button = '<div title="Show Scouts\' Log Panel (alt + L)" id="scoutsLogPanelButton" class="menuButton"><img src="' + S.images.logo + '" height="20" width="20" /></div>';
+
+		jQuery("#gameTools").append(button);
+
+		jQuery('#scoutsLogPanelButton').click(function() {
+			if (S.windowState != '') {
+				if (jQuery('#slPanel').is(':visible')) {
+					jQuery('#slPanel').hide();
+				} else {
+					jQuery('#slPanel').show();
+				}
+			}
+		});
 	}
 	
 	S.doPanelStats = function() {
