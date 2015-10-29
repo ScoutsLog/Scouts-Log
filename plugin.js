@@ -1,28 +1,4 @@
 
-
-	// Inject scouts.js into page
-	var s = document.createElement('script');
-	
-	s.src = chrome.extension.getURL('scouts.js');
-	
-	s.onload = function() {
-	    this.parentNode.removeChild(this);
-	};
-	
-	(document.head||document.documentElement).appendChild(s);
-
-
-	// Inject scouts.css into page 
-	var c = document.createElement('link');
-	
-	c.rel = 'stylesheet';
-	c.type = 'text/css';
-	c.href = chrome.extension.getURL('scouts.css');
-
-	(document.head||document.documentElement).appendChild(c);
-
-///////////////////////////////////////////////////////////////////////////////
-
 (function(exports){
   /**
    * Compares two software version numbers (e.g. "1.7.1" or "1.2b").
@@ -132,53 +108,57 @@
 	
 function ScoutsLogEyeWire() {
 
-	
-	this.getJSON = function(url, callback) {
+	this.getJSON = function(msg, callback) {
+		// Get parameters
+		var url = msg.url;
+		
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
 		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				var obj = JSON.parse(xhr.responseText);
+			if (this.readyState == 4 && this.status == 200) {
+				var obj = JSON.parse(this.responseText);
 				
-				setTimeout(function() {
-				    document.dispatchEvent(new CustomEvent('SLEW_getJSON', {
-				        detail: {"callback": callback, "response": obj}
-				    }));
-				}, 0);
+				SLEW.sendMessage(callback, obj);
 			}
 		}
+
 		xhr.send();
 	}
 	
-	this.postRequest = function(url, data, callback) {
+	this.postRequest = function(msg, callback) {
+		// Get parameters
+		var url = msg.url;
+		var data = msg.data;
+	
+		// Send POST request
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url, true);
 		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				var obj = JSON.parse(xhr.responseText);
+			if (this.readyState == 4 && this.status == 200) {
+				var obj = JSON.parse(this.responseText);
 				
-				setTimeout(function() {
-				    document.dispatchEvent(new CustomEvent('SLEW_postRequest', {
-				        detail: {"callback": callback, "response": obj}
-				    }));
-				}, 0);
+				SLEW.sendMessage(callback, obj);
 			}
 		}
+
 		xhr.send(data);
 	}
-	
-	
-	this.getResource = function(url) {
-		return chrome.extension.getURL(url);
+
+	this.getPosition = function(data, callback) {
+		chrome.storage.local.get('position', function(d) {
+			SLEW.sendMessage(callback, { position: d.position });
+		});
 	}
 
-	this.getVersion = function() {
-		var manifest = chrome.runtime.getManifest();
-
-		return manifest.version;
+	this.setPosition = function(msg) {
+		var pos = msg.position;
+		pos.vertical = msg.vertical;
+		
+		// Update position setting
+		chrome.storage.local.set({'position': pos});
 	}
-	
+
 	
 	this.register = function() {
 		var xhr = new XMLHttpRequest();
@@ -192,113 +172,84 @@ function ScoutsLogEyeWire() {
 				if (res.error == 'invalid authentication-token') {
 					// Invalid user session, init auth sequence
 					
-					setTimeout(function() {
-					    document.dispatchEvent(new CustomEvent('SLEW_AUTH'));
-					}, 0);
+					SLEW.sendMessage("slew_auth", {});
 				} else if (res.status == 'ok') {
 					// User session is OK
 
 					// Check plugin version
-					var version = SLEW.getVersion();
+					var version = chrome.runtime.getManifest().version;
 
 					if (VersionCompare.lt(version, res.version) == true) {
 						// Plugin out of date
 
-						setTimeout(function() {
-						    document.dispatchEvent(new CustomEvent('SLEW_UPDATE'));
-						}, 0);
+						SLEW.sendMessage("slew_update", { url: res.plugin });
 					} else {
 						// Trigger init event
 
-						setTimeout(function() {
-						    document.dispatchEvent(new CustomEvent('SLEW_INIT'));
-						}, 0);
+						SLEW.sendMessage("slew_init", { baseDataURL: chrome.extension.getURL("") });
 					}
 				}
 			}
 		}
+
 		xhr.send();
 	}
 	
-	
-	
-	// Event to listen for register requests
-	document.addEventListener('SLEW_REGISTER', function(e) {
-		// Perform request
-		SLEW.register();
-	});
-	
-	// Event to listen for getJSON requests
-	document.addEventListener('SLEW_requestGetJSON', function(e) {
-	    // Extract data
-		var url = e.detail.url;			// URL to request
-		var cb = e.detail.callback;		// Callback function
+	/**
+	 * Send Routed Message
+	 * 
+	 * This function routes a message from the main content
+	 * script to the main page script.
+	 */
+	this.sendMessage = function(dst, data) {
+		var d = {detail: { destination: dst, data: data } };
+		var ev = new CustomEvent('RoutedMessageCS', d);
 		
-		// Perform request
-		SLEW.getJSON(url, cb);
-	});
+		document.dispatchEvent(ev);
+	}
 	
-	// Event to listen for postRequest requests
-	document.addEventListener('SLEW_requestPostRequest', function(e) {
-	    // Extract data
-		var url = e.detail.url;			// URL to request
-		var d = e.detail.data;			// Data to send
-		var cb = e.detail.callback;		// Callback function
-		
-		// Perform request
-		SLEW.postRequest(url, d, cb);
-	});
+	/**
+	 * Listener: Routed Message Handler
+	 * 
+	 * This function routes messages from the main page script
+	 * to this content script.
+	 */
+	document.addEventListener('RoutedMessagePS', function(e) {
+		// Extract message parameters
+		var dst = e.detail.destination;
+		var data = e.detail.data;
+		var cb = e.detail.callback;
 	
-	// Event to listen for getResource requests
-	document.addEventListener('SLEW_requestGetResource', function(e) {
-		// Extract data
-		var n = e.detail.name;			// Resource name
-		var url = e.detail.url;			// URL for resource
-		var cb = e.detail.callback;		// Callback function
-		
-		// Perform request
-		setTimeout(function() {
-		    document.dispatchEvent(new CustomEvent('SLEW_getResource', {
-		        detail: {
-		        	"callback": cb,
-		        	"response": {
-		        		"name": n,
-		        		"data": SLEW.getResource(url)
-		        	}
-		        }
-		    }));
-		}, 0);
+		if (SLEW[dst]) {
+			SLEW[dst](data, cb);
+		}
 	});
 
-	// Event to listen for setPanelPosition requests
-	document.addEventListener('SLEW_requestSetPanelPosition', function(e) {
-		// Extract data
-		var pos = e.detail.position;
-		pos.vertical = e.detail.vertical;
-		
-		// Update position setting
-		chrome.storage.local.set({'position': pos});
-	});
-
-	// Event to listen for getpanelPosition requests
-	document.addEventListener('SLEW_requestGetPanelPosition', function(e) {
-		// Extract data
-		var cb = e.detail.callback;		// Callback function
-		
-		// Get position setting
-		chrome.storage.local.get('position', function(d) {
-			setTimeout(function() {
-				document.dispatchEvent(new CustomEvent('SLEW_getPanelPosition', {
-					detail: {"callback": cb, "position": d.position}
-				}));
-			}, 0);
-		});
-	});
-
-	
 }
+
+var SLEW = new ScoutsLogEyeWire();
 
 ///////////////////////////////////////////////////////////////////////////////
 
-var SLEW = new ScoutsLogEyeWire();
+
+// Inject scouts.js into page
+	var s = document.createElement('script');
+	
+	s.src = chrome.extension.getURL('scouts.js');
+	
+	s.onload = function() {
+		this.parentNode.removeChild(this);
+	};
+	
+	(document.head||document.documentElement).appendChild(s);
+
+
+// Inject scouts.css into page 
+	var c = document.createElement('link');
+	
+	c.rel = 'stylesheet';
+	c.type = 'text/css';
+	c.href = chrome.extension.getURL('scouts.css');
+
+	(document.head||document.documentElement).appendChild(c);
 
