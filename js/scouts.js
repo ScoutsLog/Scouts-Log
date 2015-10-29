@@ -228,7 +228,7 @@ function nice_number(n) {
             var t;
             var c;
 
-            if (target[0]) {
+            if (Array.isArray(target)) {
                 t = target[0].id;
                 c = target[0].cell;
             } else {
@@ -459,14 +459,14 @@ function nice_number(n) {
         var target = window.tomni.getTarget();
         var t;
 
-        if (target[0]) {
+        if (Array.isArray(target)) {
             t = target[0].id;
         } else {
             t = target.id;
         }
         
         if (typeof t == 'undefined') {
-            var t = window.tomni.task.id;
+            t = window.tomni.task.id;
         }
         
         // Update window state
@@ -599,7 +599,7 @@ function nice_number(n) {
             // Get current cube/task
             var target = window.tomni.getTarget();
 
-            if (target[0]) {
+            if (Array.isArray(target)) {
                 t = target[0].id;
             } else {
                 t = target.id;
@@ -1127,18 +1127,22 @@ function nice_number(n) {
             jQuery('#sl-action-buttons').append('<p>' + S.getLocalizedString("messageSaving") + '</p>');
 
             // Get current cube/task
-            var target = window.tomni.getTarget();
-            var t;
+            if (!t) {
+                var target = window.tomni.getTarget();
 
-            if (target[0]) {
-                t = target[0].id;
-            } else {
-                t = target.id;
+                if (target) {
+                    if (Array.isArray(target)) {
+                        t = target[0].id;
+                    } else {
+                        t = target.id;
+                    }
+
+                    if (typeof t == 'undefined') {
+                        t = window.tomni.task.id;
+                    }
+                }
             }
         
-            if (typeof t == 'undefined') {
-                var t = window.tomni.task.id;
-            }
 
             // Prepare data object
             var imA = jQuery('#sl-action-image-annotated').val();
@@ -1517,7 +1521,7 @@ function nice_number(n) {
             var target = window.tomni.getTarget();
             var t;
 
-            if (target[0]) {
+            if (Array.isArray(target)) {
                 t = target[0].id;
             } else {
                 t = target.id;
@@ -1545,7 +1549,7 @@ function nice_number(n) {
             var target = window.tomni.getTarget();
             var t;
 
-            if (target[0]) {
+            if (Array.isArray(target)) {
                 t = target[0].id;
             } else {
                 t = target.id;
