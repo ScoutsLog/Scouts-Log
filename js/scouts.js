@@ -1309,6 +1309,19 @@ function nice_number(n) {
                         return;
                     }
 
+                    var am = window.tomni.getCurrentCell();
+
+                    if (am) {
+                        am.killPendingCubeSelection();
+                    }
+
+                    if (window.tomni.gameMode) {
+                        window.tomni.leave();
+                    } else {
+                        window.tomni.threeD.setTarget(null);
+                        window.tomni.ui.setControls(4);
+                    }
+
                     window.tomni.ui.jumpToTask(d);
                 });
             });

@@ -2,7 +2,7 @@
 // Inject sl-scouts.js into page
 var s = document.createElement('script');
 	
-s.src = chrome.extension.getURL('sl-scouts.js');
+s.src = chrome.extension.getURL('js/sl-scouts.js');
 s.onload = function() {
     this.parentNode.removeChild(this);
 };
