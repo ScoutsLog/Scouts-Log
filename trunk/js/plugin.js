@@ -290,7 +290,13 @@ function ScoutsLogEyeWire() {
                     } else {
                         // Trigger init event
 
-                        SLEW.sendMessage("slew_init", { baseDataURL: chrome.extension.getURL("") });
+                        SLEW.sendMessage(
+                            "slew_init",
+                            {
+                                baseDataURL: chrome.extension.getURL(""),
+                                locale: SLEW.language
+                            }
+                        );
                     }
                 }
             }

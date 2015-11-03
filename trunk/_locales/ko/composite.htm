@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<title>Annotate Image</title>
+<title>주석이 추가된 이미지</title>
 <meta charset="UTF-8">
 <style type="text/css">
 
@@ -195,9 +195,9 @@ body {
 <div id="annotations-tools" class="tools">
 
 <div class="tools-box" id="tools-items">
-<a href="#annotations-sketch" class="tools-button tools-item active" data-tool="marker">Marker</a>
-<a href="#annotations-sketch" class="tools-button tools-item" data-tool="label">Label</a>
-<a href="#annotations-sketch" class="tools-button tools-item" data-tool="eraser">Eraser</a>
+<a href="#annotations-sketch" class="tools-button tools-item active" data-tool="marker">표기</a>
+<a href="#annotations-sketch" class="tools-button tools-item" data-tool="label">라벨</a>
+<a href="#annotations-sketch" class="tools-button tools-item" data-tool="eraser">지우기</a>
 </div>
 
 <div class="tools-box" id="tools-colors"></div>
@@ -205,24 +205,24 @@ body {
 <div class="tools-box" id="tools-eraser-sizes" style="display:none;"></div>
 <div class="tools-box" id="tools-labels" style="display:none;">
 <select id="tools-label-arrow" data-target="#annotations-sketch">
-<option value="100">Top</option>
-<option value="200">Right</option>
-<option value="300" selected="selected">Bottom</option>
-<option value="400">Left</option>
+<option value="100">위</option>
+<option value="200">오른쪽</option>
+<option value="300" selected="selected">아래</option>
+<option value="400">왼쪽</option>
 </select>
 
 <select id="tools-label" data-target="#annotations-sketch" style="margin:6px 8px 8px 8px;">
-<option value="15">Add</option>
-<option value="10">Merger</option>
-<option value="5" selected="selected">Missing Branch</option>
-<option value="3">Missing Nub</option>
-<option value="20">Remove</option>
+<option value="15">추가하다</option>
+<option value="10">합쳐짐</option>
+<option value="5" selected="selected">빠진 가지</option>
+<option value="3">빠진 마디</option>
+<option value="20">삭제</option>
 <option value="25">Watch</option>
 </select>
 </div>
 <div class="tools-box" id="tools-actions">
-<a href="#annotations-sketch" class="tools-button tools-save">Save</a>
-<a href="#annotations-sketch" class="tools-button tools-clear">Clear</a>
+<a href="#annotations-sketch" class="tools-button tools-save" title="주석을 저장하려면 클릭하세요">저장하기</a>
+<a href="#annotations-sketch" class="tools-button tools-clear" title="모든 주석을 지우려면 클릭하세요.">지우기</a>
 </div>
 
 </div>
@@ -590,28 +590,28 @@ var __slice = Array.prototype.slice;
 
       switch (size) {
         case 3:
-          t1 = "Missing Nub";
-          t2 = "빠트린 마디";
+          t2 = "Missing Nub";
+          t1 = "빠트린 마디";
           break;
         case 5:
-          t1 = "Missing Branch";
-          t2 = "빠트린 가지";
+          t2 = "Missing Branch";
+          t1 = "빠트린 가지";
           break;
         case 10:
-          t1 = "Merger";
-          t2 = "합쳐짐";
+          t2 = "Merger";
+          t1 = "합쳐짐";
           break;
         case 15:
-          t1 = "Add";
-          t2 = "추가하다";
+          t2 = "Add";
+          t1 = "추가하다";
           break;
         case 20:
-          t1 = "Remove";
-          t2 = "삭제";
+          t2 = "Remove";
+          t1 = "삭제";
           break;
         case 25:
           t1 = "Watch";
-          t2 = "주목하다";
+          t2 = "";
           break;
       };
 
@@ -1094,28 +1094,28 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
       switch (s) {
         case 3:
-          t1 = "Missing Nub";
-          t2 = "빠트린 마디";
+          t2 = "Missing Nub";
+          t1 = "빠트린 마디";
           break;
         case 5:
-          t1 = "Missing Branch";
-          t2 = "빠트린 가지";
+          t2 = "Missing Branch";
+          t1 = "빠트린 가지";
           break;
         case 10:
-          t1 = "Merger";
-          t2 = "합쳐짐";
+          t2 = "Merger";
+          t1 = "합쳐짐";
           break;
         case 15:
-          t1 = "Add";
-          t2 = "추가하다";
+          t2 = "Add";
+          t1 = "추가하다";
           break;
         case 20:
-          t1 = "Remove";
-          t2 = "삭제";
+          t2 = "Remove";
+          t1 = "삭제";
           break;
         case 25:
           t1 = "Watch";
-          t2 = "주목하다";
+          t2 = "";
           break;
       };
 
