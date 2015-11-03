@@ -20,11 +20,11 @@
         "description": "사용자 권한이 필요할 때 대화창에 보이는 타이틀"
     },
     "windowAuthText": {
-        "message": "<p>스카우트 로그 확장 프로그램을 사용하기 위해서는 당신의 아이와이어 계정을 사용하여 프로그램에 권한을 주어야 합니다.</p><p>아래 링크를 클릭하여 프로그램에 권한을 주십시오:</p><p style=\"text-align:center;\"><a class=\"sl-task\" href=\"http://scoutslog.org/?do=extension-auth&lang=ko\" target=\"_blank\">scoutslog.org</a></p><p>권한부여 작업이 완료되면, 이 페이지를 다시 로드해 주시기 바랍니다.</p>",
+        "message": "<p>스카우트 로그 확장 프로그램을 사용하기 위해서는 당신의 아이와이어 계정을 사용하여 프로그램에 권한을 부여해야 합니다.</p><p>아래 링크를 클릭하여 프로그램에 권한을 부여하십시오.</p><p style=\"text-align:center;\"><a class=\"sl-task\" href=\"http://scoutslog.org/?do=extension-auth&lang=ko\" target=\"_blank\">scoutslog.org</a></p><p>권한부여 작업이 완료되면, 이 페이지를 다시 로드해 주시기 바랍니다.</p>",
         "description": "Text to be displayed when the user needs to authorization their account."
     },
     "windowCellSummary": {
-        "message": "세포 정보 요약"
+        "message": "세포 요약 리스트"
     },
     "windowHistoryTitle": {
         "message": "큐브 제출 기록"
@@ -137,7 +137,7 @@
         "description": "Column header text when displaying the date/time for the most recent action of a task."
     },
     "columnLastUser": {
-        "message": "최근 사용한 플레이어",
+        "message": "최근 작업한 플레이어",
         "description": "Column header text when displaying the most recent username of the most recent action of a task."
     },
     "columnNotes": {
@@ -145,11 +145,11 @@
         "description": "Column header text when displaying user comments for a given task action."
     },
     "columnOpenTasks": {
-        "message": "남은 작업",
+        "message": "남은 작업 수",
         "description": "Column header text when displaying the count of open tasks for a cell and/or status."
     },
     "columnScore": {
-        "message": "Score",
+        "message": "스코어(점수와 정확도)",
         "description": "Column header text when displaying the raw score and consensus percent for a submission in the history window."
     },
     "columnStatus": {
@@ -173,14 +173,14 @@
     
 
     "labelAnnotatedImage": {
-        "message": "Annotated Image"
+        "message": "주석이 추가된 이미지"
     },
     "labelCell": {
-        "message": "Cell",
+        "message": "세포",
         "description": "Noun to reference a specific neuron within EyeWire."
     },
     "labelCellID": {
-        "message": "Cell ID",
+        "message": "세포 아이디",
         "description": "Noun to reference the ID number for a specific neuron within EyeWire."
     },
     "labelConsensus": {
@@ -274,7 +274,7 @@
          "description": "Text to display when hovering over the 'Capture Image' link in the 'New Entry' window."
     },
     "actionCellTooltip": {
-        "message": "해당 세포의 작업을 보려면 클릭하세요",
+        "message": "이 세포의 작업을 보려면 클릭하세요.",
         "description": "Text to display when hovering over a link to view tasks for a specific cell."
     },
     "actionHideWindowTooltip": {
@@ -369,7 +369,7 @@
         "description": "Action phrase to indicate viewing the saved image for a given task action."
     },
     "actionViewImageTooltip": {
-        "message": "위 작업과 관련한 이미지를 보려면 클릭하세요",
+        "message": "클릭하면 위 로그 입력과 관련한 이미지를 보실 수 있습니다.",
         "description": "Text to display when hovering over the 'view image' link."
     },
     
@@ -381,11 +381,11 @@
         "description": "Option text to indicate viewing all consensus values"
     },
     "historyConsensus5090": {
-    	"message": "50% to 90%",
+    	"message": "50% ~ 90%",
     	"description": "Option text to indicate viewing consesus values 50% to 90%"
     },
     "historyConsensus50": {
-        "message": "50% 이하의 컨센서스 값",
+        "message": "50% 이하",
         "description": "Option text to indicate viewing consensus values equal to 50% or less"
     },
     "historyConsensusNone": {
@@ -397,11 +397,11 @@
         "description": "Option text to indicate viewing all submission types."
     },
     "historyTypesNormal": {
-        "message": "Normal",
+        "message": "정상 플레이",
         "description": "Option text to indicate viewing submissions from normal EyeWire play."
     },
     "historyTypesTrailblazer": {
-        "message": "Normal Trailblazer",
+        "message": "정상 개척",
         "description": "Option text to indicate viewing trailblazed submissions from normal EyeWire play."
     },
     "historyTypesScythed": {
@@ -413,22 +413,22 @@
         
     
     "statusAll": {
-        "message": "모두"
+        "message": "전부 보기"
     },
     "statusBranchChecking": {
         "message": "가지 확인"
     },
     "statusGood": {
-        "message": "좋음"
+        "message": "좋은 상태"
     },
     "statusMerger": {
         "message": "합쳐짐"
     },
     "statusMissingBranch": {
-        "message": "빠트린 가지"
+        "message": "빠진 가지"
     },
     "statusMissingNub": {
-        "message": "빠트린 마디"
+        "message": "빠진 마디"
     },
     "statusNeedAdmin": {
         "message": "어드민 요청"
@@ -440,13 +440,13 @@
         "message": "플레이어 의견"
     },
     "statusOpen": {
-        "message": "작업이 남음"
+        "message": "남은 작업"
     },
     "statusScytheComplete": {
-        "message": "사이드 요청"
+        "message": "사이드 완료"
     },
     "statusStillGrowing": {
-        "message": "계속 자라는 중"
+        "message": "자라는 중"
     },
     "statusSubtreeComplete": {
         "message": "서브트리 완료"
