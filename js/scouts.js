@@ -40,6 +40,7 @@ function nice_number(n) {
 
 (function(S) {
     S.images = {};
+    S.locale = 'en';
     S.localizedStrings = {};
     
     S.windowState = '';
@@ -135,6 +136,7 @@ function nice_number(n) {
      */
     S.slew_init = function(msg) {
         S.baseDataURL = msg.baseDataURL;
+        S.locale = msg.locale;
 
         S.init_ui();
     };
@@ -1827,7 +1829,7 @@ function nice_number(n) {
     S.showAnnotation = function() {
         S.sendMessage(
             "getRequest",
-            { url: S.baseDataURL + "composite.htm" },
+            { url: S.baseDataURL + "_locales/" + S.locale + "/composite.htm" },
             "showAnnotationCallback"
         );
     };
@@ -1854,7 +1856,7 @@ function nice_number(n) {
     S.createAnnotation = function() {
         S.sendMessage(
             "getRequest",
-            { url: S.baseDataURL + "composite.htm" },
+            { url: S.baseDataURL + "_locales/" + S.locale + "/composite.htm" },
             "createAnnotationCallback"
         );
     };
