@@ -540,10 +540,16 @@ function nice_number(n) {
             if (s.image != "") {
                 img = '<a class="sl-image" href="' + s.image + '" target="_blank" title="' + S.getLocalizedString("actionViewImageTooltip") + '">' + S.getLocalizedString("actionViewImage") + '</a>';
             }
+
+            var user = s.user;
+
+            if (s.reaped == 0) {
+                user = '(' + s.user + ')';
+            }
             
             var row = '<tr>';
             row += '<td class="sl-' + s.status + '">' + S.getLocalizedStatus(s.status) + '</td>';
-            row += '<td>' + s.user + '</td>';
+            row += '<td>' + user + '</td>';
             row += '<td>' + s.notes + '</td>';
             row += '<td>' + img + '</td>';
             row += '<td>' + s.timestamp + '</td>';
