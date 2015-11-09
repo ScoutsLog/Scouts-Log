@@ -984,7 +984,7 @@ function nice_number(n) {
      */
     S.prepareTaskWindow = function(t) {
         // Set window state
-        S.windowState = 'task';
+        S.windowState = 'task-' + t;
         
         // Prepare display window
         var doc = '';
@@ -1553,11 +1553,15 @@ function nice_number(n) {
             if (window.scoutsLog.windowState == test || window.scoutsLog.windowState == 'task') {
                 // Same task window is open, close instead
                 
-                jQuery('#slPanel').hide();
-                //window.scoutsLog.windowState = '';
+                if (jQuery('#slPanel').is(':visible')) {
+                    jQuery('#slPanel').hide();
+                } else {
+                    jQuery('#slPanel').show();
+                }
             } else {
                 // Show log entries for currently selected cube
                 window.scoutsLog.getTaskEntriesInspect();
+		jQuery('#slPanel').show();
             }
         });
         
