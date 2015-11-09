@@ -208,8 +208,16 @@ function nice_number(n) {
                 if (S.windowState != '') {
                     if (jQuery('#slPanel').is(':visible')) {
                         jQuery('#slPanel').hide();
+                        jQuery('#scoutsLogFloatingControls').hide();
                     } else {
+                        if (S.windowState == 'history' && S.historyPosition == S.historyDisplay) {
+                            S.windowState = '';
+
+                            S.getHistory();
+                        }
+
                         jQuery('#slPanel').show();
+                        jQuery('#scoutsLogFloatingControls').show();
                     }
                 }
             }
@@ -980,7 +988,7 @@ function nice_number(n) {
         
         // Prepare display window
         var doc = '';
-        doc += '<h2>' + S.getLocalizedString("title") + ' | <a class="sl-jump-task" data-task="' + t + '">' + S.getLocalizedString("labelTask") + ' #' + t + '</a></h2>';
+        doc += '<h2>' + S.getLocalizedString("title") + ' | ' + S.getLocalizedString("labelTask") + ' #' + t + ' <button type="button" class="blueButton sl-jump-task" data-task="' + t + '">' + S.getLocalizedString("actionJumpTask") + '</button></h2>';
         
         doc += '<div id="sl-summary-table">';
         doc += '<table class="sl-table">';
@@ -1308,7 +1316,7 @@ function nice_number(n) {
      * Utils: Set Links for Common Items
      */
     S.setLinks = function(o) {
-        jQuery(o).find('a.sl-jump-task').each(function() {
+        jQuery(o).find('.sl-jump-task').each(function() {
             var task = jQuery(this).attr('data-task');
             
             jQuery(this).attr( "title", S.getLocalizedString("actionJumpTaskTooltip") );
@@ -1598,6 +1606,7 @@ function nice_number(n) {
             if (S.windowState != '') {
                 if (jQuery('#slPanel').is(':visible')) {
                     jQuery('#slPanel').hide();
+                    jQuery('#scoutsLogFloatingControls').hide();
                 } else {
                     if (S.windowState == 'history' && S.historyPosition == S.historyDisplay) {
                         S.windowState = '';
@@ -1606,6 +1615,7 @@ function nice_number(n) {
                     }
 
                     jQuery('#slPanel').show();
+                    jQuery('#scoutsLogFloatingControls').show();
                 }
             }
         });
