@@ -1455,7 +1455,7 @@ function nice_number(n) {
         
         if (vertical) {
             panel += '<a class="translucent flat minimalButton active sl-cell-list" title="' + S.getLocalizedString("panelCellListTooltip") + '">' + S.getLocalizedString("panelCellListShort") + '</a>';
-            panel += '<a class="translucent flat minimalButton active sl-open" title="' + S.getLocalizedString("panelOpenTooltip") + '">' + S.getLocalizedString("panelOpenShort") + '</a>';
+            panel += '<a class="translucent flat minimalButton active sl-open" title="' + S.getLocalizedString("panelOpenTooltip") + '">' + S.getLocalizedString("panelOpenShort") + ' <span id="sl-open-badge" class="sl-badge">0</span></a>';
             panel += '<a class="translucent flat minimalButton active sl-need-admin" title="' + S.getLocalizedString("panelNeedAdminTooltip") + '">' + S.getLocalizedString("panelNeedAdminShort") + ' <span id="sl-need-admin-badge" class="sl-badge">0</span></a>';
             panel += '<a class="translucent flat minimalButton active sl-need-scythe" title="' + S.getLocalizedString("panelNeedScytheTooltip") + '">' + S.getLocalizedString("panelNeedScytheShort") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span></a>';
             panel += '<a class="translucent flat minimalButton active sl-watch" title="' + S.getLocalizedString("panelWatchTooltip") + '">' + S.getLocalizedString("panelWatchShort") + ' <span id="sl-watch-badge" class="sl-badge">0</span></a>';
@@ -1464,7 +1464,7 @@ function nice_number(n) {
             panel += '<a class="translucent flat minimalButton active sl-task" id="sl-task-entry" title="' + S.getLocalizedString("panelTaskEntryTooltip") + '" style="display: none;">' + S.getLocalizedString("panelTaskEntryShort") + '</a>';
         } else {
             panel += '<a class="translucent flat minimalButton active sl-cell-list" title="' + S.getLocalizedString("panelCellListTooltip") + '">' + S.getLocalizedString("panelCellList") + '</a>';
-            panel += '<a class="translucent flat minimalButton active sl-open" title="' + S.getLocalizedString("panelOpenTooltip") + '">' + S.getLocalizedString("panelOpen") + '</a>';
+            panel += '<a class="translucent flat minimalButton active sl-open" title="' + S.getLocalizedString("panelOpenTooltip") + '">' + S.getLocalizedString("panelOpen") + ' <span id="sl-open-badge" class="sl-badge">0</span></a>';
             panel += '<a class="translucent flat minimalButton active sl-need-admin" title="' + S.getLocalizedString("panelNeedAdminTooltip") + '">' + S.getLocalizedString("panelNeedAdmin") + ' <span id="sl-need-admin-badge" class="sl-badge">0</span></a>';
             panel += '<a class="translucent flat minimalButton active sl-need-scythe" title="' + S.getLocalizedString("panelNeedScytheTooltip") + '">' + S.getLocalizedString("panelNeedScythe") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span></a>';
             panel += '<a class="translucent flat minimalButton active sl-watch" title="' + S.getLocalizedString("panelWatchTooltip") + '">' + S.getLocalizedString("panelWatch") + ' <span id="sl-watch-badge" class="sl-badge">0</span></a>';
@@ -1500,7 +1500,7 @@ function nice_number(n) {
                 jQuery('#scoutsLogFloatingControls').removeClass('sl-vertical');
         
                 jQuery('#scoutsLogFloatingControls a.sl-cell-list').html( S.getLocalizedString("panelCellList") );
-                jQuery('#scoutsLogFloatingControls a.sl-open').html( S.getLocalizedString("panelOpen") );
+                jQuery('#scoutsLogFloatingControls a.sl-open').html( S.getLocalizedString("panelOpen") + ' <span id="sl-open-badge" class="sl-badge">0</span>');
                 jQuery('#scoutsLogFloatingControls a.sl-need-admin').html( S.getLocalizedString("panelNeedAdmin") + ' <span id="sl-need-admin-badge" class="sl-badge">0</span>');
                 jQuery('#scoutsLogFloatingControls a.sl-need-scythe').html( S.getLocalizedString("panelNeedScythe") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span>');
                 jQuery('#scoutsLogFloatingControls a.sl-watch').html( S.getLocalizedString("panelWatch") + ' <span id="sl-watch-badge" class="sl-badge">0</span>');
@@ -1511,7 +1511,7 @@ function nice_number(n) {
                 jQuery('#scoutsLogFloatingControls').addClass('sl-vertical');
 
                 jQuery('#scoutsLogFloatingControls a.sl-cell-list').html( S.getLocalizedString("panelCellListShort") );
-                jQuery('#scoutsLogFloatingControls a.sl-open').html( S.getLocalizedString("panelOpenShort") );
+                jQuery('#scoutsLogFloatingControls a.sl-open').html( S.getLocalizedString("panelOpenShort") + ' <span id="sl-open-badge" class="sl-badge">0</span>');
                 jQuery('#scoutsLogFloatingControls a.sl-need-admin').html( S.getLocalizedString("panelNeedAdminShort") + ' <span id="sl-need-admin-badge" class="sl-badge">0</span>');
                 jQuery('#scoutsLogFloatingControls a.sl-need-scythe').html( S.getLocalizedString("panelNeedScytheShort") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span>');
                 jQuery('#scoutsLogFloatingControls a.sl-watch').html( S.getLocalizedString("panelWatchShort") + ' <span id="sl-watch-badge" class="sl-badge">0</span>');
@@ -1647,6 +1647,7 @@ function nice_number(n) {
         s += D['task_summary']['merger'].tasks;
         s += D['task_summary']['scythe-complete'].tasks;
         var w = D['task_summary'].watch.tasks;
+        var o = D['tasks'];
 
         if (a > 0) {
             var c = parseInt(jQuery('#sl-need-admin-badge').text(), 10);
@@ -1680,6 +1681,18 @@ function nice_number(n) {
         } else {
             jQuery('#sl-watch-badge').hide().text(0);
         }
+
+        if (o > 0) {
+	    var c = parseInt(jQuery('#sl-open-badge').text(), 10);
+
+            if (c != o) {
+                jQuery('#sl-open-badge').show().text(o);
+                jQuery('#sl-open-badge').fadeOut(300).fadeIn(600).fadeOut(300).fadeIn(600).fadeOut(300).fadeIn(600);
+            }
+        } else {
+            jQuery('#sl-open-badge').hide().text(0);
+        }
+	
     };
     
     
