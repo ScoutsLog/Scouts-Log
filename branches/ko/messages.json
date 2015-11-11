@@ -52,34 +52,34 @@
         "message": "C"
     },
     "panelCellListTooltip": {
-        "message": "미완료 세포리스트와 남은 작업의 요약을 보여줌"
+        "message": "미완료 세포와 남은 큐브에 대한 요약 리스트"
     },
     "panelOpen": {
-        "message": "남은 작업"
+        "message": "남은 큐브"
     },
     "panelOpenShort": {
         "message": "O"
     },
     "panelOpenTooltip": {
-        "message": "남은 작업 리스트를 보여줌"
+        "message": "남은 큐브 전체 리스트"
     },
     "panelNeedAdmin": {
-        "message": "어드민 요청"
+        "message": "어드민 확인 요청"
     },
     "panelNeedAdminShort": {
         "message": "A"
     },
     "panelNeedAdminTooltip": {
-        "message": "어드민 확인이 필요한 작업을 보여줌"
+        "message": "어드민의 확인이 필요한 큐브 리스트"
     },
     "panelNeedScythe": {
-        "message": "사이드 요청"
+        "message": "사이드 확인 요청"
     },
     "panelNeedScytheShort": {
         "message": "S"
     },
     "panelNeedScytheTooltip": {
-        "message": "사이드 확인이 필요하는 작업을 보여줌"
+        "message": "사이드(큰낫)의 확인이 필요한 큐브 리스트"
     },
     "panelWatch": {
         "message": "Watch"
@@ -88,52 +88,52 @@
         "message": "W"
     },
     "panelWatchTooltip": {
-        "message": "Watch가 시작된 작업을 보여줌"
+        "message": "Watch가 진행 중인 큐브 리스트"
     },
     "panelHistory": {
-        "message": "기록"
+        "message": "제출 기록"
     },
     "panelHistoryShort": {
         "message": "H"
     },
     "panelHistoryTooltip": {
-        "message": "본인이 제출했거나 사이드했던 큐브 상세내용 보기"
+        "message": "본인이 제출했거나 사이드 작업이 되었던 큐브 리스트"
     },
     "panelTaskDetails": {
-        "message": "큐브 상세 내용"
+        "message": "큐브 상세 정보"
     },
     "panelTaskDetailsShort": {
         "message": "D"
     },
     "panelTaskDetailsTooltip": {
-        "message": "선택한 현재 큐브의 입력된 로그 요약 보기"
+        "message": "선택한 현재 큐브의 입력 기록"
     },
     "panelTaskEntry": {
-        "message": "새 입력"
+        "message": "새 로그 입력"
     },
     "panelTaskEntryShort": {
         "message": "N"
     },
     "panelTaskEntryTooltip": {
-        "message": "선택한 현재 큐브의 새 로그 입력 생성"
+        "message": "선택한 현재 큐브의 새 로그 입력"
     },
     
     
     
     
     "columnCell": {
-        "message": "세포 이름",
+        "message": "세포",
         "description": "Column header text when displaying cell names."
     },
     "columnCube": {
-        "message": "큐브 번호",
+        "message": "큐브",
         "description": "Column header text when displaying cube numbers."
     },
     "columnImage": {
         "message": "이미지"
     },
     "columnLastUpdated": {
-        "message": "최근 업데이트",
+        "message": "최근 업데이트 시간",
         "description": "Column header text when displaying the date/time for the most recent action of a task."
     },
     "columnLastUser": {
@@ -145,11 +145,11 @@
         "description": "Column header text when displaying user comments for a given task action."
     },
     "columnOpenTasks": {
-        "message": "남은 작업 수",
+        "message": "남은 큐브 수",
         "description": "Column header text when displaying the count of open tasks for a cell and/or status."
     },
     "columnScore": {
-        "message": "스코어(점수와 정확도)",
+        "message": "Score(점수와 정확도)",
         "description": "Column header text when displaying the raw score and consensus percent for a submission in the history window."
     },
     "columnStatus": {
@@ -184,7 +184,7 @@
         "description": "Noun to reference the ID number for a specific neuron within EyeWire."
     },
     "labelConsensus": {
-        "message": "Consensus",
+        "message": "컨센서스(Consensus)",
         "description": "Percentage value indicating agreement, or lack of agreement, with the EyeWire consensus at the time of submission."
     },
     "labelCube": {
@@ -198,18 +198,18 @@
         "message": "3차원 이미지"
     },
     "labelLastUser": {
-        "message": "마지막 플레이어 아이디",
+        "message": "마지막 작업한 플레이어",
         "description": "Username of the last person to save an action to the task."
     },
     "labelLastUpdated": {
-        "message": "마지막 업데이트 시간",
+        "message": "마지막 작업 시간",
         "description": "Date/time of the last action saved to a specific task in UTC."
     },
     "labelNo": {
         "message": "아니오"
     },
     "labelNotApplicable": {
-        "message": "유효하지 않습니다",
+        "message": "데이터 정보 없음",
         "description": "Abbreviation to use when there is no data/information for a specific item."
     },
     "labelNotes": {
@@ -221,7 +221,7 @@
         "description": "Abbreviation to use when refering to the EyeWire cube submission score value."
     },
     "labelReaped": {
-        "message": "수확이 되었습니까?",
+        "message": "수확 되었습니까?",
         "description": "Question if user reaped a change within EyeWire for the given task action (entry in log)."
     },
     "labelStatus": {
@@ -233,7 +233,7 @@
         "description": "The type of EyeWire submission for a cube (normal, trailblaze, or scythed)"
     },
     "labelTask": {
-        "message": "작업",
+        "message": "큐브",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
     },
     "labelVotes": {
@@ -252,41 +252,41 @@
     
     
     "actionAnnotate": {
-        "message": "Annotate Image"
+        "message": "이미지에 주석 달기"
     },
     "actionAnnotateTooltip": {
-        "message": "Add details to the captured image(s)."
+        "message": "캡쳐된 이미지에 상세 정보를 추가"
     },
     "actionCancel": {
-        "message": "취소합니다",
+        "message": "취소",
         "description": "Action word to indicate not submitting this log entry."
     },
     "actionCancelTooltip": {
-        "message": "로그 입력을 제출하지 않고 창을 닫습니다",
+        "message": "로그 입력을 제출하지 않고 창을 닫습니다.",
         "description": "Text to display when hovering over the 'Cancel' button."
     },
     "actionCapture": {
-        "message": "이미지를 캡쳐합니다",
+        "message": "이미지를 캡쳐합니다.",
         "description": "Action word to indicate capturing the image from the 3D view."
     },
     "actionCaptureTooltip": {
-         "message": "3차원 이미지를 캡쳐하려면 클릭하세요",
+         "message": "3차원 이미지를 캡쳐하려면 클릭하세요.",
          "description": "Text to display when hovering over the 'Capture Image' link in the 'New Entry' window."
     },
     "actionCellTooltip": {
-        "message": "이 세포의 작업을 보려면 클릭하세요.",
+        "message": "이 세포의 모든 큐브 보려면 클릭하세요.",
         "description": "Text to display when hovering over a link to view tasks for a specific cell."
     },
     "actionHideWindowTooltip": {
-        "message": "3차원 이미지를 캡쳐하려면 클릭하세요",
+        "message": "창 숨기기",
         "description": "Text to display when hovering over the 'X' icon of the Scouts' Log window."
     },
     "actionJumpTask": {
-        "message": "점프합니다",
+        "message": "이동",
         "description": "Action word to indicate switching focus to a specific cube/task."
     },
     "actionJumpTaskTooltip": {
-        "message": "아이와이어에서 해당 큐브를 보기 위해 클릭합니다",
+        "message": "아이와이어에서 이 큐브를 보려면 클릭하세요.",
         "description": "Text to display when hovering over a 'jump to cube' link."
     },
     "actionMore": {
@@ -294,15 +294,15 @@
         "description": "Action word to indicate displaying additional entries."
     },
     "actionMoreTooltip": {
-        "message": "추가 입력 보여줌",
+        "message": "추가 입력 보기",
         "description": "Text to display when hovering over the 'more' link in the history window."
     },
     "actionNewEntry": {
-        "message": "새 입력",
+        "message": "새 로그 입력",
         "description": "Action phrase to indicate creating a new task action (entry in log)."
     },
     "actionNewEntryTooltip": {
-        "message": "해당 작업의 새 로그 입력을 생성하려면 클릭하세요",
+        "message": "이 큐브의 새 로그를 생성하려면 클릭하세요.",
         "description": "Text to display when hovering over the 'New Entry' button."
     },
     "actionPreview": {
@@ -310,15 +310,15 @@
         "description": "Action word to indicate viewing the image captured."
     },
     "actionPreviewTooltip": {
-        "message": "캡쳐된 이미지를 보려면 클릭하세요",
+        "message": "캡쳐된 이미지를 보려면 클릭하세요.",
         "description": "Text to display when hovering over the 'Preview Image' link in the 'New Entry' window."
     },
     "actionRecapture": {
-        "message": "이미지를 다시 캡쳐합니다",
+        "message": "이미지 다시 캡쳐",
         "description": "Action word to indicate capturing the image from the 3D view again."
     },
     "actionRecaptureTooltip": {
-        "message": "3차원 이미지를 다시 캡쳐하려면 클릭하세요",
+        "message": "3차원 이미지를 다시 캡쳐하려면 클릭하세요.",
         "description": "Text to display when hovering over the 'Re-Capture Image' link in the 'New Entry' window."
     },
     "actionRefresh": {
@@ -326,7 +326,7 @@
         "description": "Action word to indicate updating the display based on selected options."
     },
     "actionRefreshTooltip": {
-        "message": "선택한 옵션을 바탕으로 보여지기가 업데이트 됩니다",
+        "message": "선택된 옵선을 기준으로 디스플레이 업데이트",
         "description": "Text to display when hovering over the 'Refresh' button."
     },
     "actionRemove": {
@@ -334,15 +334,15 @@
         "description": "Action word to indicate removing the image from the new log entry submission."
     },
     "actionRemoveTooltip": {
-        "message": "로그 입력 제출에서 이미지를 삭제하기",
+        "message": "제출된 로그에서 이미지를 삭제",
         "description": "Text to display when hovering over the 'Remove' link in the 'New Entry' window."
     },
     "actionSetToGood": {
-        "message": "\"좋음\"을 표기합니다",
+        "message": "좋은 상태로 표시",
         "description": "Action phrase to indicate there are no further issues for a given task."
     },
     "actionSetToGoodTooltip": {
-        "message": "더는 다른 이슈가 없는 경우에 \"좋음\"이라고 표기합니다",
+        "message": "다른 이슈가 없는 경우 "좋은 상태"로 표기합니다.",
         "description": "Text to display when hovering over the 'Set to Good' button."
     },
     "actionShowWindowTooltip": {
@@ -350,22 +350,22 @@
         "description": "Text to display when hovering over the 'Show Scouts' Log Window' icon 'game tools' button area."
     },
     "actionSubmit": {
-        "message": "제출하기",
+        "message": "제출",
         "description": "Action word to indicate saving the new log entry."
     },
     "actionSubmitTooltip": {
-        "message": "위 로그 입력을 제출하기",
+        "message": "입력한 로그를 제출하기",
         "description": "Text to display when hovering over the 'Submit' button."
     },
     "actionTask": {
-        "message": "작업 상세 내용"
+        "message": "큐브 상세 내용"
     },
     "actionTaskTooltip": {
-        "message": "위 작업의 기록을 보려면 클릭하세요",
+        "message": "위 큐브의 기록을 보려면 클릭하세요",
         "description": "Text to display when hovering over a numbered task link (e.g. #123456)"
     },
     "actionViewImage": {
-        "message": "이미지를 봅니다",
+        "message": "이미지 보기",
         "description": "Action phrase to indicate viewing the saved image for a given task action."
     },
     "actionViewImageTooltip": {
@@ -389,7 +389,7 @@
         "description": "Option text to indicate viewing consensus values equal to 50% or less"
     },
     "historyConsensusNone": {
-        "message": "동의가 없음",
+        "message": "컨센서스 없음",
         "description": "Option text to indicate viewing consensus values equal to zero."
     },
     "historyTypesAll": {
@@ -413,7 +413,7 @@
         
     
     "statusAll": {
-        "message": "전부 보기"
+        "message": "모두 보기"
     },
     "statusBranchChecking": {
         "message": "가지 확인"
@@ -431,16 +431,16 @@
         "message": "빠진 마디"
     },
     "statusNeedAdmin": {
-        "message": "어드민 요청"
+        "message": "어드민 확인 요청"
     },
     "statusNeedScythe": {
-        "message": "사이드 요청"
+        "message": "사이드 확인 요청"
     },
     "statusNote": {
         "message": "플레이어 의견"
     },
     "statusOpen": {
-        "message": "남은 작업"
+        "message": "남은 큐브"
     },
     "statusScytheComplete": {
         "message": "사이드 완료"
@@ -449,7 +449,7 @@
         "message": "자라는 중"
     },
     "statusSubtreeComplete": {
-        "message": "서브트리 완료"
+        "message": "자식/자손 큐브 완료"
     },
     "statusWatch": {
         "message": "Watch"
@@ -475,11 +475,11 @@
     
     
     "error_notasks": {
-        "message": "위 세포와 상태에 작업은 없습니다.",
+        "message": "위에 해당하는 큐브는 없습니다.",
         "description": "Message to indicate no tasks are available for the cell and/or specific task status."
     },
     "error_submission": {
-        "message": "죄송합니다, 제출 중에 에러가 발생하였습니다. 다시 해주시기 바랍니다.",
+        "message": "죄송합니다, 제출 중 에러가 발생하였습니다. 다시 해주시기 바랍니다.",
         "description": "Phrase to indicate a transmission error while saving a task action."
     }
 
