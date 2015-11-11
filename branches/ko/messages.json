@@ -342,7 +342,7 @@
         "description": "Action phrase to indicate there are no further issues for a given task."
     },
     "actionSetToGoodTooltip": {
-        "message": "다른 이슈가 없는 경우 "좋은 상태"로 표기합니다.",
+        "message": "다른 이슈가 없는 경우 \"좋은 상태\"로 표기합니다.",
         "description": "Text to display when hovering over the 'Set to Good' button."
     },
     "actionShowWindowTooltip": {
