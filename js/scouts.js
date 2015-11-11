@@ -319,8 +319,16 @@ function nice_number(n) {
         for (var c in d['cell_summary']) {
             var s = d['cell_summary'][c];
 
+            var cn;
+
+            if (S.locale == 'en') {
+                cn = s.cellName;
+            } else {
+                cn = s['cellName' + S.locale.toUpperCase()];
+            }
+
             var row = '<tr>';
-            row += '<td><a class="sl-cell" data-cell="' + s.cell + '">' + s.cellName + ' (' + s.cell + ')</a></td>';
+            row += '<td><a class="sl-cell" data-cell="' + s.cell + '">' + cn + ' (' + s.cell + ')</a></td>';
             row += '<td>' + s.tasks + '</td>';
             row += '</tr>';
 
@@ -362,7 +370,15 @@ function nice_number(n) {
      * Callback: Get Task Entries for Cell
      */
     S.getCellEntriesCallback = function(d) {
-        jQuery("#slPanel h2 small").text(d.cellName + " (" + d.cell + ")");
+        var cn;
+
+        if (S.locale == 'en') {
+            cn = d.cellName;
+        } else {
+            cn = d['cellName' + S.locale.toUpperCase()];
+        }
+
+        jQuery("#slPanel h2 small").text(cn + " (" + d.cell + ")");
         jQuery("#sl-main-table table tbody").empty();
 
         if (d.tasks.length > 0) {    
@@ -429,9 +445,17 @@ function nice_number(n) {
         for (var c in d.tasks) {
             var s = d.tasks[c];
 
+            var cn;
+
+            if (S.locale == 'en') {
+                cn = s.cellName;
+            } else {
+                cn = s['cellName' + S.locale.toUpperCase()];
+            }
+
             var row = '<tr>';
             row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a></td>';
-            row += '<td><a class="sl-cell" data-cell="' + s.cell + '">' + s.cellName + ' (' + s.cell + ')</a></td>';
+            row += '<td><a class="sl-cell" data-cell="' + s.cell + '">' + cn + ' (' + s.cell + ')</a></td>';
             row += '<td class="sl-' + s.status + '">' + S.getLocalizedStatus(s.status) + '</td>';
             row += '<td>' + s.lastUser + '</td>';
             row += '<td>' + s.lastUpdated + '</td>';
@@ -670,7 +694,7 @@ function nice_number(n) {
         
         // Update title
         //jQuery("#slPanel h2 small").text(S.getLocalizedString("labelTask") + ' #' + d.task);
-        
+
         // Display task summary
         jQuery("#sl-summary-table table tbody").empty();
         jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelCell") + ':</strong></td><td><a class="sl-cell" data-cell="' + d.cell + '">' + d.cellName + ' (' + d.cell + ')</a></td></tr>');
@@ -786,10 +810,19 @@ function nice_number(n) {
                 } else {
                     a += '%';
                 }
+
+                var cn;
+
+                if (S.locale == 'en') {
+                    cn = h.cellName;
+                } else {
+                    cn = h['cellName' + S.locale.toUpperCase()];
+                }
+
     
                 var row = '<tr>';
                 row += '<td>' + h.task + '<br /><a class="sl-task" data-task="' + h.task + '">' + S.getLocalizedString("actionTask") + '</a> | <a class="sl-jump-task" data-task="' + h.task + '">' + S.getLocalizedString("actionJumpTask") + '</a></td>';
-                row += '<td>' + h.cell + '<br /><a class="sl-history-cell" data-cell="' + h.cell + '">' + h.cellName + '</a></td>';
+                row += '<td>' + h.cell + '<br /><a class="sl-history-cell" data-cell="' + h.cell + '">' + cn + '</a></td>';
                 row += '<td>' + h.type + '<br />&nbsp;</td>';
 
                 if (h.type == "scythed" || h.trailblazer == 1) {
