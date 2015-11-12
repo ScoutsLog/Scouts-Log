@@ -1075,8 +1075,7 @@ function nice_number(n) {
             S.prepareTaskActionWindow(t);
             
             // Capture image data
-            S.capture3D();
-            S.capture2D();
+            S.captureImage(t);
             
             // Get task summary
             S.getTaskSummary(t);
@@ -1134,9 +1133,16 @@ function nice_number(n) {
         doc += '</td>';
         doc += '</tr>';
         doc += '<tr><td><strong>' + S.getLocalizedString("labelReaped") + '</strong></td><td><input type="radio" name="reaped" value="1" /> ' + S.getLocalizedString("labelYes") + '&nbsp;&nbsp;&nbsp;<input type="radio" name="reaped" value="0" checked />' + S.getLocalizedString("labelNo") + '</td></tr>';
-        doc += '<tr><td><strong>' + S.getLocalizedString("label3DImage") + ':</strong></td><td><input type="hidden" id="sl-action-image-3d" name="image-data-3d" value="" /><div id="sl-action-image-status-3d">' + S.getLocalizedString("messageProcessing") + '</div></td></tr>';
-        doc += '<tr><td><strong>' + S.getLocalizedString("label2DImage") + ':</strong></td><td><input type="hidden" id="sl-action-image-2d" name="image-data-2d" value="" /><div id="sl-action-image-status-2d">' + S.getLocalizedString("messageProcessing") + '</div></td></tr>';
-        doc += '<tr><td><strong>' + S.getLocalizedString("labelAnnotatedImage") + ':</strong></td><td><input type="hidden" id="sl-action-image-annotated" name="image-data-annotated" value="" /><input type="hidden" id="sl-action-image-annotated-sketch" name="image-data-annotated-sketch" value="" /><div id="sl-action-image-status-annotated">' + S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a>' + '</div></td></tr>';
+        doc += '<tr>';
+        doc += '<td><strong>' + S.getLocalizedString("labelImage") + ':</strong></td>';
+        doc += '<td>';
+        doc += '<input type="hidden" id="sl-action-image" name="image-data" value="" />';
+        doc += '<input type="hidden" id="sl-action-image-3d" name="image-data-3d" value="" />';
+        doc += '<input type="hidden" id="sl-action-image-2d" name="image-data-2d" value="" />';
+        doc += '<input type="hidden" id="sl-action-image-sketch" name="image-data-sketch" value="" />';
+        doc += '<div id="sl-action-image-status">' + S.getLocalizedString("messageProcessing") + '</div>';
+        doc += '</td>';
+        doc += '</tr>';
         doc += '<tr><td><strong>' + S.getLocalizedString("labelNotes") + ':</strong></td><td><textarea name="notes" id="sl-action-notes" rows="4" cols="75"></textarea></td></tr>';
         doc += '</tbody>';
         doc += '</table>';
@@ -1164,10 +1170,6 @@ function nice_number(n) {
         jQuery('#slPanel button.sl-cancel').click(function() {
             jQuery('#slPanel').hide();
         });
-        
-        jQuery('#slPanel #sl-action-image-status-annotated a.sl-capture').click(function() {
-            S.createAnnotation(t);
-        });
 
 
         jQuery('#slPanel button.sl-submit').click(function() {
@@ -1194,16 +1196,14 @@ function nice_number(n) {
         
 
             // Prepare data object
-            var imA = jQuery('#sl-action-image-annotated').val();
-
-            if (imA != "") {
+            if (jQuery('#sl-action-image-sketch').val() != "") {
                 var data = {
                     cell: window.tomni.cell,
                     task: t,
                     status: jQuery('#sl-action-status').val(),
                     reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
                     notes: jQuery('#sl-action-notes').val(),
-                    image: imA
+                    image: jQuery('#sl-action-image').val()
                 };
             } else {
                 var data = {
@@ -1616,8 +1616,7 @@ function nice_number(n) {
             S.prepareTaskActionWindow(t);
             
             // Capture image data
-            S.capture3D();
-            S.capture2D();
+            S.captureImage();
             
             // Get task summary
             S.getTaskSummary();
@@ -1733,7 +1732,8 @@ function nice_number(n) {
     /**
      * Utils: Capture Image Data from 3D Canvas
      */
-    S.capture3D = function() {
+    S.captureImage = function() {
+        // Capture 3D image
         if (jQuery('#threeD canvas').length == 1) {
             // Get 3D canvas object
             var c = jQuery('#threeD canvas')[0];
@@ -1743,76 +1743,14 @@ function nice_number(n) {
             
             // Store image data
             jQuery('#sl-action-image-3d').val(c.toDataURL());
-            
-            // Update image status
-            jQuery('#sl-action-image-status-3d').html('<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | <a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | <a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>');
-            
-            // Assign click functions
-            jQuery('#sl-action-image-status-3d a.sl-preview').click(function() {
-                var w = window.open();
-                
-                w.document.open();
-                w.document.write('<!DOCTYPE html><head><title>' + S.getLocalizedString("windowImagePreviewTitle") + '</title>');
-                w.document.write('<style type="text/css">body { background-color: #232323; color: #fff; }</style>');
-                w.document.write('</head><body>');
-                w.document.write('<img src="' + jQuery('#sl-action-image-3d').val() + '"/>');
-                w.document.write('</body></html>');
-                w.document.close();
-            });
-            
-            jQuery('#sl-action-image-status-3d a.sl-capture').click(function() {
-                var res = confirm("Are you sure you want to to re-capture this image?  Any annotations will be lost.");
+        } else {
+            // 3D canvas is not visible/available
 
-                if (res) {
-                    jQuery('#sl-action-image-status-3d').html( S.getLocalizedString("messageProcessing") );
-                
-                    setTimeout(function() { window.scoutsLog.capture3D(); }, 1000);
-
-
-                    // Clear annotations
-                    jQuery('#sl-action-image-annotated').val('');
-                        
-                    jQuery('#sl-action-image-status-annotated').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a>');
-            
-                    jQuery('#sl-action-image-status-annotated a.sl-capture').click(function() {
-                        S.createAnnotation();
-                    });                }
-            });
-            
-            jQuery('#sl-action-image-status-3d a.sl-remove').click(function() {
-                var res = confirm("Are you sure you want to to remove this image?  Any annotations will be lost.");
-
-                if (res) {
-                    jQuery('#sl-action-image-3d').val('');
-                            
-                    jQuery('#sl-action-image-status-3d').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionCaptureTooltip") + '">' + S.getLocalizedString("actionCapture") + '</a>');
-                
-                    jQuery('#sl-action-image-status-3d a.sl-capture').click(function() {
-                        jQuery('#sl-action-image-status-3d').html( S.getLocalizedString("messageProcessing") );
-                    
-                        setTimeout(function() { window.scoutsLog.capture3D(); }, 1000);
-                    });
-
-
-                    // Clear annotations
-                    jQuery('#sl-action-image-annotated').val('');
-                        
-                    jQuery('#sl-action-image-status-annotated').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a>');
-            
-                    jQuery('#sl-action-image-status-annotated a.sl-capture').click(function() {
-                        S.createAnnotation();
-                    });
-                }
-            })
-            
+            // Clear image data
+            jQuery('#sl-action-image-3d').val('');
         }
-        
-    }
 
-    /**
-     * Utils: Capture Image Data from 2D Canvas
-     */
-    S.capture2D = function() {
+        // Capture 2D image
         if (jQuery('#twoD canvas').length == 1 && window.tomni.gameMode) {
             // Get 2D canvas object
             var c = jQuery('#twoD canvas')[0];
@@ -1823,72 +1761,93 @@ function nice_number(n) {
             // Store image data
             jQuery('#sl-action-image-2d').val(c.toDataURL());
             
-            // Update image status
-            jQuery('#sl-action-image-status-2d').html('<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | <a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | <a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>');
-            
-            // Assign click functions
-            jQuery('#sl-action-image-status-2d a.sl-preview').click(function() {
-                var w = window.open();
-                
-                w.document.open();
-                w.document.write('<!DOCTYPE html><head><title>' + S.getLocalizedString("windowImagePreviewTitle") + '</title>');
-                w.document.write('<style type="text/css">body { background-color: #232323; color: #fff; }</style>');
-                w.document.write('</head><body>');
-                w.document.write('<img src="' + jQuery('#sl-action-image-2d').val() + '"/>');
-                w.document.write('</body></html>');
-                w.document.close();
-            });
-            
-            jQuery('#sl-action-image-status-2d a.sl-capture').click(function() {
-                var res = confirm("Are you sure you want to to re-capture this image?  Any annotations will be lost.");
-
-                if (res) {
-                    jQuery('#sl-action-image-status-2d').html( S.getLocalizedString("messageProcessing") );
-                
-                    setTimeout(function() { window.scoutsLog.capture2D(); }, 1000);
-
-                    // Clear annotations
-                    jQuery('#sl-action-image-annotated').val('');
-                        
-                    jQuery('#sl-action-image-status-annotated').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a>');
-            
-                    jQuery('#sl-action-image-status-annotated a.sl-capture').click(function() {
-                        S.createAnnotation();
-                    });
-                }
-            });
-            
-            jQuery('#sl-action-image-status-2d a.sl-remove').click(function() {
-                var res = confirm("Are you sure you want to to remove this image?  Any annotations will be lost.");
-
-                if (res) {
-                    jQuery('#sl-action-image-2d').val('');
-                            
-                    jQuery('#sl-action-image-status-2d').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionCaptureTooltip") + '">' + S.getLocalizedString("actionCapture") + '</a>');
-                
-                    jQuery('#sl-action-image-status-2d a.sl-capture').click(function() {
-                        jQuery('#sl-action-image-status-2d').html( S.getLocalizedString("messageProcessing") );
-                    
-                        setTimeout(function() { window.scoutsLog.capture2D(); }, 1000);
-                    });
-
-                    // Clear annotations
-                    jQuery('#sl-action-image-annotated').val('');
-                        
-                    jQuery('#sl-action-image-status-annotated').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a>');
-            
-                    jQuery('#sl-action-image-status-annotated a.sl-capture').click(function() {
-                        S.createAnnotation();
-                    });
-                }
-            });
-            
         } else {
             // 2D canvas is not visible/available
 
-            jQuery('#sl-action-image-status-2d').html( S.getLocalizedString("labelNotApplicable") );
+            // Clear image data
+            jQuery('#sl-action-image-2d').val('');
         }
+
+        // @TODO: Create basic image preview
+
+
+
         
+        // Reset annotation/sketch data
+        jQuery('#sl-action-image-sketch').val('');
+
+        // Update status, set links
+        var status = '<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | ';
+        status += '<a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a> | ';
+        status += '<a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | ';
+        status += '<a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>';
+
+        jQuery('#sl-action-image-status').html(status);
+
+        // Set event handlers
+
+        jQuery('#sl-action-image-status a.sl-preview').click(function() {
+            var w = window.open();
+                
+            w.document.open();
+            w.document.write('<!DOCTYPE html><head><title>' + S.getLocalizedString("windowImagePreviewTitle") + '</title>');
+            w.document.write('<style type="text/css">body { background-color: #232323; color: #fff; }</style>');
+            w.document.write('</head><body>');
+            w.document.write('<img src="' + jQuery('#sl-action-image').val() + '"/>');
+            w.document.write('</body></html>');
+            w.document.close();
+        });
+
+        jQuery('#sl-action-image-status a.sl-annotate').click(function() {
+            if (jQuery('#sl-action-image-annotation').val() == '') {
+                S.createAnnotation();
+            } else {
+                S.showAnnotation();
+            }
+        });
+
+        jQuery('#sl-action-image-status a.sl-capture').click(function() {
+            var res = true;
+
+            if (jQuery('#sl-action-image-sketch').val() != '') {
+                res = confirm("Are you sure you want to to re-capture this image?  Any annotations will be lost.");
+            }
+
+            if (res) {
+                jQuery('#sl-action-image').val('');
+                jQuery('#sl-action-image-3d').val('');
+                jQuery('#sl-action-image-2d').val('');
+                jQuery('#sl-action-image-sketch').val('');
+
+                jQuery('#sl-action-image-status').html( S.getLocalizedString("messageProcessing") );
+                
+                setTimeout(function() { window.scoutsLog.captureImage(); }, 1000);
+            }
+        });
+
+        jQuery('#sl-action-image-status a.sl-remove').click(function() {
+            var res = true;
+
+            if (jQuery('#sl-action-image-sketch').val() != '') {
+                res = confirm("Are you sure you want to to remove this image?  Any annotations will be lost.");
+            }
+
+            if (res) {
+                jQuery('#sl-action-image').val('');
+                jQuery('#sl-action-image-3d').val('');
+                jQuery('#sl-action-image-2d').val('');
+                jQuery('#sl-action-image-sketch').val('');
+
+                jQuery('#sl-action-image-status').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionCaptureTooltip") + '">' + S.getLocalizedString("actionCapture") + '</a>');
+                
+                jQuery('#sl-action-image-status a.sl-capture').click(function() {
+                    jQuery('#sl-action-image-status').html( S.getLocalizedString("messageProcessing") );
+                    
+                    setTimeout(function() { window.scoutsLog.captureImage(); }, 1000);
+                });
+            }
+        });
+
     }
 
 
@@ -1915,7 +1874,7 @@ function nice_number(n) {
         w.document.close();
 
         setTimeout(function() {
-            w.load_annotation( jQuery("#sl-action-image-annotated-sketch").val() );
+            w.load_annotation( jQuery("#sl-action-image-sketch").val() );
         }, 1000);
     };
     
@@ -1944,26 +1903,8 @@ function nice_number(n) {
     
     S.saveAnnotation = function(data) {
         // Store data
-        jQuery("#sl-action-image-annotated").val(data.image);
-        jQuery("#sl-action-image-annotated-sketch").val(data.sketch);
-        
-        // Update image status
-        jQuery('#sl-action-image-status-annotated').html('<a class="sl-preview" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a> | <a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>');
-
-        // Assign click functions
-        jQuery('#sl-action-image-status-annotated a.sl-preview').click(function() {
-            S.showAnnotation();
-        });
-        
-        jQuery('#sl-action-image-status-annotated a.sl-remove').click(function() {
-            jQuery('#sl-action-image-annotated').val('');
-                        
-            jQuery('#sl-action-image-status-annotated').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a>');
-            
-            jQuery('#sl-action-image-status-annotated a.sl-capture').click(function() {
-                S.createAnnotation();
-            });
-        });
+        jQuery("#sl-action-image").val(data.image);
+        jQuery("#sl-action-image-sketch").val(data.sketch);
     }
 
 
