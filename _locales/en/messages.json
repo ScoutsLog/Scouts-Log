@@ -191,11 +191,8 @@
         "message": "Cube",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
     },
-    "label2DImage": {
-        "message": "2D Image"
-    },
-    "label3DImage": {
-        "message": "3D Image"
+    "labelImage": {
+        "message": "Image"
     },
     "labelLastUser": {
         "message": "Last User",

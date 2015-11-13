@@ -106,6 +106,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 function ScoutsLogEyeWire() {
+    this.user = "";
     this.language = "en";
     this.localizedStrings = {};
 
@@ -178,6 +179,8 @@ function ScoutsLogEyeWire() {
                     if (res.language && res.language != "") {
                         lang = res.language;
                     }
+
+                    SLEW.user = res.username;
                 }
                 
                 switch (lang) {
@@ -294,7 +297,8 @@ function ScoutsLogEyeWire() {
                             "slew_init",
                             {
                                 baseDataURL: chrome.extension.getURL(""),
-                                locale: SLEW.language
+                                locale: SLEW.language,
+                                user: SLEW.user
                             }
                         );
                     }

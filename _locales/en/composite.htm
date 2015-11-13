@@ -69,33 +69,19 @@ body {
     bottom:63px;
 }
 
-#threeD {
+#capture {
     position:absolute;
     top:0;
     left:0;
     bottom:0;
-    right:50%;
+    right:0;
     overflow:hidden;
 }
 
-#threeD img {
+#capture img {
     position:absolute;
     top:50%;
     left:50%;
-}
-
-#threeD.single {
-    right:0;
-}
-
-#twoD {
-    position:absolute;
-    top:0;
-    left:50%;
-    right:0;
-    bottom:0;
-    border-left:1px dashed #888;
-    overflow:hidden;
 }
 
 #annotations-sketch {
@@ -175,19 +161,11 @@ body {
 <div id="wrapper2">
 
 <div id="header">
-<h1><img src="[ICON]" style="vertical-align:middle;" /> Task #[TASK]</h1>
+<h1><img src="[ICON]" style="vertical-align:middle;" /> Annotate Image</h1>
 </div>
 
 <div id="content">
-
-<div id="threeD">
-<img src="[IMAGE_3D]" />
-</div>
-
-<div id="twoD">
-<img src="[IMAGE_2D]" />
-</div>
-
+<div id="capture"><img src="[IMAGE]" /></div>
 </div>
 
 <canvas id="annotations-sketch"></canvas>
@@ -688,7 +666,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
     /*
      * Process Image Dimensions and Initialize UI
      */
-    var dataRaw = jQuery("#threeD img").attr("src").slice(22, 86); // 54
+    var dataRaw = jQuery("#capture img").attr("src").slice(22, 86); // 54
     var data = Base64.decodeRaw(dataRaw);
     var wR = data.slice(16, 20);
     var hR = data.slice(20); 
@@ -700,7 +678,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
     .css("width", w + "px")
     .css("height", h + "px");
 
-    jQuery("#threeD img")
+    jQuery("#capture img")
     .css("margin-left", "-" + Math.floor(w / 2) + "px")
     .css("margin-top", "-" + Math.floor(h / 2) + "px");
 
@@ -709,11 +687,6 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
     .css("height", h + "px")
     .attr("width", w)
     .attr("height", h);
-
-    if (jQuery("#twoD img").attr("src") == "") {
-        jQuery("#threeD").addClass("single");
-        jQuery("#twoD").hide();
-    }
 
 
     /*
@@ -854,29 +827,9 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
         cx.fillStyle = '#232323';
         cx.fill();
 
-        var im3D = jQuery('#threeD img')[0];
-        var im2D = jQuery('#twoD img')[0];
+        var cimg = jQuery('#capture img')[0];
 
-        if (im2D.src != "") {
-            var im3Dc = jQuery('#threeD')[0];
-
-            var sX = Math.floor((im3D.width - im3Dc.clientWidth) / 2);
-
-            cx.drawImage(im3D, sX, 0, im3Dc.clientWidth, im3Dc.clientHeight, 0, 0, im3Dc.clientWidth, im3Dc.clientHeight);
-
-            cx.drawImage(im2D, Math.floor(cvA.width / 2), 0);
-
-            cx.beginPath();
-            cx.setLineDash([3, 3]);
-            cx.moveTo(Math.floor(cvA.width / 2) + 0.5, 0);
-            cx.lineTo(Math.floor(cvA.width / 2) + 0.5, cvA.height);
-            cx.lineWidth = 1;
-            cx.strokeStyle = '#888';
-            cx.stroke();
-        } else {
-            cx.drawImage(im3D, 0, 0);
-        }
-
+        cx.drawImage(cimg, 0, 0);
         cx.drawImage(cvA, 0, 0, cvA.width, cvA.height, 0, 0, cvA.width, cvA.height);
 
         var im = cv.toDataURL();

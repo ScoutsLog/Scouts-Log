@@ -40,6 +40,9 @@ function nice_number(n) {
 
 (function(S) {
     S.images = {};
+
+    S.user = '';
+
     S.locale = 'en';
     S.localizedStrings = {};
     
@@ -137,6 +140,7 @@ function nice_number(n) {
     S.slew_init = function(msg) {
         S.baseDataURL = msg.baseDataURL;
         S.locale = msg.locale;
+        S.user = msg.user;
 
         S.init_ui();
     };
@@ -837,7 +841,7 @@ function nice_number(n) {
                 jQuery("#sl-main-table table tbody").append(row);
             }
 
-            // @TODO: Scroll to end of history data
+            // Scroll to end of history data
             var slpc = jQuery("#slPanel div.slPanelContent")[0];
             slpc.scrollTop = slpc.scrollHeight - slpc.offsetHeight;
 
@@ -1196,26 +1200,14 @@ function nice_number(n) {
         
 
             // Prepare data object
-            if (jQuery('#sl-action-image-sketch').val() != "") {
-                var data = {
-                    cell: window.tomni.cell,
-                    task: t,
-                    status: jQuery('#sl-action-status').val(),
-                    reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
-                    notes: jQuery('#sl-action-notes').val(),
-                    image: jQuery('#sl-action-image').val()
-                };
-            } else {
-                var data = {
-                    cell: window.tomni.cell,
-                    task: t,
-                    status: jQuery('#sl-action-status').val(),
-                    reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
-                    notes: jQuery('#sl-action-notes').val(),
-                    image2D: jQuery('#sl-action-image-2d').val(),
-                    image3D: jQuery('#sl-action-image-3d').val()
-                };
-            }
+            var data = {
+                cell: window.tomni.cell,
+                task: t,
+                status: jQuery('#sl-action-status').val(),
+                reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
+                notes: jQuery('#sl-action-notes').val(),
+                image: jQuery('#sl-action-image').val()
+            };
 
             // Initiate request through plugin
             S.sendMessage(
@@ -1768,8 +1760,100 @@ function nice_number(n) {
             jQuery('#sl-action-image-2d').val('');
         }
 
-        // @TODO: Create basic image preview
+        // Create basic image preview
+        var cvA = jQuery("#threeD canvas")[0];
+        var cxA = cvA.getContext('2d');
 
+        var cv = document.createElement('canvas');
+        cv.height = cvA.height;
+        cv.width = cvA.width;
+
+        var cx = cv.getContext('2d');
+
+        cx.beginPath();
+        cx.rect(0, 0, cvA.width, cvA.height);
+        cx.fillStyle = '#232323';
+        cx.fill();
+
+        var cvB = jQuery("#twoD canvas")[0];
+
+        if (cvB && window.tomni.gameMode) {
+            var imC = jQuery('#twoD')[0];
+            var sX = Math.floor((cvA.width - imC.clientWidth) / 2);
+            //var sX = Math.floor(cvA.width / 4);
+
+            var sW = Math.floor(cvA.width / 2);
+
+            cx.drawImage(cvA, sX, 0, sW, cvA.height, 0, 0, sW, cvA.height);
+
+            cx.drawImage(cvB, sW, 0);
+
+            cx.beginPath();
+            cx.setLineDash([3, 3]);
+            cx.moveTo(sW + 0.5, 0);
+            cx.lineTo(sW + 0.5, cvA.height);
+            cx.lineWidth = 1;
+            cx.strokeStyle = '#888';
+            cx.stroke();
+
+            // Get current cube/task
+            var tg = window.tomni.getTarget();
+            var t;
+
+            if (Array.isArray(tg)) {
+                t = tg[0].id;
+            } else {
+                t = tg.id;
+            }
+        
+            if (typeof t == 'undefined') {
+                t = window.tomni.task.id;
+            }
+
+            cx.beginPath();
+            cx.rect(5, 5, 300, 88);
+            cx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            cx.fill();
+
+            var dir;
+            switch (window.tomni.task.dir) {
+                case 'x':
+                    dir = 'zy';
+
+                    break;
+                case 'y':
+                    dir = 'xz';
+
+                    break;
+                case 'z':
+                    dir = 'xy';
+
+                    break;
+            }
+
+            cx.font = 'normal 10pt sans-serif';
+            cx.fillStyle = '#bbb';      
+            cx.fillText('Cell: ' + window.tomni.cell, 10, 23);
+            cx.fillText('Cube: ' + t, 10, 43);
+            cx.fillText('Plane: ' + dir, 10, 63);
+            cx.fillText('User: ' + S.user, 10, 83);
+
+        } else {
+            cx.drawImage(cvA, 0, 0);
+
+            cx.beginPath();
+            cx.rect(5, 5, 300, 48);
+            cx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            cx.fill();
+
+            cx.font = 'normal 10pt sans-serif';
+            cx.fillStyle = '#bbb';      
+            cx.fillText('Cell: ' + window.tomni.cell, 10, 23);
+            cx.fillText('User: ' + S.user, 10, 43);
+        }
+
+
+        jQuery('#sl-action-image').val(cv.toDataURL());
 
 
         
@@ -1865,9 +1949,7 @@ function nice_number(n) {
         var w = window.open();
     
         msg = msg.replace( "[ICON]", S.images.logoSmall );
-        msg = msg.replace( "[TASK]", t );
-        msg = msg.replace( "[IMAGE_3D]", jQuery('#sl-action-image-3d').val() );
-        msg = msg.replace( "[IMAGE_2D]", jQuery('#sl-action-image-2d').val() );
+        msg = msg.replace( "[IMAGE]", jQuery('#sl-action-image').val() );
                     
         w.document.open();
         w.document.write(msg);
@@ -1892,9 +1974,7 @@ function nice_number(n) {
         var w = window.open();
     
         msg = msg.replace( "[ICON]", S.images.logoSmall );
-        msg = msg.replace( "[TASK]", t );
-        msg = msg.replace( "[IMAGE_3D]", jQuery('#sl-action-image-3d').val() );
-        msg = msg.replace( "[IMAGE_2D]", jQuery('#sl-action-image-2d').val() );
+        msg = msg.replace( "[IMAGE]", jQuery('#sl-action-image').val() );
                     
         w.document.open();
         w.document.write(msg);
