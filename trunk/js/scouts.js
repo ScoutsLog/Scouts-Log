@@ -1143,6 +1143,7 @@ function nice_number(n) {
         doc += '<input type="hidden" id="sl-action-image" name="image-data" value="" />';
         doc += '<input type="hidden" id="sl-action-image-3d" name="image-data-3d" value="" />';
         doc += '<input type="hidden" id="sl-action-image-2d" name="image-data-2d" value="" />';
+        doc += '<input type="hidden" id="sl-action-image-annotated" name="image-data-annotated" value="" />';
         doc += '<input type="hidden" id="sl-action-image-sketch" name="image-data-sketch" value="" />';
         doc += '<div id="sl-action-image-status">' + S.getLocalizedString("messageProcessing") + '</div>';
         doc += '</td>';
@@ -1200,14 +1201,25 @@ function nice_number(n) {
         
 
             // Prepare data object
-            var data = {
-                cell: window.tomni.cell,
-                task: t,
-                status: jQuery('#sl-action-status').val(),
-                reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
-                notes: jQuery('#sl-action-notes').val(),
-                image: jQuery('#sl-action-image').val()
-            };
+            if (jQuery('#sl-action-image-annotated').val() != '') {
+                var data = {
+                    cell: window.tomni.cell,
+                    task: t,
+                    status: jQuery('#sl-action-status').val(),
+                    reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
+                    notes: jQuery('#sl-action-notes').val(),
+                    image: jQuery('#sl-action-image-annotated').val()
+                };
+            } else {
+                var data = {
+                    cell: window.tomni.cell,
+                    task: t,
+                    status: jQuery('#sl-action-status').val(),
+                    reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
+                    notes: jQuery('#sl-action-notes').val(),
+                    image: jQuery('#sl-action-image').val()
+                };
+            }
 
             // Initiate request through plugin
             S.sendMessage(
@@ -1858,6 +1870,7 @@ function nice_number(n) {
 
         
         // Reset annotation/sketch data
+        jQuery('#sl-action-image-annotated').val('');
         jQuery('#sl-action-image-sketch').val('');
 
         // Update status, set links
@@ -1872,18 +1885,26 @@ function nice_number(n) {
 
         jQuery('#sl-action-image-status a.sl-preview').click(function() {
             var w = window.open();
+
+            var im;
+
+            if (jQuery('#sl-action-image-annotated').val() != '') {
+                im = jQuery('#sl-action-image-annotated').val();
+            } else {
+                im = jQuery('#sl-action-image').val();
+            }
                 
             w.document.open();
             w.document.write('<!DOCTYPE html><head><title>' + S.getLocalizedString("windowImagePreviewTitle") + '</title>');
             w.document.write('<style type="text/css">body { background-color: #232323; color: #fff; }</style>');
             w.document.write('</head><body>');
-            w.document.write('<img src="' + jQuery('#sl-action-image').val() + '"/>');
+            w.document.write('<img src="' + im + '"/>');
             w.document.write('</body></html>');
             w.document.close();
         });
 
         jQuery('#sl-action-image-status a.sl-annotate').click(function() {
-            if (jQuery('#sl-action-image-annotation').val() == '') {
+            if (jQuery('#sl-action-image-annotated').val() == '') {
                 S.createAnnotation();
             } else {
                 S.showAnnotation();
@@ -1901,6 +1922,7 @@ function nice_number(n) {
                 jQuery('#sl-action-image').val('');
                 jQuery('#sl-action-image-3d').val('');
                 jQuery('#sl-action-image-2d').val('');
+                jQuery('#sl-action-image-annotated').val('');
                 jQuery('#sl-action-image-sketch').val('');
 
                 jQuery('#sl-action-image-status').html( S.getLocalizedString("messageProcessing") );
@@ -1920,6 +1942,7 @@ function nice_number(n) {
                 jQuery('#sl-action-image').val('');
                 jQuery('#sl-action-image-3d').val('');
                 jQuery('#sl-action-image-2d').val('');
+                jQuery('#sl-action-image-annotated').val('');
                 jQuery('#sl-action-image-sketch').val('');
 
                 jQuery('#sl-action-image-status').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionCaptureTooltip") + '">' + S.getLocalizedString("actionCapture") + '</a>');
@@ -1983,7 +2006,7 @@ function nice_number(n) {
     
     S.saveAnnotation = function(data) {
         // Store data
-        jQuery("#sl-action-image").val(data.image);
+        jQuery("#sl-action-image-annotated").val(data.image);
         jQuery("#sl-action-image-sketch").val(data.sketch);
     }
 
