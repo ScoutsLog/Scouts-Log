@@ -191,11 +191,8 @@
         "message": "큐브",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
     },
-    "label2DImage": {
-        "message": "2차원 이미지"
-    },
-    "label3DImage": {
-        "message": "3차원 이미지"
+    "labelImage": {
+        "message": "이미지"
     },
     "labelLastUser": {
         "message": "마지막 작업한 플레이어",
