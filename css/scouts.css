@@ -147,38 +147,6 @@
 
 /* ------------------------------------------------------------------------- */
 
-#scoutsLogPing {
-    position: absolute;
-    width: 160px;
-    height: 140px;
-    padding: 5px;
-    border: 1px solid #131313;
-    border-radius: 2px;
-    background-color: rgba(27,27,27,0.91);
-    font-family: 'Open Sans', sans-serif;
-    font-size: 11px;
-    color: #b4b4b4;
-    top: 45px;
-    left: 15px;
-    z-index: 2000;
-}
-
-#scoutsLogPing a.sl-close-window {
-    float: right;
-}
-
-#scoutsLogPing .sl-ping-list {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 20px;
-    bottom: 0;
-    padding: 5px;
-    overflow-x: hidden;
-    overflow-y: auto;
-
-/* ------------------------------------------------------------------------- */
-
 
 
 

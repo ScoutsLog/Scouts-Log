@@ -54,8 +54,6 @@ function nice_number(n) {
     S.historyPosition = 0;
     S.historyDisplay = 4;
 
-    S.inspectFlag = false;
-
     var baseDataURL = '';
     
     
@@ -182,14 +180,6 @@ function nice_number(n) {
             } else if (ra > 0) {
                 jQuery('#sl-task-details').show();
                 jQuery('#sl-task-entry').hide();
-            }
-
-            if (ea > 0 || window.tomni.inspect) {
-                S.inspectFlag = true;
-
-                S.doInspectPing();
-            } else {
-                S.inspectFlag = false;
             }
         });
         
@@ -504,7 +494,18 @@ function nice_number(n) {
      */
     S.getTaskEntriesInspect = function() {
         // Get current cube/task
-        var t = S.getTargetCube();
+        var target = window.tomni.getTarget();
+        var t;
+
+        if (Array.isArray(target)) {
+            t = target[0].id;
+        } else {
+            t = target.id;
+        }
+        
+        if (typeof t == 'undefined') {
+            t = window.tomni.task.id;
+        }
         
         // Update window state
         S.windowstate = 'task-' + t;
@@ -640,7 +641,17 @@ function nice_number(n) {
     S.getTaskSummary = function(t) {
         if (typeof t == 'undefined' || isNaN(t)) {
             // Get current cube/task
-            t = S.getTargetCube();
+            var target = window.tomni.getTarget();
+
+            if (Array.isArray(target)) {
+                t = target[0].id;
+            } else {
+                t = target.id;
+            }
+        
+            if (typeof t == 'undefined') {
+                t = window.tomni.task.id;
+            }
         }
         
         // Initiate request
@@ -1173,7 +1184,19 @@ function nice_number(n) {
 
             // Get current cube/task
             if (!t) {
-                t = S.getTargetCube();
+                var target = window.tomni.getTarget();
+
+                if (target) {
+                    if (Array.isArray(target)) {
+                        t = target[0].id;
+                    } else {
+                        t = target.id;
+                    }
+
+                    if (typeof t == 'undefined') {
+                        t = window.tomni.task.id;
+                    }
+                }
             }
         
 
@@ -1548,7 +1571,18 @@ function nice_number(n) {
 
         jQuery('#sl-task-details').click(function() {
             // Get current cube/task
-            var t = S.getTargetCube();
+            var target = window.tomni.getTarget();
+            var t;
+
+            if (Array.isArray(target)) {
+                t = target[0].id;
+            } else {
+                t = target.id;
+            }
+            
+            if (typeof t == 'undefined') {
+                t = window.tomni.task.id;
+            }
             
             var test = 'task-' + t;
             
@@ -1569,7 +1603,18 @@ function nice_number(n) {
         });
         
         jQuery("#sl-task-entry").click(function() {
-            var t = S.getTargetCube();
+            var target = window.tomni.getTarget();
+            var t;
+
+            if (Array.isArray(target)) {
+                t = target[0].id;
+            } else {
+                t = target.id;
+            }
+            
+            if (typeof t == 'undefined') {
+                t = window.tomni.task.id;
+            }
             
             // Prepare display window
             S.prepareTaskActionWindow(t);
@@ -1615,96 +1660,6 @@ function nice_number(n) {
             }
         });
     }
-
-
-    S.doInspectPing = function() {
-        if (S.inspectFlag == true) {
-            // Get current cube
-            var t = S.getTargetCube();
-
-            if (typeof(t) != 'undefined' && !isNaN(t)) {
-                // Send the message
-                S.sendMessage(
-                    "getJSON",
-                    { url: "http://scoutslog.org/1.1/task/" + t + "/inspect/ping" },
-                    "doInspectPingCallback"
-                );
-            }
-
-            setTimeout(function() {
-                S.doInspectPing();
-            }, 15000);
-        } else {
-            // Remove inspect ping window
-            jQuery('#scoutsLogPing').remove();
-        }
-    }
-
-    S.doInspectPingCallback = function(d) {
-        if (S.inspectFlag == true) {
-            // Check if the inspect ping panel is present
-            if (jQuery('#scoutsLogPing').length == 0) {
-                // Create inspect ping panel
-                var panel = '<div id="scoutsLogPing">';
-                panel += '<a href="javascript:void(0);" class="sl-close-window" title="' + S.getLocalizedString("actionHideWindowTooltip") + '"><img src="' + S.images.close + '" alt="' + S.getLocalizedString("actionHideWindowTooltip") + '" /></a>';
-                panel += 'Users Inspecting:';
-                panel += '<div class="sl-ping-list"></div>';
-                panel += '</div>';
-                jQuery("#content .gameBoard").append(panel);
-
-                jQuery('#scoutsLogPing').draggable({ container: 'window' });
-
-                jQuery('#scoutsLogPing a.sl-close-window').click(function() {
-                    jQuery('#scoutsLogPing').hide();
-                });
-            }
-
-            // Update user list
-            var users = '';
-
-            for (var n in d.users) {
-                var u = d.users[n];
-
-		if (u.active == 1) {
-                    switch (u.role) {
-                        case 'admin':
-                            users += '<span class="sl-need-admin">' + u.username + '</span><br />';
-
-                            break;
-                        case 'scythe':
-                            users += '<span class="sl-need-scythe">' + u.username + '</span><br />';
-
-                            break;
-                        default:
-                            users += u.username + '<br />';
-
-                            break;
-                    }
-                } else {
-                    switch (u.role) {
-                        case 'admin':
-                            users += '<span class="sl-need-admin" style="text-decoration: line-through;">' + u.username + '</span><br />';
-
-                            break;
-                        case 'scythe':
-                            users += '<span class="sl-need-scythe" style="text-decoration: line-through;">' + u.username + '</span><br />';
-
-                            break;
-                        default:
-                            users += '<span style="text-decoration: line-through;">' + u.username + '</span><br />';
-
-                            break;
-                    }
-                }
-
-                jQuery('#scoutsLogPing div.sl-ping-list').html(users);
-            }
-        } else {
-            // Remove inspect ping window
-            jQuery('#scoutsLogPing').remove();
-        }
-    }
-
     
     /**
      * Update Floating Panel Stats Values
@@ -1854,8 +1809,18 @@ function nice_number(n) {
             cx.stroke();
 
             // Get current cube/task
-            var t = S.getTargetCube();
+            var tg = window.tomni.getTarget();
+            var t;
 
+            if (Array.isArray(tg)) {
+                t = tg[0].id;
+            } else {
+                t = tg.id;
+            }
+        
+            if (typeof t == 'undefined') {
+                t = window.tomni.task.id;
+            }
 
             cx.beginPath();
             cx.rect(5, 5, 300, 88);
@@ -2045,26 +2010,6 @@ function nice_number(n) {
         jQuery("#sl-action-image-sketch").val(data.sketch);
     }
 
-
-    /**
-     * Utils: Get current cube/task
-     */
-    S.getTargetCube = function() {
-        var target = window.tomni.getTarget();
-        var t;
-
-        if (Array.isArray(target)) {
-            t = target[0].id;
-        } else {
-            t = target.id;
-        }
-        
-        if (typeof t == 'undefined') {
-            t = window.tomni.task.id;
-        }
-
-        return t;
-    }
 
 
     /**
