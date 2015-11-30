@@ -173,7 +173,7 @@ body {
 <div id="annotations-tools" class="tools">
 
 <div class="tools-box" id="tools-items">
-<a href="#annotations-sketch" class="tools-button tools-item active" data-tool="marker">표기</a>
+<a href="#annotations-sketch" class="tools-button tools-item active" data-tool="marker">입력 도구</a>
 <a href="#annotations-sketch" class="tools-button tools-item" data-tool="label">라벨</a>
 <a href="#annotations-sketch" class="tools-button tools-item" data-tool="eraser">지우기</a>
 </div>
@@ -190,7 +190,7 @@ body {
 </select>
 
 <select id="tools-label" data-target="#annotations-sketch" style="margin:6px 8px 8px 8px;">
-<option value="15">추가하다</option>
+<option value="15">추가</option>
 <option value="10">합쳐짐</option>
 <option value="5" selected="selected">빠진 가지</option>
 <option value="3">빠진 마디</option>
@@ -199,7 +199,7 @@ body {
 </select>
 </div>
 <div class="tools-box" id="tools-actions">
-<a href="#annotations-sketch" class="tools-button tools-save" title="주석을 저장하려면 클릭하세요">저장하기</a>
+<a href="#annotations-sketch" class="tools-button tools-save" title="주석을 저장합니다.">저장</a>
 <a href="#annotations-sketch" class="tools-button tools-clear" title="모든 주석을 지우려면 클릭하세요.">지우기</a>
 </div>
 
@@ -569,11 +569,11 @@ var __slice = Array.prototype.slice;
       switch (size) {
         case 3:
           t2 = "Missing Nub";
-          t1 = "빠트린 마디";
+          t1 = "빠진 마디";
           break;
         case 5:
           t2 = "Missing Branch";
-          t1 = "빠트린 가지";
+          t1 = "빠진 가지";
           break;
         case 10:
           t2 = "Merger";
@@ -581,7 +581,7 @@ var __slice = Array.prototype.slice;
           break;
         case 15:
           t2 = "Add";
-          t1 = "추가하다";
+          t1 = "추가";
           break;
         case 20:
           t2 = "Remove";
@@ -593,7 +593,7 @@ var __slice = Array.prototype.slice;
           break;
       };
 
-      this.context.font = 'normal 10pt sans-serif';
+      this.context.font = 'normal 10pt Arial, Helvetica, sans-serif';
       this.context.fillStyle = cc;
       
       switch (a) {
@@ -1048,11 +1048,11 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
       switch (s) {
         case 3:
           t2 = "Missing Nub";
-          t1 = "빠트린 마디";
+          t1 = "빠진 마디";
           break;
         case 5:
           t2 = "Missing Branch";
-          t1 = "빠트린 가지";
+          t1 = "빠진 가지";
           break;
         case 10:
           t2 = "Merger";
@@ -1060,7 +1060,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
           break;
         case 15:
           t2 = "Add";
-          t1 = "추가하다";
+          t1 = "추가";
           break;
         case 20:
           t2 = "Remove";
@@ -1072,7 +1072,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
           break;
       };
 
-      ctx.font = 'normal 10pt sans-serif';
+      ctx.font = 'normal 10pt Arial, Helvetica, sans-serif';
       ctx.fillStyle = cc;
       
       switch (a) {
