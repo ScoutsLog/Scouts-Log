@@ -21,7 +21,7 @@
     },
     "windowAuthText": {
         "message": "<p>스카우트 로그 확장 프로그램을 사용하기 위해서는 당신의 아이와이어 계정을 사용하여 프로그램에 권한을 부여해야 합니다.</p><p>아래 링크를 클릭하여 프로그램에 권한을 부여하십시오.</p><p style=\"text-align:center;\"><a class=\"sl-task\" href=\"http://scoutslog.org/?do=extension-auth&lang=ko\" target=\"_blank\">scoutslog.org</a></p><p>권한부여 작업이 완료되면, 이 페이지를 다시 로드해 주시기 바랍니다.</p>",
-        "description": "Text to be displayed when the user needs to authorization their account."
+        "description": "사용자 권한이 필요할 때 대화창에 보이는 권한 부여 방법"
     },
     "windowCellSummary": {
         "message": "세포 요약 리스트"
@@ -64,7 +64,7 @@
         "message": "남은 큐브 전체 리스트"
     },
     "panelNeedAdmin": {
-        "message": "어드민 확인 요청"
+        "message": "어드민 필요"
     },
     "panelNeedAdminShort": {
         "message": "A"
@@ -73,7 +73,7 @@
         "message": "어드민의 확인이 필요한 큐브 리스트"
     },
     "panelNeedScythe": {
-        "message": "사이드 확인 요청"
+        "message": "사이드 필요"
     },
     "panelNeedScytheShort": {
         "message": "S"
@@ -91,7 +91,7 @@
         "message": "Watch가 진행 중인 큐브 리스트"
     },
     "panelHistory": {
-        "message": "제출 기록"
+        "message": "플레이 기록"
     },
     "panelHistoryShort": {
         "message": "H"
@@ -149,7 +149,7 @@
         "description": "Column header text when displaying the count of open tasks for a cell and/or status."
     },
     "columnScore": {
-        "message": "Score(점수와 정확도)",
+        "message": "Score (점수와 정확도)",
         "description": "Column header text when displaying the raw score and consensus percent for a submission in the history window."
     },
     "columnStatus": {
@@ -184,7 +184,7 @@
         "description": "Noun to reference the ID number for a specific neuron within EyeWire."
     },
     "labelConsensus": {
-        "message": "컨센서스(Consensus)",
+        "message": "정확도",
         "description": "Percentage value indicating agreement, or lack of agreement, with the EyeWire consensus at the time of submission."
     },
     "labelCube": {
@@ -226,7 +226,7 @@
         "description": "Noun to indicate current state for a given task."
     },
     "labelSubmissionType": {
-        "message": "제출 종류",
+        "message": "플레이 종류",
         "description": "The type of EyeWire submission for a cube (normal, trailblaze, or scythed)"
     },
     "labelTask": {
@@ -249,10 +249,10 @@
     
     
     "actionAnnotate": {
-        "message": "이미지에 주석 달기"
+        "message": "이미지에 주석 추가"
     },
     "actionAnnotateTooltip": {
-        "message": "캡쳐된 이미지에 상세 정보를 추가"
+        "message": "캡쳐된 이미지에 상세 정보를 추가합니다."
     },
     "actionCancel": {
         "message": "취소",
@@ -263,11 +263,11 @@
         "description": "Text to display when hovering over the 'Cancel' button."
     },
     "actionCapture": {
-        "message": "이미지를 캡쳐합니다.",
+        "message": "이미지 캡쳐",
         "description": "Action word to indicate capturing the image from the 3D view."
     },
     "actionCaptureTooltip": {
-         "message": "3차원 이미지를 캡쳐하려면 클릭하세요.",
+         "message": "이미지를 캡쳐하려면 클릭하세요.",
          "description": "Text to display when hovering over the 'Capture Image' link in the 'New Entry' window."
     },
     "actionCellTooltip": {
@@ -275,7 +275,7 @@
         "description": "Text to display when hovering over a link to view tasks for a specific cell."
     },
     "actionHideWindowTooltip": {
-        "message": "창 숨기기",
+        "message": "창을 숨깁니다.",
         "description": "Text to display when hovering over the 'X' icon of the Scouts' Log window."
     },
     "actionJumpTask": {
@@ -291,7 +291,7 @@
         "description": "Action word to indicate displaying additional entries."
     },
     "actionMoreTooltip": {
-        "message": "추가 입력 보기",
+        "message": "추가 입력 정보를 더 봅니다.",
         "description": "Text to display when hovering over the 'more' link in the history window."
     },
     "actionNewEntry": {
@@ -299,7 +299,7 @@
         "description": "Action phrase to indicate creating a new task action (entry in log)."
     },
     "actionNewEntryTooltip": {
-        "message": "이 큐브의 새 로그를 생성하려면 클릭하세요.",
+        "message": "이 큐브의 새 로그를 생성합니다.",
         "description": "Text to display when hovering over the 'New Entry' button."
     },
     "actionPreview": {
@@ -307,7 +307,7 @@
         "description": "Action word to indicate viewing the image captured."
     },
     "actionPreviewTooltip": {
-        "message": "캡쳐된 이미지를 보려면 클릭하세요.",
+        "message": "캡쳐된 이미지를 봅니다.",
         "description": "Text to display when hovering over the 'Preview Image' link in the 'New Entry' window."
     },
     "actionRecapture": {
@@ -315,7 +315,7 @@
         "description": "Action word to indicate capturing the image from the 3D view again."
     },
     "actionRecaptureTooltip": {
-        "message": "3차원 이미지를 다시 캡쳐하려면 클릭하세요.",
+        "message": "이미지를 다시 캡쳐합니다.",
         "description": "Text to display when hovering over the 'Re-Capture Image' link in the 'New Entry' window."
     },
     "actionRefresh": {
@@ -327,19 +327,19 @@
         "description": "Text to display when hovering over the 'Refresh' button."
     },
     "actionRemove": {
-        "message": "이미지 삭제하기",
+        "message": "이미지 삭제",
         "description": "Action word to indicate removing the image from the new log entry submission."
     },
     "actionRemoveTooltip": {
-        "message": "제출된 로그에서 이미지를 삭제",
+        "message": "제출된 로그에서 이미지를 삭제합니다.",
         "description": "Text to display when hovering over the 'Remove' link in the 'New Entry' window."
     },
     "actionSetToGood": {
-        "message": "좋은 상태로 표시",
+        "message": "\"양호\"로 표기",
         "description": "Action phrase to indicate there are no further issues for a given task."
     },
     "actionSetToGoodTooltip": {
-        "message": "다른 이슈가 없는 경우 \"좋은 상태\"로 표기합니다.",
+        "message": "다른 이슈가 없는 경우 \"양호\"로 표기합니다.",
         "description": "Text to display when hovering over the 'Set to Good' button."
     },
     "actionShowWindowTooltip": {
@@ -351,14 +351,14 @@
         "description": "Action word to indicate saving the new log entry."
     },
     "actionSubmitTooltip": {
-        "message": "입력한 로그를 제출하기",
+        "message": "입력한 로그를 제출합니다.",
         "description": "Text to display when hovering over the 'Submit' button."
     },
     "actionTask": {
         "message": "큐브 상세 내용"
     },
     "actionTaskTooltip": {
-        "message": "위 큐브의 기록을 보려면 클릭하세요",
+        "message": "위 큐브의 기록을 봅니다.",
         "description": "Text to display when hovering over a numbered task link (e.g. #123456)"
     },
     "actionViewImage": {
@@ -366,7 +366,7 @@
         "description": "Action phrase to indicate viewing the saved image for a given task action."
     },
     "actionViewImageTooltip": {
-        "message": "클릭하면 위 로그 입력과 관련한 이미지를 보실 수 있습니다.",
+        "message": "위 로그 입력과 관련한 이미지를 보실 수 있습니다.",
         "description": "Text to display when hovering over the 'view image' link."
     },
     
@@ -374,7 +374,7 @@
 
     
     "historyConsensusAll": {
-        "message": "모든 컨센서스 값",
+        "message": "모든 정확도 보기",
         "description": "Option text to indicate viewing all consensus values"
     },
     "historyConsensus5090": {
@@ -390,19 +390,19 @@
         "description": "Option text to indicate viewing consensus values equal to zero."
     },
     "historyTypesAll": {
-        "message": "모든 제출 종류",
+        "message": "모든 기록 보기",
         "description": "Option text to indicate viewing all submission types."
     },
     "historyTypesNormal": {
-        "message": "정상 플레이",
+        "message": "일반 플레이",
         "description": "Option text to indicate viewing submissions from normal EyeWire play."
     },
     "historyTypesTrailblazer": {
-        "message": "정상 개척",
+        "message": "개척",
         "description": "Option text to indicate viewing trailblazed submissions from normal EyeWire play."
     },
     "historyTypesScythed": {
-        "message": "사이드가 작업함",
+        "message": "사이드 작업",
         "description": "Option text to indicate viewing reaped/scythed submissions."
     },
     
@@ -416,7 +416,7 @@
         "message": "가지 확인"
     },
     "statusGood": {
-        "message": "좋은 상태"
+        "message": "양호"
     },
     "statusMerger": {
         "message": "합쳐짐"
@@ -428,10 +428,10 @@
         "message": "빠진 마디"
     },
     "statusNeedAdmin": {
-        "message": "어드민 확인 요청"
+        "message": "어드민 필요"
     },
     "statusNeedScythe": {
-        "message": "사이드 확인 요청"
+        "message": "사이드 필요"
     },
     "statusNote": {
         "message": "플레이어 의견"
@@ -446,7 +446,7 @@
         "message": "자라는 중"
     },
     "statusSubtreeComplete": {
-        "message": "자식/자손 큐브 완료"
+        "message": "자식 큐브 완료"
     },
     "statusWatch": {
         "message": "Watch"
