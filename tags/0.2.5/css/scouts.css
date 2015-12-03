@@ -1,0 +1,365 @@
+
+#slButtonTop {
+    background-color: rgba(204,0,0,1) !important;
+}
+
+#slPageHeader {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    right: 0;
+    height: 44px;
+    color: #fff;
+    border-bottom: 1px solid #454545;
+    filter: none;
+    background-color: #2b3035;
+    background-image: linear-gradient(#393f46, #2b3035 60%, #22262a);
+    background-repeat: no-repeat;
+}
+
+#slPageHeader ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#slPageHeader ul > li {
+    position: relative;
+    display: block;
+    float: left;
+}
+
+#slPageHeader ul > li > a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    line-height: 20px;
+    color: #fff;
+    text-decoration: none;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+#slPageHeader ul > li > a.popout > img {
+    float: left;
+    vertical-align: middle;
+    margin-top: -6px;
+}
+
+#slPageHeader .slLogo {
+    margin-left: -15px;
+    float: left;
+    padding: 10px 15px;
+    font-size: 18px;
+    line-height: 20px;
+    border-left: none;
+}
+
+/* ------------------------------------------------------------------------- */
+
+#scoutsLogAuthPanel {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 480px;
+    margin-left: -240px;
+    padding: 8px;
+    border: 1px solid #232323;
+    border-radius: 2px;
+    background-color: rgba(27,27,27,0.91);
+    font-weight: 400;
+    color: #fff;
+    z-index: 1600;
+}
+
+
+/* ------------------------------------------------------------------------- */
+
+#scoutsLogFloatingControls {
+    position: absolute;
+    height: 48px;
+    padding: 8px;
+    border: 1px solid #131313;
+    border-radius: 2px;
+    background-color: rgba(27,27,27,0.91);
+    font-weight: 400;
+    top: 10px;
+    left: 30%;
+    z-index: 1600;
+    transition: opacity 250ms;
+}
+
+#scoutsLogFloatingControls img {
+    display: inline-block;
+}
+
+#scoutsLogFloatingControls a {
+    display: inline-block;
+    height: 32px;
+    width: inital;
+    border-color: initial;
+    border-radius: 2px;
+    padding: 12px 8px 0 8px;
+    margin-right: 8px;
+    margin-top: 2px;
+}
+
+#scoutsLogFloatingControls img + a {
+    margin-left: 8px;
+}
+
+#scoutsLogFloatingControls.sl-vertical {
+    height: initial;
+    width: 48px;
+}
+
+#scoutsLogFloatingControls.sl-vertical img {
+    display: inline-block;
+}
+
+#scoutsLogFloatingControls.sl-vertical a {
+    width: 32px;
+    margin-right: 2px;
+    margin-top: 8px;
+}
+
+#scoutsLogFloatingControls.sl-vertical img + a {
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+
+.sl-badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    line-height: 1;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-align: center;
+    background-color: #7a8288;
+    border-radius: 10px;
+}
+
+/* ------------------------------------------------------------------------- */
+
+
+
+
+#slMainHeader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 45px;
+    padding: 0 10px;
+    border-bottom: 1px solid #3a3939;
+    background-color: #1e1e1e;
+    color: #eee;
+}
+
+#slMainHeader #nav ul li img {
+    margin: 8px 0 0 0;
+    padding: 0 10px;
+}
+
+#slMainHeader #nav ul li h2 {
+    margin: 8px 0 0 0;
+    padding: 0 10px;
+    font-size: 1.25em;
+    font-weight: normal;
+}
+
+#slMainContent {
+    margin-top: 46px;
+    padding: 10px;
+}
+
+div#sl-main-table,
+div#sl-action-table {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    user-select: text !important;
+}
+
+
+.sl-table {
+    width: 100%;
+    background-color: rgb(27,27,27);
+}
+
+.sl-table th {
+    margin: 0;
+    padding: 4px 10px;
+    color: #eee;
+    font-weight: normal;
+    text-align: left;
+    border-bottom: 2px solid #eee;
+}
+
+.sl-table td {
+    margin: 0;
+    padding: 4px;
+    text-align: left;
+    font-weight: normal;
+    color: #dcdcdc;
+}
+
+.sl-table td a {
+    color: #0cf;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.sl-table tbody tr:nth-child(even) {
+    background-color: rgb(33,33,33);
+}
+
+.sl-table tbody tr:nth-child(odd) {
+    background-color: rgb(43,43,43);
+}
+
+
+
+
+
+#slPanel {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    background: rgba(27,27,27,1);
+    border: 1px solid #ddd;
+    border-radius: 6px; color: #eee;
+    z-index: 1100;
+    font-size: 10pt;
+    font-weight: normal;
+}
+
+#slPanel a.sl-close-window {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    z-index: 100;
+}
+
+#slPanel a.sl-minimize-window {
+    position: absolute;
+    top: 10px;
+    right: 39px;
+    z-index: 100;
+}
+
+
+#slPanel h2 small {
+    color: #999;
+}
+
+#slPanel h2 small::before {
+    content: " | ";
+}
+
+
+#slPanel .slPanelContent {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#slPanel .sl-table {
+    background: none;
+}
+
+#slPanel button {
+    font-size: 12pt;
+    padding: 2px 6px;
+}
+
+.sl-capture {
+    color: #d076d7 !important;
+}
+
+.sl-remove {
+    color: #f89406 !important;
+}
+
+
+
+
+
+.sl-cell,
+.sl-history-cell {
+    color: #aaf !important;
+}
+
+.sl-task {
+    color: #afa !important;
+}
+
+.sl-admin,
+.sl-need-admin {
+    color: #ff0 !important;
+}
+
+
+.sl-missing-nub,
+.sl-missing-branch,
+.sl-merger {
+    color: #ee6f6b !important;
+}
+
+.sl-need-scythe,
+.sl-more {
+    color: #f89406 !important;
+}
+
+.sl-watch,
+.sl-note {
+    color: #5bc0de !important;
+}
+
+.sl-scythe-complete,
+.sl-subtree-complete,
+.sl-still-growing,
+.sl-branch-checking {
+    color: #d076d7 !important;
+}
+
+.sl-good {
+    color: #62c462 !important;
+}
+
+
+/* ----------------------------------------------------------- */
+
+#cubeInspectorFloatingControls .controls .control.scoutslog .cube.on.active {
+    border-color: #5f8ff7;
+    color: #5f8ff7;
+}
+
+#content .gameBoard .chatMsgContainer a.sl-jump-task {
+    color: #afa !important;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#scoutsLogPanelButton {
+    width: 30px;
+    height: 22px;
+    padding: 0 5px;
+    border: 2px solid #e7e7e7;
+    background-color: #383838;
+    margin-top: 10px;
+    text-align: center;
+    color: #e7e7e7;
+    cursor: pointer;
+}
