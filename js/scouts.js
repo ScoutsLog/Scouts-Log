@@ -1183,21 +1183,21 @@ function nice_number(n) {
             jQuery('#sl-action-buttons').append('<p>' + S.getLocalizedString("messageSaving") + '</p>');
 
             // Get current cube/task
-            if (!t) {
-                var target = window.tomni.getTarget();
-
-                if (target) {
-                    if (Array.isArray(target)) {
-                        t = target[0].id;
-                    } else {
-                        t = target.id;
-                    }
-
-                    if (typeof t == 'undefined') {
-                        t = window.tomni.task.id;
-                    }
-                }
-            }
+//            if (!t) {
+//                var target = window.tomni.getTarget();
+//
+//                if (target) {
+//                    if (Array.isArray(target)) {
+//                        t = target[0].id;
+//                    } else {
+//                        t = target.id;
+//                    }
+//
+//                    if (typeof t == 'undefined') {
+//                        t = window.tomni.task.id;
+//                    }
+//                }
+//            }
         
 
             // Prepare data object
@@ -1620,10 +1620,10 @@ function nice_number(n) {
             S.prepareTaskActionWindow(t);
             
             // Capture image data
-            S.captureImage();
+            S.captureImage(t);
             
             // Get task summary
-            S.getTaskSummary();
+            S.getTaskSummary(t);
         });
 
         // Set stats refresh function
