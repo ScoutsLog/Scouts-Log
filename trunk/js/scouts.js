@@ -237,43 +237,58 @@ function nice_number(n) {
 
         // Create listener for cube submission data
         jQuery(document).on('cube-submission-data', function(e, data) {
-            // Get current cube/task
-            var target = window.tomni.getTarget();
-            var t;
-            var c;
+            setTimeout(function() {
+                // Get current cube/task
+                var target = window.tomni.getTarget();
+                var t;
+                var c;
 
-            if (Array.isArray(target)) {
-                t = target[0].id;
-                c = target[0].cell;
-            } else {
-                t = target.id;
-                c = target.cell;
-            }
+                if (Array.isArray(target)) {
+                    t = target[0].id;
+                    c = target[0].cell;
+                } else {
+                    t = target.id;
+                    c = target.cell;
+                }
         
-            if (typeof t == 'undefined') {
-                t = window.tomni.task.id;
-            }
+                if (typeof t == 'undefined') {
+                    try {
+                        t = window.tomni.task.id;
+                    } catch (notask) { }
+                }
         
-            if (typeof c == 'undefined') {
-                c = window.tomni.task.cell;
-            }
+                if (typeof c == 'undefined') {
+                    try {
+                        c = window.tomni.task.cell;
+                    } catch (notask2) { }
+                }
 
-            // Update data object
-            data.cell = c;
-            data.task = t;
+                if (typeof c == 'undefined') {
+                    try {
+                        c = window.tomni.cell;
+                    } catch (notask3) { }
+                }
 
-            var dt = new Date();
-            data.timestamp = dt.toLocaleString();
+                // Update data object
+                if (typeof t != 'undefined' && typeof c != 'undefined') {
+                    data.cell = c;
+                    data.task = t;
 
-            // Send submission data to server
-            S.sendMessage(
-                "postRequest",
-                {
-                    url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/submit",
-                    data: "data=" + encodeURIComponent(JSON.stringify(data))
-                },
-                ""
-            );
+                    var dt = new Date();
+                    data.timestamp = dt.toLocaleString();
+
+                    // Send submission data to server
+                    S.sendMessage(
+                        "postRequest",
+                        {
+                            url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/submit",
+                            data: "data=" + encodeURIComponent(JSON.stringify(data))
+                        },
+                        ""
+                    );
+                }
+            }, 1000);
+
         });
         
         
@@ -829,7 +844,10 @@ function nice_number(n) {
                 row += '<td>' + h.cell + '<br /><a class="sl-history-cell" data-cell="' + h.cell + '">' + cn + '</a></td>';
                 row += '<td>' + h.type + '<br />&nbsp;</td>';
 
-                if (h.type == "scythed" || h.trailblazer == 1) {
+
+                if (h.type == "reaped") {
+                    row += '<td>' + S.getLocalizedString("labelNotApplicable") + '<br />&nbsp;</td>';
+                } else if (h.type == "scythed" || h.trailblazer == 1) {
                     row += '<td>' + h.score + ' ' + S.getLocalizedString("labelPoints") + '<br />&nbsp;</td>';
                 } else {
                     row += '<td>' + h.score + ' ' + S.getLocalizedString("labelPoints") + '<br />' + a + '</td>';
@@ -1254,6 +1272,7 @@ function nice_number(n) {
         doc += '<option value="normal">' + S.getLocalizedString("historyTypesNormal") + '</option>';
         doc += '<option value="trailblazer">' + S.getLocalizedString("historyTypesTrailblazer") + '</option>';
         doc += '<option value="scythed">' + S.getLocalizedString("historyTypesScythed") + '</option>';
+        doc += '<option value="reaped">Reaped (Admin)</option>';
         doc += '</select>';
         doc += '</div>';
         doc += '<div style="display:inline-block;margin-right:10px;">';
