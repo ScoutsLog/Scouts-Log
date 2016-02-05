@@ -237,36 +237,45 @@ function nice_number(n) {
 
         // Create listener for cube submission data
         jQuery(document).on('cube-submission-data', function(e, data) {
-            setTimeout(function() {
                 // Get current cube/task
                 var target = window.tomni.getTarget();
                 var t;
                 var c;
 
                 if (Array.isArray(target)) {
-                    t = target[0].id;
-                    c = target[0].cell;
+                    try {
+                        t = target[0].id;
+                    } catch (notask) { }
+
+                    try {
+                        c = target[0].cell;
+                    } catch (nocell) { }
                 } else {
-                    t = target.id;
-                    c = target.cell;
+                    try {
+                        t = target.id;
+                    } catch (notask2) { }
+
+                    try {
+                        c = target.cell;
+                    } catch (nocell2) { }
                 }
         
                 if (typeof t == 'undefined') {
                     try {
                         t = window.tomni.task.id;
-                    } catch (notask) { }
+                    } catch (notask3) { }
                 }
         
                 if (typeof c == 'undefined') {
                     try {
                         c = window.tomni.task.cell;
-                    } catch (notask2) { }
+                    } catch (nocell3) { }
                 }
 
                 if (typeof c == 'undefined') {
                     try {
                         c = window.tomni.cell;
-                    } catch (notask3) { }
+                    } catch (nocell4) { }
                 }
 
                 // Update data object
@@ -287,7 +296,6 @@ function nice_number(n) {
                         ""
                     );
                 }
-            }, 1000);
 
         });
         
