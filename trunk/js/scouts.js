@@ -237,66 +237,65 @@ function nice_number(n) {
 
         // Create listener for cube submission data
         jQuery(document).on('cube-submission-data', function(e, data) {
-                // Get current cube/task
-                var target = window.tomni.getTarget();
-                var t;
-                var c;
+            // Get current cube/task
+            var target = window.tomni.getTarget();
+            var t;
+            var c;
 
-                if (Array.isArray(target)) {
-                    try {
-                        t = target[0].id;
-                    } catch (notask) { }
+            if (Array.isArray(target)) {
+                try {
+                    t = target[0].id;
+                } catch (notask) { }
 
-                    try {
-                        c = target[0].cell;
-                    } catch (nocell) { }
-                } else {
-                    try {
-                        t = target.id;
-                    } catch (notask2) { }
+                try {
+                    c = target[0].cell;
+                } catch (nocell) { }
+            } else {
+                try {
+                    t = target.id;
+                } catch (notask2) { }
 
-                    try {
-                        c = target.cell;
-                    } catch (nocell2) { }
-                }
+                try {
+                    c = target.cell;
+                } catch (nocell2) { }
+            }
         
-                if (typeof t == 'undefined') {
-                    try {
-                        t = window.tomni.task.id;
-                    } catch (notask3) { }
-                }
+            if (typeof t == 'undefined') {
+                try {
+                    t = window.tomni.task.id;
+                } catch (notask3) { }
+            }
         
-                if (typeof c == 'undefined') {
-                    try {
-                        c = window.tomni.task.cell;
-                    } catch (nocell3) { }
-                }
+            if (typeof c == 'undefined') {
+                try {
+                    c = window.tomni.task.cell;
+                } catch (nocell3) { }
+            }
 
-                if (typeof c == 'undefined') {
-                    try {
-                        c = window.tomni.cell;
-                    } catch (nocell4) { }
-                }
+            if (typeof c == 'undefined') {
+                try {
+                    c = window.tomni.cell;
+                } catch (nocell4) { }
+            }
 
-                // Update data object
-                if (typeof t != 'undefined' && typeof c != 'undefined') {
-                    data.cell = c;
-                    data.task = t;
+            // Update data object
+            if (typeof t != 'undefined' && typeof c != 'undefined') {
+                data.cell = c;
+                data.task = t;
 
-                    var dt = new Date();
-                    data.timestamp = dt.toLocaleString();
+                var dt = new Date();
+                data.timestamp = dt.toLocaleString();
 
-                    // Send submission data to server
-                    S.sendMessage(
-                        "postRequest",
-                        {
-                            url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/submit",
-                            data: "data=" + encodeURIComponent(JSON.stringify(data))
-                        },
-                        ""
-                    );
-                }
-
+                // Send submission data to server
+                S.sendMessage(
+                    "postRequest",
+                    {
+                        url: "http://scoutslog.org/1.1/task/" + encodeURIComponent(t) + "/submit",
+                        data: "data=" + encodeURIComponent(JSON.stringify(data))
+                    },
+                    ""
+                );
+            }
         });
         
         
