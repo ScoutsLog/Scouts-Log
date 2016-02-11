@@ -6,6 +6,10 @@
     
     S.windowState = '';
 
+    S.windowHistory = [];
+    S.windowHistoryPosition = -1;
+    S.windowHistoryNavigating = false;
+
     S.panelVertical = false;
     S.panelPosition = {};
 
@@ -45,7 +49,7 @@
         
         // Begin user registration process
         S.sendMessage("register", {}, "");
-    };
+    }
 
 
     /**
@@ -98,7 +102,7 @@
 
         // Begin creating UI elements
         S.init_ui();
-    };
+    }
 
 
 
@@ -226,7 +230,7 @@
         S.setMainPanel();
         S.setFloatingPanel();
         S.setGameTools();
-    };
+    }
 
 
     /**
@@ -238,13 +242,19 @@
     S.loadImages = function() {
         S.images = {
             close: S.baseDataURL + "images/close.png",
+            history: S.baseDataURL + "images/history.png",
+            historyDisabled: S.baseDataURL + "images/history-disabled.png",
             lock: S.baseDataURL + "images/lock.png",
             logo: S.baseDataURL + "images/icon48.png",
             logoSmall: S.baseDataURL + "images/icon32.png",
             magnifier: S.baseDataURL + "images/magnifier.png",
+            next: S.baseDataURL + "images/next.png",
+            nextDisabled: S.baseDataURL + "images/next-disabled.png",
+            previous: S.baseDataURL + "images/previous.png",
+            previousDisabled: S.baseDataURL + "images/previous-disabled.png",
             tick: S.baseDataURL + "images/tick.png"
         };
-    };
+    }
 
 
     /**
@@ -258,12 +268,6 @@
         // Add main panel to game board
         jQuery("#content .gameBoard").append(data);
 
-        // Set event handler for close button
-        jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
-            jQuery('#slPanel').hide();
-            jQuery('#slPanelShadow').hide();
-        });
-
         // Set main panel to be draggable
         jQuery("#slPanel").draggable({
             container: 'window'
@@ -272,7 +276,7 @@
         // Set main panel to be resizable
         jQuery("#slPanel").resizable({
             stop, resize: function(e, ui) {
-                var h = jQuery("#slPanel").height() - 20;
+                var h = jQuery("#slPanel").height() - 71;
 
                 jQuery("#slPanel div.slPanelContent").height(h);
             }
@@ -281,7 +285,52 @@
         // Set initial height on panel content
         var h = jQuery("#slPanel").height() - 20;
         jQuery("#slPanel div.slPanelContent").height(h);
-    };
+
+        // Set event handler for close button
+        jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
+            jQuery('#slPanel').hide();
+            jQuery('#slPanelShadow').hide();
+        });
+
+        // Set event handlers for window history buttons
+        jQuery("#slPanel a.sl-window-previous").click(function() {
+            if (jQuery(this).hasClass("disabled") == false) {
+                // Update window history position
+                if (S.windowHistoryPosition > 0) {
+                    var p = S.windowHistoryPosition;
+                    p--;
+                    S.windowHistoryPosition = p;
+
+                    // Navigate to history point
+                    S.navigateWindowHistory(p);
+                }
+            }
+        });
+
+        jQuery("#slPanel a.sl-window-next").click(function() {
+            if (jQuery(this).hasClass("disabled") == false) {
+                // Update window history position
+                if (S.windowHistoryPosition < S.windowHistory.length) {
+                    var p = S.windowHistoryPosition;
+                    p++;
+                    S.windowHistoryPosition = p;
+
+                    // Navigate to history point
+                    S.navigateWindowHistory(p);
+                }
+            }
+        });
+
+        jQuery("#slPanel a.sl-window-history").click(function() {
+            if (jQuery(this).hasClass("disabled") == false) {
+                if (S.windowState == "window-history") {
+                    S.navigateWindowHistory(S.windowHistoryPosition);
+                } else {
+                    S.getWindowHistory();
+                }
+            }
+        });
+    }
 
 
     /**
@@ -443,7 +492,7 @@
             { url: S.scoutsLogURIbase + "stats/header" },
             "doPanelStatsCallback"
         );
-    };
+    }
     
     /**
      * Callback: Update Floating Panel Stats Values
@@ -502,7 +551,7 @@
             jQuery('#sl-open-badge').hide().text(0);
         }
 	
-    };
+    }
 
 
     /**
@@ -532,7 +581,7 @@
                 }
             }
         });
-    };
+    }
 
 
     /**
@@ -732,7 +781,7 @@
             });
         });
         
-    };
+    }
 
 
     /**
@@ -901,6 +950,13 @@
         // Set window state
         S.windowState = 'cell';
 
+        // Update window history
+        if (S.windowHistoryNavigating == false) {
+            S.pushWindowHistory({ state: S.windowState, data: {} });
+        }
+
+        S.windowHistoryNavigating = false;
+
         // Send content request
         S.getContent("cell-list.htm", "getCellList_Content");
     }
@@ -943,7 +999,7 @@
         }
 
         S.setLinks("#slPanel");
-    };
+    }
 
 
 /**
@@ -961,6 +1017,13 @@
             if (h == true) {
                 S.windowState += "-header";
             }
+
+            // Update window history
+            if (S.windowHistoryNavigating == false) {
+                S.pushWindowHistory({ state: S.windowState, data: {} });
+            }
+
+            S.windowHistoryNavigating = false;
 
             // Send content request
             S.getContent("cell-summary.htm", "getStatusSummary_Content");
@@ -1006,7 +1069,7 @@
             { url: url },
             "getStatusSummary_Data"
         );
-    };
+    }
 
     S.getStatusSummary_Data = function(data) {
         jQuery("#sl-main-table table tbody").empty();
@@ -1046,7 +1109,7 @@
         }
 
         S.setLinks('#slPanel');
-    };
+    }
 
 
 /**
@@ -1063,7 +1126,7 @@
 
         // Send content request
         S.getContent("cell-tasks.htm", "getCellEntries_Content");
-    };
+    }
 
     S.getCellEntries_Content = function(data) {
         // Set panel content
@@ -1110,11 +1173,12 @@
             { url: url },
             "getCellEntries_Data"
         );
-    };
+    }
 
     S.getCellEntries_Data = function(data) {
         var cn;
 
+        // Set window title
         if (S.locale == "en") {
             cn = data.cellName;
         } else {
@@ -1122,6 +1186,14 @@
         }
 
         jQuery("#slPanel h2 small").text(cn + " (" + data.cell + ")");
+
+        // Update window history
+        if (S.windowHistoryNavigating == false) {
+            S.pushWindowHistory({ state: S.windowState, data: {title: cn + " (" + data.cell + ")"} });
+        }
+
+        S.windowHistoryNavigating = false;
+
         jQuery("#sl-main-table table tbody").empty();
 
         if (data.tasks.length > 0) {    
@@ -1155,7 +1227,7 @@
             
             jQuery("#sl-main-table table tbody").append('<tr><td colspan="4">' + S.getLocalizedString("error_notasks") + '</td></tr>');
         }
-    };
+    }
 
 
 /**
@@ -1167,10 +1239,17 @@
     S.getTaskEntries = function(t) {
         // Update window state
         S.windowState = "task-" + t;
-        
+
+        // Update window history
+        if (S.windowHistoryNavigating == false) {
+            S.pushWindowHistory({ state: S.windowState, data: {} });
+        }
+
+        S.windowHistoryNavigating = false;
+
         // Send content request
         S.getContent("task-detail.htm", "getTaskEntries_Content");
-    };
+    }
     
     S.getTaskEntriesInspect = function() {
         // Get current cube/task
@@ -1179,17 +1258,27 @@
         if (typeof target.task != "undefined") {
             // Update window state
             S.windowState = "task-" + target.task;
-        
+
+            // Update window history
+            if (S.windowHistoryNavigating == false) {
+                S.pushWindowHistory({ state: S.windowState, data: {} });
+            }
+
+            S.windowHistoryNavigating = false;
+
             // Send content request
             S.getContent("task-detail.htm", "getTaskEntries_Content");
         } else {
             alert("Scouts' Log: unable to determine current cube!  Please check if cube is stashed otherwise re-select OR re-enter the cube.");
         }
-    };
+    }
 
     S.getTaskEntries_Content = function(data) {
         // Get current task
         var t = S.windowState.split("-")[1];
+
+        // Set panel title
+        jQuery("#slPanel h2 small").text( S.getLocalizedString("labelTask") + " #" + t );
 
         // Perform content specific string replacements
         data = data.replace(/{task}/gi, t);
@@ -1211,7 +1300,7 @@
             { url: S.scoutsLogURIbase + "task/" + encodeURIComponent(t) + "/actions" },
             "getTaskEntries_Data"
         );
-    };
+    }
 
     S.getTaskEntries_Data = function(data) {
         S.getTaskDetails(data.task, function(data2) {
@@ -1225,7 +1314,7 @@
             // Trigger callback to display data
             S.getTaskEntries_Data2(data);
         });
-    };
+    }
 
     S.getTaskEntries_Data2 = function(data) {
         // Check for admin weight
@@ -1314,11 +1403,11 @@
         
         // Set links for panel
         S.setLinks('#slPanel');
-    };
+    }
 
     S.setTaskGoodCallback = function(data) {
         S.getTaskEntries(data.task);
-    };
+    }
 
     S.getTaskDetails = function(id, callback) {
         jQuery.getJSON('http://eyewire.org/1.0/task/' + encodeURIComponent(id), function(d1) {
@@ -1342,7 +1431,7 @@
                 });
             });
         });
-    };
+    }
 
 
 /**
@@ -1366,6 +1455,9 @@
     S.prepareTaskActionWindow_Content = function(data) {
         // Get current task and cell
         var ts = S.windowState.split("-")[1];
+
+        // Set panel title
+        jQuery("#slPanel h2 small").text( S.getLocalizedString("windowNewEntryTitle") + " (" + S.getLocalizedString("labelTask") + " #" + ts + ")" );
 
         // Perform content specific string replacements
         data = data.replace(/{task}/gi, ts);
@@ -1733,7 +1825,7 @@
  */
     S.showAnnotation = function() {
         S.getContent("annotation.htm", "showAnnotation_Content");
-    };
+    }
 
     S.showAnnotation_Content = function(data) {
         // Get current task
@@ -1754,11 +1846,11 @@
         setTimeout(function() {
             w.load_annotation( jQuery("#sl-action-image-sketch").val() );
         }, 1000);
-    };
+    }
 
     S.createAnnotation = function() {
         S.getContent("annotation.htm", "createAnnotation_Content");
-    };
+    }
 
     S.createAnnotation_Content = function(data) {
         // Get current task
@@ -1774,7 +1866,7 @@
         w.document.open();
         w.document.write(data);
         w.document.close();
-    };
+    }
 
     S.saveAnnotation = function(data) {
         // Store annotation data in form
@@ -1805,6 +1897,9 @@
     }
 
     S.getHistory_Content = function(data) {
+        // Set panel title
+        jQuery("#slPanel h2 small").text( S.getLocalizedString("windowHistoryTitle") );
+
         // Set panel content
         jQuery("#slPanel div.slPanelContent").html(data);
         jQuery("#slPanel").show();
@@ -1892,6 +1987,47 @@
         S.historyAccuracy = data.accuracy;
         S.historyPosition = data.start + data.limit;
         S.historyDisplay = data.limit;
+
+        // Update window history
+        if (S.windowHistoryNavigating == false) {
+            var updated = false;
+
+            if (S.windowHistory.length > 0) {
+                if (S.windowHistory[S.windowHistoryPosition].state == "history") {
+                    // Update current history point
+
+                    S.windowHistory[S.windowHistoryPosition] = {
+                        state: S.windowState,
+                        data: {
+                            historyType: data.type,
+                            historyCell: data.cell,
+                            historyAccuracy: data.accuracy,
+                            historyPosition: data.start + data.limit,
+                            historyDisplay: 4
+                        }
+                    };
+
+                    updated = true;
+                }
+            }
+
+            if (updated == false) {
+                // Create new window history point
+
+                S.pushWindowHistory({
+                    state: S.windowState,
+                    data: {
+                        historyType: data.type,
+                        historyCell: data.cell,
+                        historyAccuracy: data.accuracy,
+                        historyPosition: data.start + data.limit,
+                        historyDisplay: 4
+                    }
+                });
+            }
+        }
+
+        S.windowHistoryNavigating = false;
         
         // Set default values
         jQuery("#sl-history-type").val(S.historyType);
@@ -1968,8 +2104,288 @@
 
         // Set links
         S.setLinks('#slPanel');
+
+        // Reset display value
+        S.historyDisplay = 4;
     }
 
+
+/**
+ * UI: Show Window History Entries
+ * ----------------------------------------------------------------------------
+ */
+
+
+    S.getWindowHistory = function() {
+        // Set window state
+        S.windowState = "window-history";
+
+        // Send content request
+        S.getContent("window-history.htm", "getWindowHistory_Content");
+    }
+
+    S.getWindowHistory_Content = function(data) {
+        // Set panel title
+        jQuery("#slPanel h2 small").text( S.getLocalizedString("windowWindowHistoryTitle") );
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").show();
+        jQuery("#slPanelShadow").show();
+
+        // Display window history entries
+        jQuery("#sl-main-table table tbody").empty();
+
+        for (var n=S.windowHistory.length-1; n >= 0; n--) {
+            // Get history data
+            var h = S.windowHistory[n];
+
+            // Get window state
+            var sp = h.state.split("-");
+
+            // Determine window title text
+            var title = "";
+
+            switch (sp[0]) {
+                case "cell":
+                    if (sp[1] == "entries") {
+                        // Cell Task Summary
+
+                        title = h.data.title;
+                    } else {
+                        // Cell List
+
+                        title = S.getLocalizedString("windowCellSummary");
+                    }
+
+                    break;
+                case "history":
+                    // User History
+
+                    title = S.getLocalizedString("windowHistoryTitle");
+
+                    break;
+                case "status":
+                    // Status Summary
+                    var hdr = false;
+
+                    sp.shift();
+
+                    if (sp[sp.length - 1] == "header") {
+                        sp.pop();
+                        hdr = true;
+                    }
+
+                    var st = sp.join("-");
+
+                    title = S.getLocalizedStatus(st);
+
+                    break;
+                case "task":
+                    // Task Details
+
+                    title = S.getLocalizedString("labelTask") + " #" + sp[1];
+
+                    break;
+            }
+
+            var row = '<tr><td><a href="javascript:void(0);" class="sl-history" data-history="' + n + '">' + title + '</a></td></tr>';
+
+            jQuery("#sl-main-table table tbody").append(row);
+        }
+
+        // Set event handlers
+        jQuery("#sl-main-table a.sl-history").click(function() {
+             // Get history point
+             var p = parseInt(jQuery(this).attr("data-history"), 10);
+
+             // Set history point position
+             S.windowHistoryPosition = p;
+
+             // Navigate to history point
+             S.navigateWindowHistory(p);
+        });
+
+        jQuery("#slPanel button.sl-history-clear").click(function() {
+            // Clear history
+            S.clearWindowHistory();
+
+            // Refresh screen
+            S.getWindowHistory();
+        });
+    }
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//                       WINDOW HISTORY FUNCTIONS                            //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+
+    /**
+     * Clear Window History
+     */
+    S.clearWindowHistory = function() {
+        // Clear history
+        S.windowHistory = [];
+        S.windowHistoryPosition = -1;
+
+        // Update button status
+        S.updateWindowHistoryButtons();
+    }
+
+
+    /**
+     * Navigate to Window History Point
+     *
+     * @param p integer History point index
+     */
+    S.navigateWindowHistory = function(p) {
+        if (typeof S.windowHistory[p] != "undefined") {
+            // Set navigating flag
+            S.windowHistoryNavigating = true;
+
+            // Get history data
+            var h = S.windowHistory[p];
+
+            // Get window state
+            var sp = h.state.split("-");
+
+            // Determine navigation function
+            switch (sp[0]) {
+                case "cell":
+                    if (sp[1] == "entries") {
+                        // Show Cell Task Summary
+                        var c = sp[2];
+                        var s = "";
+
+                        if (sp.length > 3) {
+                            // Remove cell entry parts
+                            sp.shift();
+                            sp.shift();
+                            sp.shift();
+
+                            // Get status
+                            s = sp.join("-");
+                        }
+
+                        S.getCellEntries(c, s);
+                    } else {
+                        // Show Cell List
+
+                        S.getCellList();
+                    }
+
+                    break;
+                case "history":
+                    // Set history view
+                    S.windowState = "history";
+                    S.historyType = h.data.historyType;
+                    S.historyCell = h.data.historyCell;
+                    S.historyAccuracy = h.data.historyAccuracy;
+                    S.historyPosition = 0;
+                    S.historyDisplay = h.data.historyPosition;
+
+                    // Send content request
+                    S.getContent("history.htm", "getHistory_Content");
+
+                    break;
+                case "status":
+                    // Get status value
+                    var hdr = false;
+
+                    sp.shift();
+
+                    if (sp[sp.length - 1] == "header") {
+                        sp.pop();
+                        hdr = true;
+                    }
+
+                    var st = sp.join("-");
+
+                    // Display status summary
+                    S.getStatusSummary(st, hdr);
+
+                    break;
+                case "task":
+                    // Display task details
+                    S.getTaskEntries(sp[1]);
+
+                    break;
+            }
+
+            // Update button status
+            S.updateWindowHistoryButtons();
+        } else {
+            // Error: invalid history position
+
+            console.log("Invalid history position: " + p);
+        }
+    }
+
+
+    /**
+     * Add Window History Point
+     *
+     * Supplied object should use the following keys:
+     *   state: the window state value
+     *   data: object with any additional data needed
+     *
+     * @param o object Object containing history point details
+     */
+    S.pushWindowHistory = function(o) {
+        // Check if we are not at the most recent point
+        // and if so clear any remaining points
+        if (S.windowHistoryPosition < (S.windowHistory.length - 1)) {
+            S.windowHistory.splice(S.windowHistoryPosition + 1, S.windowHistory.length - S.windowHistoryPosition);
+        }
+
+        // Add history point
+        S.windowHistory.push(o);
+
+        // Increment history position
+        S.windowHistoryPosition++;
+
+        // Update button status
+        S.updateWindowHistoryButtons();
+    }
+
+
+    /**
+     * Update History Buttons Status
+     */
+    S.updateWindowHistoryButtons = function() {
+        if (S.windowHistoryPosition <= 0) {
+            jQuery("#slPanel .slPanelHeader a.sl-window-previous").addClass("disabled");
+            jQuery("#slPanel .slPanelHeader a.sl-window-previous img").attr("src", S.images.previousDisabled);
+        } else {
+            jQuery("#slPanel .slPanelHeader a.sl-window-previous").removeClass("disabled");
+            jQuery("#slPanel .slPanelHeader a.sl-window-previous img").attr("src", S.images.previous);
+        }
+
+        if (S.windowHistoryPosition == (S.windowHistory.length - 1)) {
+            jQuery("#slPanel .slPanelHeader a.sl-window-next").addClass("disabled");
+            jQuery("#slPanel .slPanelHeader a.sl-window-next img").attr("src", S.images.nextDisabled);
+        } else {
+            jQuery("#slPanel .slPanelHeader a.sl-window-next").removeClass("disabled");
+            jQuery("#slPanel .slPanelHeader a.sl-window-next img").attr("src", S.images.next);
+        }
+
+        if (S.windowHistory.length > 0) {
+            jQuery("#slPanel .slPanelHeader a.sl-window-history").removeClass("disabled");
+            jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", S.images.history);
+        } else {
+            jQuery("#slPanel .slPanelHeader a.sl-window-history").addClass("disabled");
+            jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", S.images.historyDisabled);
+        }
+    }
 
 
 

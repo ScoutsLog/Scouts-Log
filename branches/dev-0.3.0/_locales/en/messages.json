@@ -41,6 +41,9 @@
     "windowUpdateText": {
         "message": "<p>Your extension is out of date!</p><p>Don't panic, Google Chrome should update automatically.</p><p>If you continue to see this message, please re-install the extension.</p><p style=\"text-align:center;\"><a class=\"sl-cell\" href=\"javascript:void(0);\">Close</a></p>"
     },
+    "windowWindowHistoryTitle": {
+        "message": "Window History"
+    },
     
     
     
@@ -128,6 +131,10 @@
     "columnCube": {
         "message": "Cube",
         "description": "Column header text when displaying cube numbers."
+    },
+    "columnHistoryEntry": {
+        "message": "History Entry",
+        "description": "Column header text for window history entries"
     },
     "columnImage": {
         "message": "Image"
@@ -273,6 +280,14 @@
     "actionCellTooltip": {
         "message": "Click to view tasks for this cell",
         "description": "Text to display when hovering over a link to view tasks for a specific cell."
+    },
+    "actionClearHistory": {
+        "message": "Clear History",
+        "description": "Action word to indicate deleting all window history entries"
+    },
+    "actionClearHistoryTooltip": {
+        "message": "Delete all window history entries",
+        "description": "Text to display when hovering over the button to delete history entries."
     },
     "actionHideWindowTooltip": {
         "message": "Hide this window",

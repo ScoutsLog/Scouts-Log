@@ -260,13 +260,27 @@ div#sl-action-table {
     z-index: 100;
 }
 
-#slPanel a.sl-minimize-window {
+#slPanel .slPanelHeader {
     position: absolute;
-    top: 10px;
-    right: 39px;
-    z-index: 100;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 10px;
+    height: 30px;
+    overflow: hidden;
 }
 
+#slPanel a.sl-window-previous,
+#slPanel a.sl-window-next,
+#slPanel a.sl-window-history {
+    float: left;
+    margin-right: 10px;
+}
+
+#slPanel h2 {
+    float: left;
+    margin: 0;
+}
 
 #slPanel h2 small {
     color: #999;
@@ -281,21 +295,21 @@ div#sl-action-table {
     position: absolute;
     left: 0;
     right: 0;
-    top: 0;
+    top: 50px;
     padding: 10px;
     overflow: auto;
-/*    overflow-x: hidden; */
-/*    overflow-y: auto; */
-}
-
-#slPanel .sl-table {
-    background: none;
+    border-top: 1px solid #333;
 }
 
 #slPanel button {
     font-size: 12pt;
     padding: 2px 6px;
 }
+
+#slPanel .sl-table {
+    background: none;
+}
+
 
 .sl-capture {
     color: #d076d7 !important;

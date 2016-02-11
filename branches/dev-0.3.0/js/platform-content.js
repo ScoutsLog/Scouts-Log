@@ -13,11 +13,13 @@ function ThePlatformContent() {
         var dst = e.detail.destination;
         var data = e.detail.data;
 
-        if (typeof P[dst] != undefined) {
-            P[dst](data);
-        } else {
-            // Error: Unknown callback
-            console.log("Unknown callback function: " + dst.toString() );
+        if (dst != "") {
+            if (typeof P[dst] == "function") {
+                P[dst](data);
+            } else {
+                // Error: Unknown callback
+                console.log("Unknown callback function: " + dst.toString() );
+            }
         }
     });
 }

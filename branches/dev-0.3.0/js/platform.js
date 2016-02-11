@@ -14,11 +14,13 @@ function ThePlatform() {
         var data = e.detail.data;
         var cb = e.detail.callback;
 
-        if (typeof P[dst] != undefined) {
-            P[dst](data, cb);
-        } else {
-            // Error: Unknown callback
-            console.log("Unknown callback function: " + dst.toString() );
+        if (dst != "") {
+            if (typeof P[dst] == "function") {
+                P[dst](data, cb);
+            } else {
+                // Error: Unknown callback
+                console.log("Unknown callback function: " + dst.toString() );
+            }
         }
     });
 }
@@ -142,14 +144,20 @@ function ThePlatform() {
                 for (var n in rs) {
                     var m = rs[n];
                     var k = m.substring(5, m.length - 1);
-                    var t = P.localizedStrings[k];
+
+                    if (P.localizedStrings[k]) {
+                        var t = P.localizedStrings[k];
+                    } else {
+                        var t= '__' + k + '__';
+                    }
+
                     var rt = new RegExp(m, "gi");
 
                     txt = txt.replace(rt, t);
                 }
 
 		// Process image string replacements
-                r = new RegExp("\{%IMG_[a-zA-Z0-9\.]+\}", "gi");
+                r = new RegExp("\{%IMG_[a-zA-Z0-9\-\.]+\}", "gi");
                 rs = txt.match(r);
 
                 for (var n in rs) {
