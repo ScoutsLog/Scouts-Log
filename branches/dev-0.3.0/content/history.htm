@@ -1,0 +1,53 @@
+<h2>{%LS_title}<small>{%LS_windowHistoryTitle}</small></h2>
+
+<div id="slOptions">
+<div style="display:inline-block;margin-right:10px;">
+<label>{%LS_labelSubmissionType}:</label><br />
+<select id="sl-history-type">
+<option value="">{%LS_historyTypesAll}</option>
+<option value="normal">{%LS_historyTypesNormal}</option>
+<option value="trailblazer">{%LS_historyTypesTrailblazer}</option>
+<option value="scythed">{%LS_historyTypesScythed}</option>
+<option value="reaped">Reaped (Admin)</option>
+</select>
+</div>
+<div style="display:inline-block;margin-right:10px;">
+<label>{%LS_labelCellID}:</label><br />
+<input type="text" id="sl-history-cell" value="" size="12" />
+</div>
+<div style="display:inline-block;margin-right:10px;">
+<label>{%LS_labelConsensus}:</label><br />
+<select id="sl-history-accuracy">
+<option value="1">{%LS_historyConsensusAll}</option>
+<option value="0.5-0.9">{%LS_historyConsensus5090}</option>        
+<option value="0.5">{%LS_historyConsensus50}</option>
+<option value="0">{%LS_historyConsensusNone}</option>
+</select>
+</div>
+<div style="display:inline-block;margin-right:10px;">
+<button type="button" id="sl-history-refresh" class="blueButton" title="{%LS_actionRefreshTooltip}">{%LS_actionRefresh}</button>
+</div>
+</div><br />
+
+<div id="sl-main-table">
+<table class="sl-table">
+<col style="width:20%" />
+<col style="width:30%" />
+<col style="width:10%" />
+<col style="width:15%" />
+<col style="width:25%" />
+<thead>
+<tr>
+<th>{%LS_columnCube}</th>
+<th>{%LS_columnCell}</th>
+<th>{%LS_columnType}</th>
+<th>{%LS_columnScore}</th>
+<th>{%LS_columnTimestamp}</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+
+<p style="text-align:center;"><a class="sl-more" href="javascript:void(0);" title="{%LS_actionMoreTooltip}">&#10836; {%LS_actionMore} &#10836;</a></p>

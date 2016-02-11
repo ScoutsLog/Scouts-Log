@@ -1,0 +1,39 @@
+<h2>{%LS_title}<small/></h2>        
+<div class="slOptions">
+<select>
+<option value="" selected>{%LS_statusOpen}</option>
+<option value="all">{%LS_statusAll}</option>
+<option value="-" disabled>---------------</option>
+<option value="missing-nub">{%LS_statusMissingNub}</option>
+<option value="missing-branch">{%LS_statusMissingBranch}</option>
+<option value="merger">{%LS_statusMerger}</option>
+<option value="watch">{%LS_statusWatch}</option>
+<option value="need-scythe">{%LS_statusNeedScythe}</option>
+<option value="need-admin">{%LS_statusNeedAdmin}</option>
+<option value="scythe-complete">{%LS_statusScytheComplete}</option>
+<option value="branch-checking">{%LS_statusBranchChecking}</option>
+<option value="still-growing">{%LS_statusStillGrowing}</option>
+<option value="subtree-complete">{%LS_statusSubtreeComplete}</option>
+<option value="good">{%LS_statusGood}</option>
+<option value="note">{%LS_statusNote}</option>
+</select>
+</div><br />
+<div id="sl-main-table">
+<table class="sl-table">
+<col style="width:25%;" />
+<col style="width:25%;" />
+<col style="width:25%;" />
+<col style="width:25%;" />
+<thead>
+<tr>
+<th>{%LS_columnCube}</th>
+<th>{%LS_columnStatus}</th>
+<th>{%LS_columnLastUser}</th>
+<th>{%LS_columnLastUpdated}</th>
+</tr>
+</thead>
+<tbody>
+<tr><td colspan="5" style="text-align:center;font-size:18pt;">{%LS_messageLoading}</td></tr>
+</tbody>
+</table>
+</div>

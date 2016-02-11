@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "__MSG_extName__",
 	"description": "__MSG_extDescription__",
-	"version": "0.2.8",
+	"version": "0.3.0",
 	"minimum_chrome_version": "43",
 	"default_locale": "en",
 	
@@ -24,7 +24,7 @@
   
 	"content_scripts": [
 		{
-			"js": [ "js/plugin.js" ],
+			"js": [ "js/version-compare.js", "js/platform.js", "js/ew-plugin.js" ],
 			"css": [ "css/scouts.css" ],
 			"matches": [ "http://eyewire.org/*" ]
 		},
@@ -37,9 +37,9 @@
 	"web_accessible_resources": [
 		"css/*",
 		"js/*",
-		"images/*",
 		"_locales/*",
-		"composite.htm",
+		"content/*",
+		"images/*",
 		"http://scoutslog.org/*"
 	]
 	

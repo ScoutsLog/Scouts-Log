@@ -215,6 +215,10 @@ div#sl-action-table {
     cursor: pointer;
 }
 
+.sl-table img {
+    float: right;
+}
+
 .sl-table tbody tr:nth-child(even) {
     background-color: rgb(33,33,33);
 }
@@ -225,7 +229,15 @@ div#sl-action-table {
 
 
 
-
+#slPanelShadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1099;
+}
 
 #slPanel {
     position: absolute;
@@ -271,8 +283,9 @@ div#sl-action-table {
     right: 0;
     top: 0;
     padding: 10px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: auto;
+/*    overflow-x: hidden; */
+/*    overflow-y: auto; */
 }
 
 #slPanel .sl-table {
