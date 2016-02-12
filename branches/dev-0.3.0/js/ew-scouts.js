@@ -283,7 +283,7 @@
         });
 
         // Set initial height on panel content
-        var h = jQuery("#slPanel").height() - 20;
+        var h = jQuery("#slPanel").height() - 71;
         jQuery("#slPanel div.slPanelContent").height(h);
 
         // Set event handler for close button
