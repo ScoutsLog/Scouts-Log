@@ -257,6 +257,7 @@
             previous: S.baseDataURL + "images/previous.png",
             previousDisabled: S.baseDataURL + "images/previous-disabled.png",
             refresh: S.baseDataURL + "images/arrow_refresh.png",
+            star: S.baseDataURL + "images/bullet_star.png",
             tick: S.baseDataURL + "images/tick.png"
         };
     }
@@ -819,6 +820,10 @@
                 result = S.getLocalizedString("statusAdmin");
 
                 break;
+            case 'all':
+                result = S.getLocalizedString("statusAll");
+
+                break;
             case 'branch-checking':
                 result = S.getLocalizedString("statusBranchChecking");
 
@@ -842,7 +847,7 @@
             case 'missing-nub':
                 result = S.getLocalizedString("statusMissingNub");
                 
-                        break;
+                break;
             case 'need-admin':
                 result = S.getLocalizedString("statusNeedAdmin");
                 
@@ -874,6 +879,10 @@
             case 'watch':
                 result = S.getLocalizedString("statusWatch");
                 
+                break;
+            default:
+                result = S.getLocalizedString("statusOpen");;
+
                 break;
         }
 
@@ -967,6 +976,11 @@
     }
 
     S.getCellList_Content = function(data) {
+        // Check window state
+        if (S.windowState != "cell") {
+            return;
+        }
+
         // Set panel content
         jQuery("#slPanel div.slPanelContent").html(data);
         jQuery("#slPanel").show();
@@ -981,6 +995,11 @@
     }
 
     S.getCellList_Data = function(data) {
+        // Check window state
+        if (S.windowState != "cell") {
+            return;
+        }
+
         jQuery("#slPanel h2 small").text( S.getLocalizedString("windowCellSummary") );
         jQuery("#sl-main-table table tbody").empty();
 
@@ -1036,6 +1055,13 @@
     }
 
     S.getStatusSummary_Content = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "status") {
+            return;
+        }
+
         // Set panel content
         jQuery("#slPanel div.slPanelContent").html(data);
         jQuery("#slPanel").show();
@@ -1077,6 +1103,13 @@
     }
 
     S.getStatusSummary_Data = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "status") {
+            return;
+        }
+
         jQuery("#sl-main-table table tbody").empty();
 
         for (var c in data.tasks) {
@@ -1139,6 +1172,13 @@
     }
 
     S.getCellEntries_Content = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "cell" && sp[1] != "entries") {
+            return;
+        }
+
         // Set panel content
         jQuery("#slPanel div.slPanelContent").html(data);
         jQuery("#slPanel").show();
@@ -1186,6 +1226,13 @@
     }
 
     S.getCellEntries_Data = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "cell" && sp[1] != "entries" && sp[2] != data.cell) {
+            return;
+        }
+
         var cn;
 
         // Set window title
@@ -1199,7 +1246,22 @@
 
         // Update window history
         if (S.windowHistoryNavigating == false) {
-            S.pushWindowHistory({ state: S.windowState, data: {title: cn + " (" + data.cell + ")"} });
+            // Get state options
+            var st = "";
+
+            if (sp.length > 3) {
+                // Remove cell entry parts
+                sp.shift();
+                sp.shift();
+                sp.shift();
+
+                // Get status
+                st = sp.join("-");
+            }
+
+            var sts = S.getLocalizedStatus(st);
+
+            S.pushWindowHistory({ state: S.windowState, data: {title: cn + " (" + data.cell + ") - " + sts} });
         }
 
         S.windowHistoryNavigating = false;
@@ -1289,6 +1351,13 @@
     }
 
     S.getTaskEntries_Content = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "task") {
+            return;
+        }
+
         // Get current task
         var t = S.windowState.split("-")[1];
 
@@ -1332,6 +1401,13 @@
     }
 
     S.getTaskEntries_Data2 = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "task" && sp[1] != data.task) {
+            return;
+        }
+
         // Check for admin weight
         var wstyle = '';
         
@@ -1475,6 +1551,13 @@
     }
 
     S.prepareTaskActionWindow_Content = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "action") {
+            return;
+        }
+
         // Get current task and cell
         var ts = S.windowState.split("-")[1];
 
@@ -1919,6 +2002,11 @@
     }
 
     S.getHistory_Content = function(data) {
+        // Check window state
+        if (S.windowState != "history") {
+            return;
+        }
+
         // Set panel title
         jQuery("#slPanel h2 small").text( S.getLocalizedString("windowHistoryTitle") );
 
@@ -1978,6 +2066,11 @@
     }
 
     S.getHistory_GetData = function() {
+        // Check window state
+        if (S.windowState != "history") {
+            return;
+        }
+
         // Generate request URL
         var url = S.scoutsLogURIbase + "history/";
         url += encodeURIComponent(S.historyPosition) + "/" + encodeURIComponent(S.historyDisplay);
@@ -2003,6 +2096,11 @@
     }
 
     S.getHistory_Data = function(data) {
+        // Check window state
+        if (S.windowState != "history") {
+            return;
+        }
+
         // Update history position
         S.historyType = data.type;
         S.historyCell = data.cell;
@@ -2163,6 +2261,11 @@
     }
 
     S.getWindowHistory_Content = function(data) {
+        // Check window state
+        if (S.windowState != "window-history") {
+            return;
+        }
+
         // Set panel title
         jQuery("#slPanel h2 small").text( S.getLocalizedString("windowWindowHistoryTitle") );
 
@@ -2227,7 +2330,14 @@
                     break;
             }
 
-            var row = '<tr><td><a href="javascript:void(0);" class="sl-history" data-history="' + n + '">' + title + '</a></td></tr>';
+            // Check if this entry is the current point
+            var icon = "";
+
+            if (S.windowHistoryPosition == n) {
+                icon = ' <img src="' + S.images.star + '" />';
+            }
+
+            var row = '<tr><td><a href="javascript:void(0);" class="sl-history" data-history="' + n + '">' + title + '</a>' + icon + '</td></tr>';
 
             jQuery("#sl-main-table table tbody").append(row);
         }
@@ -2271,9 +2381,17 @@
      * Clear Window History
      */
     S.clearWindowHistory = function() {
-        // Clear history
-        S.windowHistory = [];
-        S.windowHistoryPosition = -1;
+        if (S.windowHistory.length > 0) {
+            var cur = S.windowHistory[S.windowHistoryPosition];
+
+            S.windowHistory = [];
+            S.windowHistoryPosition = 0;
+
+            S.windowHistory.push(cur);
+        } else {
+            S.windowHistory = [];
+            S.windowHistoryPosition = -1;
+        }
 
         // Update button status
         S.updateWindowHistoryButtons();
