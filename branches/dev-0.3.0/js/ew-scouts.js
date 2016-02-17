@@ -242,6 +242,7 @@
     S.loadImages = function() {
         S.images = {
             close: S.baseDataURL + "images/close.png",
+            error: S.baseDataURL + "images/error.png",
             history: S.baseDataURL + "images/history.png",
             historyDisabled: S.baseDataURL + "images/history-disabled.png",
             lock: S.baseDataURL + "images/lock.png",
@@ -1087,18 +1088,23 @@
             }
 
             // Check if current user has log entry or watch indicators
-            var ent = "";
-
+            var ent1 = "";
+            var ent2 = "";
+            
             if (s.has_entries == 1) {
-                ent = ' <img src="' + S.images.tick + '" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                ent2 = ' <img src="' + S.images.tick + '" title="' + S.getLocalizedString("labelIconEntries") + '" />';
             }
 
             if (s.has_watch == 1) {
-                ent = ' <img src="' + S.images.magnifier + '" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                ent2 = ' <img src="' + S.images.magnifier + '" title="' + S.getLocalizedString("labelIconWatch") + '" />';
             }
-
+            
+            if (s.mismatched == 1) {
+                ent1 = ' <img src="' + S.images.error + '" title="' + S.getLocalizedString("labelIconError") + '" />';
+            }
+            
             var row = '<tr>';
-            row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent + '</td>';
+            row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent1 + ent2 + '</td>';
             row += '<td><a class="sl-cell" data-cell="' + s.cell + '">' + cn + ' (' + s.cell + ')</a></td>';
             row += '<td class="sl-' + s.status + '">' + S.getLocalizedStatus(s.status) + '</td>';
             row += '<td>' + s.lastUser + '</td>';
@@ -1201,18 +1207,23 @@
                 var s = data.tasks[c];
 
                 // Check if current user has log entry or watch indicators
-                var ent = "";
-
+                var ent1 = "";
+                var ent2 = "";
+                
                 if (s.has_entries == 1) {
-                    ent = ' <img src="' + S.images.tick + '" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                    ent2 = ' <img src="' + S.images.tick + '" title="' + S.getLocalizedString("labelIconEntries") + '" />';
                 }
 
                 if (s.has_watch == 1) {
-                    ent = ' <img src="' + S.images.magnifier + '" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                    ent2 = ' <img src="' + S.images.magnifier + '" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                }
+                
+                if (s.mismatched == 1) {
+                    ent1 = ' <img src="' + S.images.error + '" title="' + S.getLocalizedString("labelIconError") + '" />';
                 }
     
                 var row = '<tr>';
-                row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent + '</td>';
+                row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent1 + ent2 + '</td>';
                 row += '<td class="sl-' + s.status + '">' + S.getLocalizedStatus(s.status) + '</td>';
                 row += '<td>' + s.lastUser + '</td>';
                 row += '<td>' + s.lastUpdated + '</td>';
@@ -1372,7 +1383,14 @@
             jQuery("#sl-main-table table tbody").append(row);
         }
         
-        // Check button status
+        // Check for mismatched cell IDs
+        if (data.mismatched == 1) {
+            var btn = '<button type="button" class="redButton sl-mismatched" style="margin-left: 10px;">Fix Mismatched Cells</button>';
+            
+            jQuery(btn).insertAfter("#slPanel button.sl-jump-task");
+        }
+        
+        // Check 'set good' button status
         if (data.status != '' && data.status != 'good') {
             var btn = '<button type="button" class="greenButton sl-good-action" style="margin-left: 10px;" title="' + S.getLocalizedString("actionSetToGoodTooltip") + '">' + S.getLocalizedString("actionSetToGood") + '</button>';
             

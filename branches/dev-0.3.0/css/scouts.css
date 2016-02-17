@@ -217,6 +217,7 @@ div#sl-action-table {
 
 .sl-table img {
     float: right;
+    margin-left: 5px;
 }
 
 .sl-table tbody tr:nth-child(even) {
