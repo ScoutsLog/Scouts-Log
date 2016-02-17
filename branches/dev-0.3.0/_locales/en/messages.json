@@ -451,7 +451,11 @@
     },
     "historyTypesScythed": {
         "message": "Scythed",
-        "description": "Option text to indicate viewing reaped/scythed submissions."
+        "description": "Option text to indicate viewing scythed submissions."
+    },
+    "historyTypeReaped": {
+        "message": "Reaped (Admin)",
+        "description": "Option text to indicate viewing reaped (admin) submissions."
     },
     
     

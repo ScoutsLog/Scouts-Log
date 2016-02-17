@@ -294,7 +294,12 @@
 
         // Set event handler for close button
         jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
-            jQuery('#slPanel').hide();
+            if (S.windowState == "error") {
+                jQuery('#slPanelError').hide();
+            } else {
+                jQuery('#slPanel').hide();
+            }
+
             jQuery('#slPanelShadow').hide();
         });
 
@@ -481,7 +486,9 @@
 
         // Set stats refresh function
         setInterval(function() {
-            S.doPanelStats();
+            if (S.windowState != "error") {
+                S.doPanelStats();
+            }
         }, S.statsInterval);
         
         S.doPanelStats();
@@ -2542,6 +2549,38 @@
             jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", S.images.historyDisabled);
         }
     }
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+//                     PLATFORM CONTENT ERROR HANDLING                       //
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+
+    document.addEventListener("PlatformContentError", function(e) {
+        // Hide main panel
+        jQuery("#slPanel").hide();
+
+        if (e.detail.status == "invalid authentication-token") {
+            // Hide controls
+            jQuery("#scoutsLogFloatingControls").hide();
+            jQuery("#scoutsLogPanelButton").hide();
+
+            // Set window state
+            S.windowState = "error";
+
+            // Display authorization prompt
+            S.slew_auth();
+        } else {
+            jQuery("#slPanelShadow").show();
+            jQuery("#slPanelError").show();
+
+            jQuery("#slPanelErrorMessage").html( S.getLocalizedString("error_submission") );
+        }
+    });
+
 
 
 

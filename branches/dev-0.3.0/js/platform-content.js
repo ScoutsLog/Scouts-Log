@@ -46,7 +46,7 @@ function ThePlatformContent() {
         var ev = new CustomEvent('RoutedMessagePS', d);
         
         document.dispatchEvent(ev);
-    };
+    }
 
 
     /**
@@ -61,7 +61,7 @@ function ThePlatformContent() {
         } else {
             return '__' + key + '__';
         }
-    };
+    }
 
 
     /**
@@ -78,6 +78,20 @@ function ThePlatformContent() {
             { name: name },
             callback
         );
-    };
+    }
+
+
+    /**
+     * Error Handler
+     *
+     * This function is executed when a platform request has failed.
+     */
+    ThePlatformContent.prototype.platformError = function(data) {
+        console.log("Platform Error: source: " + data.source + "; status: " + data.status + "; url: " + data.url + ";");
+
+        var ev = new CustomEvent('PlatformContentError', {detail: data});
+
+        document.dispatchEvent(ev);
+    }
 
 

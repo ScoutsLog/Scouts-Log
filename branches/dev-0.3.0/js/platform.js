@@ -62,7 +62,14 @@ function ThePlatform() {
             if (this.readyState == 4 && this.status == 200) {
                 var obj = JSON.parse(this.responseText);
                 
-                P.sendMessage(callback, obj);
+                if (obj.error) {
+                    P.sendMessage("platformError", {source: 'getJSON', url: url, status: obj.error});
+                } else {
+                    P.sendMessage(callback, obj);
+                }
+            }
+            if (this.readyState == 4 && this.status != 200) {
+                P.sendMessage("platformError", {source: 'getJSON', url: url, status: this.status});
             }
         }
 
@@ -86,6 +93,9 @@ function ThePlatform() {
         xhr.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 P.sendMessage(callback, this.responseText);
+            }
+            if (this.readyState == 4 && this.status != 200) {
+                P.sendMessage("platformError", {source: 'getRequest', url: url, status: this.status});
             }
         }
 
@@ -114,7 +124,14 @@ function ThePlatform() {
             if (this.readyState == 4 && this.status == 200) {
                 var obj = JSON.parse(this.responseText);
                 
-                P.sendMessage(callback, obj);
+                if (obj.error) {
+                    P.sendMessage("platformError", {source: 'postJSON', url: url, status: obj.error});
+                } else {
+                    P.sendMessage(callback, obj);
+                }
+            }
+            if (this.readyState == 4 && this.status != 200) {
+                P.sendMessage("platformError", {source: 'postRequest', url: url, status: this.status});
             }
         }
 
@@ -172,6 +189,10 @@ function ThePlatform() {
                 // Send processed template back using callback
                 P.sendMessage(callback, txt);
             }
+            if (this.readyState == 4 && this.status != 200) {
+                P.sendMessage("platformError", {source: 'getContent', url: url, status: this.status});
+            }
+
         }
 
         xhr.send();
