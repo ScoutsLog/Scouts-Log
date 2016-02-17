@@ -5,6 +5,7 @@
 	"version": "0.3.0",
 	"minimum_chrome_version": "43",
 	"default_locale": "en",
+        "author": "Extension developed by Gary Heil; Korean language translation done by Kyung Lim; some icons used from http://www.famfamfam.com/lab/icons/silk/",
 	
 	"icons": {
 		"16": "images/icon16.png",

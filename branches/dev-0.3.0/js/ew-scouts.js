@@ -242,6 +242,7 @@
     S.loadImages = function() {
         S.images = {
             close: S.baseDataURL + "images/close.png",
+            delete: S.baseDataURL + "images/delete.png",
             error: S.baseDataURL + "images/error.png",
             history: S.baseDataURL + "images/history.png",
             historyDisabled: S.baseDataURL + "images/history-disabled.png",
@@ -251,8 +252,11 @@
             magnifier: S.baseDataURL + "images/magnifier.png",
             next: S.baseDataURL + "images/next.png",
             nextDisabled: S.baseDataURL + "images/next-disabled.png",
+            pencil: S.baseDataURL + "images/pencil.png",
+            photo: S.baseDataURL + "images/photo.png",
             previous: S.baseDataURL + "images/previous.png",
             previousDisabled: S.baseDataURL + "images/previous-disabled.png",
+            refresh: S.baseDataURL + "images/arrow_refresh.png",
             tick: S.baseDataURL + "images/tick.png"
         };
     }
@@ -1092,15 +1096,15 @@
             var ent2 = "";
             
             if (s.has_entries == 1) {
-                ent2 = ' <img src="' + S.images.tick + '" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                ent2 = ' <img src="' + S.images.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
             }
 
             if (s.has_watch == 1) {
-                ent2 = ' <img src="' + S.images.magnifier + '" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                ent2 = ' <img src="' + S.images.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
             }
             
             if (s.mismatched == 1) {
-                ent1 = ' <img src="' + S.images.error + '" title="' + S.getLocalizedString("labelIconError") + '" />';
+                ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
             }
             
             var row = '<tr>';
@@ -1211,15 +1215,15 @@
                 var ent2 = "";
                 
                 if (s.has_entries == 1) {
-                    ent2 = ' <img src="' + S.images.tick + '" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                    ent2 = ' <img src="' + S.images.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
                 }
 
                 if (s.has_watch == 1) {
-                    ent2 = ' <img src="' + S.images.magnifier + '" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                    ent2 = ' <img src="' + S.images.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
                 }
                 
                 if (s.mismatched == 1) {
-                    ent1 = ' <img src="' + S.images.error + '" title="' + S.getLocalizedString("labelIconError") + '" />';
+                    ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
                 }
     
                 var row = '<tr>';
@@ -1753,10 +1757,10 @@
         jQuery('#sl-action-image-sketch').val('');
 
         // Update status, set links
-        var status = '<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | ';
-        status += '<a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a> | ';
-        status += '<a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | ';
-        status += '<a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>';
+        var status = '<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '"><img src="' + S.images.photo + '" /></a> <a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | ';
+        status += '<a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '"><img src="' + S.images.pencil + '" /></a> <a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a> | ';
+        status += '<a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '"><img src="' + S.images.refresh + '" /></a> <a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | ';
+        status += '<a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '"><img src="' + S.images.delete + '" /></a> <a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>';
 
         jQuery('#sl-action-image-status').html(status);
 
@@ -2084,9 +2088,25 @@
                     cn = h['cellName' + S.locale.toUpperCase()];
                 }
 
+                // Check if current user has log entry or watch indicators
+                var ent1 = "";
+                var ent2 = "";
+                
+                if (h.has_entries == 1) {
+                    ent2 = ' <img src="' + S.images.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                }
+
+                if (h.has_watch == 1) {
+                    ent2 = ' <img src="' + S.images.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                }
+                
+                if (h.mismatched == 1) {
+                    ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
+                }
+
     
                 var row = '<tr>';
-                row += '<td>' + h.task + '<br /><a class="sl-task" data-task="' + h.task + '">' + S.getLocalizedString("actionTask") + '</a> | <a class="sl-jump-task" data-task="' + h.task + '">' + S.getLocalizedString("actionJumpTask") + '</a></td>';
+                row += '<td>' + ent1 + ent2 + h.task + '<br /><a class="sl-task" data-task="' + h.task + '">' + S.getLocalizedString("actionTask") + '</a> | <a class="sl-jump-task" data-task="' + h.task + '">' + S.getLocalizedString("actionJumpTask") + '</a></td>';
                 row += '<td>' + h.cell + '<br /><a class="sl-history-cell" data-cell="' + h.cell + '">' + cn + '</a></td>';
                 row += '<td>' + h.type + '<br />&nbsp;</td>';
 

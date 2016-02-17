@@ -179,8 +179,14 @@
     
     
 
+    "labelAdd": {
+        "message": "Add"
+    },
     "labelAnnotatedImage": {
         "message": "Annotated Image"
+    },
+    "labelBottom": {
+        "message": "Bottom"
     },
     "labelCell": {
         "message": "Cell",
@@ -198,8 +204,14 @@
         "message": "Cube",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
     },
+    "labelEraser": {
+        "message": "Eraser"
+    },
     "labelImage": {
         "message": "Image"
+    },
+    "labelLabel": {
+        "message": "Label"
     },
     "labelLastUser": {
         "message": "Last User",
@@ -208,6 +220,12 @@
     "labelLastUpdated": {
         "message": "Last Updated (UTC)",
         "description": "Date/time of the last action saved to a specific task in UTC."
+    },
+    "labelLeft": {
+        "message": "Left"
+    },
+    "labelMarker": {
+        "message": "Marker"
     },
     "labelNo": {
         "message": "No"
@@ -228,6 +246,12 @@
         "message": "Reaped?",
         "description": "Question if user reaped a change within EyeWire for the given task action (entry in log)."
     },
+    "labelRemove": {
+        "message": "Remove"
+    },
+    "labelRight": {
+         "message": "Right"
+    },
     "labelStatus": {
         "message": "Status",
         "description": "Noun to indicate current state for a given task."
@@ -239,6 +263,9 @@
     "labelTask": {
         "message": "Task",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
+    },
+    "labelTop": {
+        "message": "Top"
     },
     "labelVotes": {
         "message": "Votes",
@@ -280,6 +307,9 @@
     "actionCellTooltip": {
         "message": "Click to view tasks for this cell",
         "description": "Text to display when hovering over a link to view tasks for a specific cell."
+    },
+    "actionClear": {
+        "message": "Clear"
     },
     "actionClearHistory": {
         "message": "Clear History",
@@ -348,6 +378,9 @@
     "actionRemoveTooltip": {
         "message": "Remove the image from this log entry submission.",
         "description": "Text to display when hovering over the 'Remove' link in the 'New Entry' window."
+    },
+    "actionSave": {
+        "message": "Save"
     },
     "actionSetToGood": {
         "message": "Set to Good",
