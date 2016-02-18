@@ -523,15 +523,20 @@
 
     
     
+    "error_cube": {
+        "message": "Unable to determine current cube!  Please check if cube is stashed otherwise re-select OR re-enter the cube."
+    },
     "error_notasks": {
         "message": "No tasks found for this cell/status",
         "description": "Message to indicate no tasks are available for the cell and/or specific task status."
+    },
+    "error_request": {
+        "message": "<p>Sorry, there was an error while processing this request.</p><p>Please check your Internet connection and try the request again.</p><p>If you continue to see this message please contact support.</p>"
     },
     "error_submission": {
         "message": "Sorry, there was an error while submitting. Please try again.",
         "description": "Phrase to indicate a transmission error while saving a task action."
     }
-
 
 
 }

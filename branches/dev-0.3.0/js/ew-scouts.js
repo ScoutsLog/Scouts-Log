@@ -298,9 +298,10 @@
 
         // Set event handler for close button
         jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
-            if (jQuery(".sl-confirmation")) {
+            if (jQuery(".sl-confirmation").length > 0) {
                 jQuery(".sl-confirmation").remove();
             } else if (S.windowState == "error") {
+                S.windowState = "";
                 jQuery('#slPanelError').hide();
             } else {
                 jQuery('#slPanel').hide();
@@ -582,21 +583,23 @@
         jQuery("#gameTools").append(button);
 
         jQuery('#scoutsLogPanelButton').click(function() {
-            if (S.windowState != '') {
-                if (jQuery('#slPanel').is(':visible')) {
-                    jQuery('#slPanel').hide();
-                    jQuery('#slPanelShadow').hide();
-                    jQuery('#scoutsLogFloatingControls').hide();
+            if (S.windowState == "error") { return; }
+
+            if (S.windowState != "") {
+                if (jQuery("#slPanel").is(":visible")) {
+                    jQuery("#slPanel").hide();
+                    jQuery("#slPanelShadow").hide();
+                    jQuery("#scoutsLogFloatingControls").hide();
                 } else {
-                    if (S.windowState == 'history' && S.historyPosition == S.historyDisplay) {
-                        S.windowState = '';
+                    if (S.windowState == "history" && S.historyPosition == S.historyDisplay) {
+                        S.windowState = "";
 
                         S.getHistory();
                     }
 
-                    jQuery('#slPanel').show();
-                    jQuery('#slPanelShadow').show();
-                    jQuery('#scoutsLogFloatingControls').show();
+                    jQuery("#slPanel").show();
+                    jQuery("#slPanelShadow").show();
+                    jQuery("#scoutsLogFloatingControls").show();
                 }
             }
         });
@@ -607,15 +610,15 @@
      * Button: Display Cell List
      */
     S.showCells = function() {
-        if (S.windowState != 'cell') {
+        if (S.windowState != "cell") {
             S.getCellList();
         } else {
-            if (jQuery('#slPanel').is(':visible')) {
-                jQuery('#slPanel').hide();
-                jQuery('#slPanelShadow').hide();
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").hide();
+                jQuery("#slPanelShadow").hide();
             } else {
-                jQuery('#slPanel').show();
-                jQuery('#slPanelShadow').show();
+                jQuery("#slPanel").show();
+                jQuery("#slPanelShadow").show();
             }
         }
     }
@@ -625,15 +628,15 @@
      * Button: Display Open Tasks List
      */
     S.showOpen = function() {
-        if (S.windowState != 'status-open') {
-            S.getStatusSummary('open', false);
+        if (S.windowState != "status-open") {
+            S.getStatusSummary("open", false);
         } else {
-            if (jQuery('#slPanel').is(':visible')) {
-                jQuery('#slPanel').hide();
-                jQuery('#slPanelShadow').hide();
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").hide();
+                jQuery("#slPanelShadow").hide();
             } else {
-                jQuery('#slPanel').show();
-                jQuery('#slPanelShadow').show();
+                jQuery("#slPanel").show();
+                jQuery("#slPanelShadow").show();
             }
         }
     }
@@ -643,15 +646,15 @@
      * Button: Display 'Need Admin' Tasks
      */
     S.showAdmin = function() {
-        if (S.windowState != 'status-need-admin') {
-            S.getStatusSummary('need-admin', false);
+        if (S.windowState != "status-need-admin") {
+            S.getStatusSummary("need-admin", false);
         } else {
-            if (jQuery('#slPanel').is(':visible')) {
-                jQuery('#slPanel').hide();
-                jQuery('#slPanelShadow').hide();
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").hide();
+                jQuery("#slPanelShadow").hide();
             } else {
-                jQuery('#slPanel').show();
-                jQuery('#slPanelShadow').show();
+                jQuery("#slPanel").show();
+                jQuery("#slPanelShadow").show();
             }
         }
     }
@@ -661,15 +664,15 @@
      * Button: Display 'Need Scythe' Tasks
      */
     S.showScythe = function() {
-        if (S.windowState != 'status-need-scythe') {
-            S.getStatusSummary('need-scythe', true);
+        if (S.windowState != "status-need-scythe") {
+            S.getStatusSummary("need-scythe", true);
         } else {
-            if (jQuery('#slPanel').is(':visible')) {
-                jQuery('#slPanel').hide();
-                jQuery('#slPanelShadow').hide();
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").hide();
+                jQuery("#slPanelShadow").hide();
             } else {
-                jQuery('#slPanel').show();
-                jQuery('#slPanelShadow').show();
+                jQuery("#slPanel").show();
+                jQuery("#slPanelShadow").show();
             }
         }
     }
@@ -679,15 +682,15 @@
      * Button: Display 'Watch List' Tasks
      */
     S.showWatch = function() {
-        if (S.windowState != 'status-watch') {
-            S.getStatusSummary('watch', false);
+        if (S.windowState != "status-watch") {
+            S.getStatusSummary("watch", false);
         } else {
-            if (jQuery('#slPanel').is(':visible')) {
-                jQuery('#slPanel').hide();
-                jQuery('#slPanelShadow').hide();
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").hide();
+                jQuery("#slPanelShadow").hide();
             } else {
-                jQuery('#slPanel').show();
-                jQuery('#slPanelShadow').show();
+                jQuery("#slPanel").show();
+                jQuery("#slPanelShadow").show();
             }
         }
     }
@@ -697,21 +700,21 @@
      * Button: Display User Submission History
      */
     S.showHistory = function() {
-        if (S.windowState != 'history') {
+        if (S.windowState != "history") {
             S.getHistory();
         } else {
-            if (jQuery('#slPanel').is(':visible')) {
-                jQuery('#slPanel').hide();
-                jQuery('#slPanelShadow').hide();
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").hide();
+                jQuery("#slPanelShadow").hide();
             } else {
                 if (S.historyPosition == S.historyDisplay) {
-                    S.windowState ='';
+                    S.windowState ="";
 
                     S.getHistory();
                 }
 
-                jQuery('#slPanel').show();
-                jQuery('#slPanelShadow').show();
+                jQuery("#slPanel").show();
+                jQuery("#slPanelShadow").show();
             }
         }
     }
@@ -795,8 +798,8 @@
      * Utils: Set Links for Common Items
      */
     S.setLinks = function(o) {
-        jQuery(o).find('.sl-jump-task').each(function() {
-            var task = jQuery(this).attr('data-task');
+        jQuery(o).find(".sl-jump-task").each(function() {
+            var task = jQuery(this).attr("data-task");
 
             var p = jQuery(this);
             
@@ -804,8 +807,8 @@
 
             var j = function(t) {
                 // Hide main panel
-                jQuery('#slPanel').hide();
-                jQuery('#slPanelShadow').hide();
+                jQuery("#slPanel").hide();
+                jQuery("#slPanelShadow").hide();
 
                 // Get cube details and jump
                 jQuery.getJSON("/1.0/task/" + t).done(function(d) {
@@ -844,8 +847,8 @@
             });
         });
         
-        jQuery(o).find('a.sl-task').each(function() {
-            var t = jQuery(this).attr('data-task');
+        jQuery(o).find("a.sl-task").each(function() {
+            var t = jQuery(this).attr("data-task");
             
             jQuery(this).attr( "title", S.getLocalizedString("actionTaskTooltip") );
             
@@ -854,24 +857,24 @@
             });
         });
         
-        jQuery(o).find('a.sl-cell').each(function() {
-            var c = jQuery(this).attr('data-cell');
+        jQuery(o).find("a.sl-cell").each(function() {
+            var c = jQuery(this).attr("data-cell");
             
             jQuery(this).attr( "title", S.getLocalizedString("actionCellTooltip") );
             
             jQuery(this).click(function() {    
-                S.getCellEntries(c, '');
+                S.getCellEntries(c, "");
             });
         });
 
-        jQuery(o).find('a.sl-history-cell').each(function() {
-            var c = jQuery(this).attr('data-cell');
+        jQuery(o).find("a.sl-history-cell").each(function() {
+            var c = jQuery(this).attr("data-cell");
             
             jQuery(this).attr( "title", S.getLocalizedString("actionCellTooltip") );
             
             jQuery(this).click(function() {    
                 S.historyCell = c;
-                S.windowState = '';
+                S.windowState = "";
 
                 S.getHistory();
             });
@@ -885,13 +888,13 @@
      */
     S.setChatLinks = function(o) {
         // Get actual chat text
-        var t = jQuery(o).children('.actualText').html();
+        var t = jQuery(o).children(".actualText").html();
 
         // Search for cube links
         var text = t.replace(/#([0-9]+)/g, '<a class="sl-jump-task sl-jump-task-chat" data-task="$1" title="' + S.getLocalizedString("actionJumpTaskTooltip") + '">#$1</a>');
 
         // Replace chat text
-        jQuery(o).children('.actualText').html(text);
+        jQuery(o).children(".actualText").html(text);
 
         // Refresh chat links
         S.setLinks(o);
@@ -906,67 +909,67 @@
         var result = "";
 
         switch (status) {
-            case 'admin':
+            case "admin":
                 result = S.getLocalizedString("statusAdmin");
 
                 break;
-            case 'all':
+            case "all":
                 result = S.getLocalizedString("statusAll");
 
                 break;
-            case 'branch-checking':
+            case "branch-checking":
                 result = S.getLocalizedString("statusBranchChecking");
 
                 break;
-            case 'good':
+            case "good":
                 result = S.getLocalizedString("statusGood");
 
                 break;
-            case 'image':
+            case "image":
                 result = S.getLocalizedString("statusImage");
 
                 break;
-            case 'merger':
+            case "merger":
                 result = S.getLocalizedString("statusMerger");
                 
                 break;
-            case 'missing-branch':
+            case "missing-branch":
                 result = S.getLocalizedString("statusMissingBranch");
                 
                 break;
-            case 'missing-nub':
+            case "missing-nub":
                 result = S.getLocalizedString("statusMissingNub");
                 
                 break;
-            case 'need-admin':
+            case "need-admin":
                 result = S.getLocalizedString("statusNeedAdmin");
                 
                 break;
-            case 'need-scythe':
+            case "need-scythe":
                 result = S.getLocalizedString("statusNeedScythe");
                 
                 break;
-            case 'note':
+            case "note":
                 result = S.getLocalizedString("statusNote");;
 
                 break;
-            case 'open':
+            case "open":
                 result = S.getLocalizedString("statusOpen");;
 
                 break;
-            case 'scythe-complete':
+            case "scythe-complete":
                 result = S.getLocalizedString("statusScytheComplete");;
 
                 break;
-            case 'still-growing':
+            case "still-growing":
                 result = S.getLocalizedString("statusStillGrowing");;
 
                 break;
-            case 'subtree-complete':
+            case "subtree-complete":
                 result = S.getLocalizedString("statusSubtreeComplete");;
 
                 break;
-            case 'watch':
+            case "watch":
                 result = S.getLocalizedString("statusWatch");
                 
                 break;
@@ -1008,21 +1011,21 @@
         }
 
         // Pass 2a: Attempt to get current task ID from omni task object
-        if (typeof t == 'undefined') {
+        if (typeof t == "undefined") {
             try {
                 t = window.tomni.task.id;
             } catch (notask3) { }
         }
 
         // Pass 2b: Attempt to get current cell ID from omni task object
-        if (typeof c == 'undefined') {
+        if (typeof c == "undefined") {
             try {
                 c = window.tomni.task.cell;
             } catch (nocell3) { }
         }
 
         // Pass 3: Attempt to get current cell from omni object
-        if (typeof c == 'undefined') {
+        if (typeof c == "undefined") {
             try {
                 c = window.tomni.cell;
             } catch (nocell4) { }
@@ -1077,7 +1080,7 @@
  */
     S.getCellList = function() {
         // Set window state
-        S.windowState = 'cell';
+        S.windowState = "cell";
 
         // Update window history
         if (S.windowHistoryNavigating == false) {
@@ -1233,10 +1236,10 @@
             // Determine cell name
             var cn;
 
-            if (S.locale == 'en') {
+            if (S.locale == "en") {
                 cn = s.cellName;
             } else {
-                cn = s['cellName' + S.locale.toUpperCase()];
+                cn = s["cellName" + S.locale.toUpperCase()];
             }
 
             // Check if current user has log entry or watch indicators
@@ -1266,7 +1269,7 @@
             jQuery("#sl-main-table table tbody").append(row);
         }
 
-        S.setLinks('#slPanel');
+        S.setLinks("#slPanel");
     }
 
 
@@ -1461,7 +1464,7 @@
             // Send content request
             S.getContent("task-detail.htm", "getTaskEntries_Content");
         } else {
-            alert("Scouts' Log: unable to determine current cube!  Please check if cube is stashed otherwise re-select OR re-enter the cube.");
+            alert( S.getLocalizedString("error_cube") );
         }
     }
 
@@ -1524,14 +1527,14 @@
         }
 
         // Check for admin weight
-        var wstyle = '';
+        var wstyle = "";
         
         if (data.weight >= 1000000) {
             wstyle =' class="sl-admin"';
         }
         
         // Check for admin complete
-        var vstyle = '';
+        var vstyle = "";
         if (data.votes >= 1000000) {
             vstyle = ' class="sl-admin"';
         }
@@ -1555,7 +1558,7 @@
         for (var c in data.actions) {
             var s = data.actions[c];
             
-            var img = '';
+            var img = "";
             
             if (s.image != "") {
                 img = '<a class="sl-image" href="' + s.image + '" target="_blank" title="' + S.getLocalizedString("actionViewImageTooltip") + '">' + S.getLocalizedString("actionViewImage") + '</a>';
@@ -1586,20 +1589,20 @@
         }
         
         // Check 'set good' button status
-        if (data.status != '' && data.status != 'good') {
+        if (data.status != "" && data.status != "good") {
             var btn = '<button type="button" class="greenButton sl-good-action" style="margin-left: 10px;" title="' + S.getLocalizedString("actionSetToGoodTooltip") + '">' + S.getLocalizedString("actionSetToGood") + '</button>';
             
             jQuery(btn).insertAfter("#slPanel button.sl-new-action");
 
-            jQuery('#slPanel button.sl-good-action').click(function() {
+            jQuery("#slPanel button.sl-good-action").click(function() {
                 // Prepare data object
                 var d = {
                     cell: data.cell,
                     task: data.task,
-                    status: 'good',
+                    status: "good",
                     reaped: 0,
-                    notes: '',
-                    image: ''
+                    notes: "",
+                    image: ""
                 };
 
                 // Initiate request through plugin
@@ -1615,7 +1618,7 @@
         }
         
         // Set links for panel
-        S.setLinks('#slPanel');
+        S.setLinks("#slPanel");
     }
 
     S.setTaskGoodCallback = function(data) {
@@ -1623,20 +1626,20 @@
     }
 
     S.getTaskDetails = function(id, callback) {
-        jQuery.getJSON('http://eyewire.org/1.0/task/' + encodeURIComponent(id), function(d1) {
+        jQuery.getJSON("http://eyewire.org/1.0/task/" + encodeURIComponent(id), function(d1) {
             var task = {
                 id: d1.id,
                 cell: d1.cell,
                 weight: d1.weightsum
             };
             
-            jQuery.getJSON('http://eyewire.org/1.0/task/' + encodeURIComponent(id) + '/aggregate', function(d2) {
+            jQuery.getJSON("http://eyewire.org/1.0/task/" + encodeURIComponent(id) + "/aggregate", function(d2) {
                 var task2 = task;
                 
                 task2.votes = d2.votes.total;
                 task2.votesMax = d2.votes.max;
                 
-                jQuery.getJSON('http://eyewire.org/1.0/cell/' + encodeURIComponent(task2.cell), function(d3) {
+                jQuery.getJSON("http://eyewire.org/1.0/cell/" + encodeURIComponent(task2.cell), function(d3) {
                     task2.cellName = d3.name;
                     
                     // Send combined task data to original callback
@@ -1654,14 +1657,14 @@
     S.prepareTaskActionWindow = function(t) {
         if (typeof t != "undefined") {
             // Set window state
-            S.windowState = 'action-' + t;
+            S.windowState = "action-" + t;
 
             // Send content request
             S.getContent("task-action.htm", "prepareTaskActionWindow_Content");
         } else {
             // Invalid task/cube
 
-            alert("Scouts' Log: unable to determine current cube!  Please check if cube is stashed otherwise re-select OR re-enter the cube.");            
+            alert( S.getLocalizedString("error_cube") );
         }
     }
 
@@ -1688,43 +1691,43 @@
         jQuery("#slPanelShadow").show();
 
         // Prevent keystrokes for notes from bubbling
-        jQuery('#sl-action-notes').keydown(function(e) {
+        jQuery("#sl-action-notes").keydown(function(e) {
             e.stopPropagation();
         });
         
         // Set handlers for buttons
-        jQuery('#slPanel button.sl-cancel').click(function() {
-            jQuery('#slPanel').hide();
-            jQuery('#slPanelShadow').hide();
+        jQuery("#slPanel button.sl-cancel").click(function() {
+            jQuery("#slPanel").hide();
+            jQuery("#slPanelShadow").hide();
         });
 
-        jQuery('#slPanel button.sl-submit').click(function() {
+        jQuery("#slPanel button.sl-submit").click(function() {
             // Set interface
-            jQuery('#sl-action-buttons button').prop('disabled', true);
-            jQuery('#sl-action-buttons').append('<p>' + S.getLocalizedString("messageSaving") + '</p>');
+            jQuery("#sl-action-buttons button").prop("disabled", true);
+            jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
 
             // Get current task and cell
             var t = jQuery("#sl-action-task").val();
             var c = jQuery("#sl-action-cell").val();
 
             // Prepare data object
-            if (jQuery('#sl-action-image-annotated').val() != '') {
+            if (jQuery("#sl-action-image-annotated").val() != "") {
                 var data = {
                     cell: c,
                     task: t,
-                    status: jQuery('#sl-action-status').val(),
-                    reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
-                    notes: jQuery('#sl-action-notes').val(),
-                    image: jQuery('#sl-action-image-annotated').val()
+                    status: jQuery("#sl-action-status").val(),
+                    reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
+                    notes: jQuery("#sl-action-notes").val(),
+                    image: jQuery("#sl-action-image-annotated").val()
                 };
             } else {
                 var data = {
                     cell: c,
                     task: t,
-                    status: jQuery('#sl-action-status').val(),
-                    reaped: jQuery('#sl-action-table input:radio[name=reaped]:checked').val(),
-                    notes: jQuery('#sl-action-notes').val(),
-                    image: jQuery('#sl-action-image').val()
+                    status: jQuery("#sl-action-status").val(),
+                    reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
+                    notes: jQuery("#sl-action-notes").val(),
+                    image: jQuery("#sl-action-image").val()
                 };
             }
 
@@ -1748,7 +1751,7 @@
             // Success
 
             jQuery("#slPanel").hide();
-            jQuery('#slPanelShadow').hide();
+            jQuery("#slPanelShadow").hide();
             S.windowState = "";
         } else {
             // Error
@@ -1783,14 +1786,14 @@
 
     S.getTaskSummary_Data2 = function(data) {
         // Check for admin weight
-        var wstyle = '';
+        var wstyle = "";
         
         if (data.weight >= 1000000) {
             wstyle =' class="sl-admin"';
         }
         
         // Check for admin complete
-        var vstyle = '';
+        var vstyle = "";
         if (data.votes >= 1000000) {
             vstyle = ' class="sl-admin"';
         }
@@ -1833,59 +1836,59 @@
         var cell = jQuery("#sl-action-cell").val();
 
         // Capture 3D image
-        if (jQuery('#threeD canvas').length == 1) {
+        if (jQuery("#threeD canvas").length == 1) {
             // Get 3D canvas object
-            var c = jQuery('#threeD canvas')[0];
+            var c = jQuery("#threeD canvas")[0];
             
             // Force a render
             window.tomni.threeD.render();
             
             // Store image data
-            jQuery('#sl-action-image-3d').val(c.toDataURL());
+            jQuery("#sl-action-image-3d").val(c.toDataURL());
         } else {
             // 3D canvas is not visible/available
 
             // Clear image data
-            jQuery('#sl-action-image-3d').val('');
+            jQuery("#sl-action-image-3d").val("");
         }
 
         // Capture 2D image
-        if (jQuery('#twoD canvas').length == 1 && window.tomni.gameMode) {
+        if (jQuery("#twoD canvas").length == 1 && window.tomni.gameMode) {
             // Get 2D canvas object
-            var c = jQuery('#twoD canvas')[0];
+            var c = jQuery("#twoD canvas")[0];
             
             // Force a render
             window.tomni.twoD.render();
             
             // Store image data
-            jQuery('#sl-action-image-2d').val(c.toDataURL());
+            jQuery("#sl-action-image-2d").val(c.toDataURL());
             
         } else {
             // 2D canvas is not visible/available
 
             // Clear image data
-            jQuery('#sl-action-image-2d').val('');
+            jQuery("#sl-action-image-2d").val("");
         }
 
         // Create basic image preview
         var cvA = jQuery("#threeD canvas")[0];
-        var cxA = cvA.getContext('2d');
+        var cxA = cvA.getContext("2d");
 
-        var cv = document.createElement('canvas');
+        var cv = document.createElement("canvas");
         cv.height = cvA.height;
         cv.width = cvA.width;
 
-        var cx = cv.getContext('2d');
+        var cx = cv.getContext("2d");
 
         cx.beginPath();
         cx.rect(0, 0, cvA.width, cvA.height);
-        cx.fillStyle = '#232323';
+        cx.fillStyle = "#232323";
         cx.fill();
 
         var cvB = jQuery("#twoD canvas")[0];
 
         if (cvB && window.tomni.gameMode) {
-            var imC = jQuery('#twoD')[0];
+            var imC = jQuery("#twoD")[0];
             var sX = Math.floor((cvA.width - imC.clientWidth) / 2);
             //var sX = Math.floor(cvA.width / 4);
 
@@ -1900,7 +1903,7 @@
             cx.moveTo(sW + 0.5, 0);
             cx.lineTo(sW + 0.5, cvA.height);
             cx.lineWidth = 1;
-            cx.strokeStyle = '#888';
+            cx.strokeStyle = "#888";
             cx.stroke();
 
             cx.beginPath();
@@ -1910,21 +1913,21 @@
 
             var dir;
             switch (window.tomni.task.dir) {
-                case 'x':
-                    dir = 'zy';
+                case "x":
+                    dir = "zy";
 
                     break;
-                case 'y':
-                    dir = 'xz';
+                case "y":
+                    dir = "xz";
 
                     break;
-                case 'z':
-                    dir = 'xy';
+                case "z":
+                    dir = "xy";
 
                     break;
             }
 
-            cx.font = 'normal 10pt sans-serif';
+            cx.font = "normal 10pt sans-serif";
             cx.fillStyle = '#bbb';      
             cx.fillText('Cell: ' + cell, 10, 23);
             cx.fillText('Cube: ' + task, 10, 43);
@@ -1946,13 +1949,13 @@
         }
 
 
-        jQuery('#sl-action-image').val(cv.toDataURL());
+        jQuery("#sl-action-image").val(cv.toDataURL());
 
 
         
         // Reset annotation/sketch data
-        jQuery('#sl-action-image-annotated').val('');
-        jQuery('#sl-action-image-sketch').val('');
+        jQuery("#sl-action-image-annotated").val("");
+        jQuery("#sl-action-image-sketch").val("");
 
         // Update status, set links
         var status = '<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '"><img src="' + S.images.photo + '" /></a> <a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | ';
@@ -1960,19 +1963,19 @@
         status += '<a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '"><img src="' + S.images.refresh + '" /></a> <a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | ';
         status += '<a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '"><img src="' + S.images.delete + '" /></a> <a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>';
 
-        jQuery('#sl-action-image-status').html(status);
+        jQuery("#sl-action-image-status").html(status);
 
         // Set event handlers
 
-        jQuery('#sl-action-image-status a.sl-preview').click(function() {
+        jQuery("#sl-action-image-status a.sl-preview").click(function() {
             var w = window.open();
 
             var im;
 
-            if (jQuery('#sl-action-image-annotated').val() != '') {
-                im = jQuery('#sl-action-image-annotated').val();
+            if (jQuery("#sl-action-image-annotated").val() != "") {
+                im = jQuery("#sl-action-image-annotated").val();
             } else {
-                im = jQuery('#sl-action-image').val();
+                im = jQuery("#sl-action-image").val();
             }
                 
             w.document.open();
@@ -1984,52 +1987,52 @@
             w.document.close();
         });
 
-        jQuery('#sl-action-image-status a.sl-annotate').click(function() {
-            if (jQuery('#sl-action-image-annotated').val() == '') {
+        jQuery("#sl-action-image-status a.sl-annotate").click(function() {
+            if (jQuery("#sl-action-image-annotated").val() == "") {
                 S.createAnnotation();
             } else {
                 S.showAnnotation();
             }
         });
 
-        jQuery('#sl-action-image-status a.sl-capture').click(function() {
+        jQuery("#sl-action-image-status a.sl-capture").click(function() {
             var res = true;
 
-            if (jQuery('#sl-action-image-sketch').val() != '') {
+            if (jQuery("#sl-action-image-sketch").val() != "") {
                 res = confirm("Are you sure you want to to re-capture this image?  Any annotations will be lost.");
             }
 
             if (res) {
-                jQuery('#sl-action-image').val('');
-                jQuery('#sl-action-image-3d').val('');
-                jQuery('#sl-action-image-2d').val('');
-                jQuery('#sl-action-image-annotated').val('');
-                jQuery('#sl-action-image-sketch').val('');
+                jQuery("#sl-action-image").val("");
+                jQuery("#sl-action-image-3d").val("");
+                jQuery("#sl-action-image-2d").val("");
+                jQuery("#sl-action-image-annotated").val("");
+                jQuery("#sl-action-image-sketch").val("");
 
-                jQuery('#sl-action-image-status').html( S.getLocalizedString("messageProcessing") );
+                jQuery("#sl-action-image-status").html( S.getLocalizedString("messageProcessing") );
                 
                 setTimeout(function() { window.scoutsLog.captureImage(); }, 1000);
             }
         });
 
-        jQuery('#sl-action-image-status a.sl-remove').click(function() {
+        jQuery("#sl-action-image-status a.sl-remove").click(function() {
             var res = true;
 
-            if (jQuery('#sl-action-image-sketch').val() != '') {
+            if (jQuery("#sl-action-image-sketch").val() != "") {
                 res = confirm("Are you sure you want to to remove this image?  Any annotations will be lost.");
             }
 
             if (res) {
-                jQuery('#sl-action-image').val('');
-                jQuery('#sl-action-image-3d').val('');
-                jQuery('#sl-action-image-2d').val('');
-                jQuery('#sl-action-image-annotated').val('');
-                jQuery('#sl-action-image-sketch').val('');
+                jQuery("#sl-action-image").val("");
+                jQuery("#sl-action-image-3d").val("");
+                jQuery("#sl-action-image-2d").val("");
+                jQuery("#sl-action-image-annotated").val("");
+                jQuery("#sl-action-image-sketch").val("");
 
-                jQuery('#sl-action-image-status').html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionCaptureTooltip") + '">' + S.getLocalizedString("actionCapture") + '</a>');
+                jQuery("#sl-action-image-status").html( S.getLocalizedString("labelNotApplicable") + ' | <a class="sl-capture" title="' + S.getLocalizedString("actionCaptureTooltip") + '">' + S.getLocalizedString("actionCapture") + '</a>');
                 
-                jQuery('#sl-action-image-status a.sl-capture').click(function() {
-                    jQuery('#sl-action-image-status').html( S.getLocalizedString("messageProcessing") );
+                jQuery("#sl-action-image-status a.sl-capture").click(function() {
+                    jQuery("#sl-action-image-status").html( S.getLocalizedString("messageProcessing") );
                     
                     setTimeout(function() { window.scoutsLog.captureImage(); }, 1000);
                 });
@@ -2049,13 +2052,13 @@
 
     S.showAnnotation_Content = function(data) {
         // Get current task
-        var t = jQuery('#slPanel h2 small').text().replace(/[^0-9]+/, '');
+        var t = jQuery("#slPanel h2 small").text().replace(/[^0-9]+/, "");
         
         // Open a new window/tab
         var w = window.open();
 
         // Set the captured image
-        data = data.replace( "[IMAGE]", jQuery('#sl-action-image').val() );
+        data = data.replace( "[IMAGE]", jQuery("#sl-action-image").val() );
 
         // Write content to the new window/tab
         w.document.open();
@@ -2074,13 +2077,13 @@
 
     S.createAnnotation_Content = function(data) {
         // Get current task
-        var t = jQuery('#slPanel h2 small').text().replace(/[^0-9]+/, '');
+        var t = jQuery("#slPanel h2 small").text().replace(/[^0-9]+/, "");
         
         // Open a new window/tab
         var w = window.open();
 
         // Set the captured image
-        data = data.replace( "[IMAGE]", jQuery('#sl-action-image').val() );
+        data = data.replace( "[IMAGE]", jQuery("#sl-action-image").val() );
 
         // Write content to the new window/tab
         w.document.open();
@@ -2295,10 +2298,10 @@
 
                 var cn;
 
-                if (S.locale == 'en') {
+                if (S.locale == "en") {
                     cn = h.cellName;
                 } else {
-                    cn = h['cellName' + S.locale.toUpperCase()];
+                    cn = h["cellName" + S.locale.toUpperCase()];
                 }
 
                 // Check if current user has log entry or watch indicators
@@ -2345,16 +2348,16 @@
 
             // Check for end of data
             if (data.tasks.length < data.limit) {
-                jQuery('#slPanel a.sl-more').remove();
+                jQuery("#slPanel a.sl-more").remove();
             }
         } else {
             // No more data
             
-            jQuery('#slPanel a.sl-more').remove();
+            jQuery("#slPanel a.sl-more").remove();
         }
 
         // Set links
-        S.setLinks('#slPanel');
+        S.setLinks("#slPanel");
 
         // Reset display value
         S.historyDisplay = 4;
@@ -2671,13 +2674,13 @@
         // Hide main panel
         jQuery("#slPanel").hide();
 
+        // Set window state
+        S.windowState = "error";
+
         if (e.detail.status == "invalid authentication-token") {
             // Hide controls
             jQuery("#scoutsLogFloatingControls").hide();
             jQuery("#scoutsLogPanelButton").hide();
-
-            // Set window state
-            S.windowState = "error";
 
             // Display authorization prompt
             S.slew_auth();
@@ -2685,7 +2688,14 @@
             jQuery("#slPanelShadow").show();
             jQuery("#slPanelError").show();
 
-            jQuery("#slPanelErrorMessage").html( S.getLocalizedString("error_submission") );
+            jQuery("#slPanelErrorMessage").html( S.getLocalizedString("error_request") );
+
+            jQuery("#slPanelError button").click(function() {
+                S.windowState = "";
+
+                jQuery("#slPanelShadow").hide();
+                jQuery("#slPanelError").hide();
+            });
         }
     });
 

@@ -2,7 +2,7 @@ var SLEW = new ThePlatform();
 
 (function(S) {
 
-    S.userPrefs = {};
+    var userPrefs = {};
 
 
     S.getLocalizedStrings = function(data, callback) {
@@ -118,7 +118,19 @@ var SLEW = new ThePlatform();
 
     // Load user preferences
         chrome.storage.local.get('prefs', function(d) {
-            S.userPrefs = d.prefs;
+            if (typeof d != "undefined") {
+                if (typeof d.prefs != "undefined") {
+                    S.userPrefs = d.prefs;
+                } else {
+                    S.userPrefs = {confirmjump: true};
+
+                    chrome.storage.local.set({'prefs': S.userPrefs});
+                }
+            } else {
+                S.userPrefs = {confirmjump: true};
+
+                chrome.storage.local.set({'prefs': S.userPrefs});
+            }
         });
 
 
