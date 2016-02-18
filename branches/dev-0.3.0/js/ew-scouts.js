@@ -130,24 +130,33 @@
      */
     S.init_ui = function() {
         // Hook game control modes
-        jQuery(window).on(InspectorPanel.Events.ModelFetched, function() {
+        jQuery(window).on(InspectorPanel.Events.ModelFetched, function(d) {
             var ea = jQuery("#gameControls #editActions").length;
             var ci = jQuery("#gameControls #cubeInspector").length;
             var ra = jQuery("#gameControls #realActions").length;
+            var td = false;
             
             if (ea > 0 || ci > 0) {
                 jQuery('#sl-task-details').show();
                 jQuery('#sl-task-entry').show();
+
+                td = true;
             } else if (ra > 0) {
                 jQuery('#sl-task-details').show();
                 jQuery('#sl-task-entry').hide();
+
+                td = true;
+            }
+
+            if (td == true) {
+                S.getCubeDetailsSummary();
             }
         });
         
         // Hook window resize event for main window 
         jQuery(window).resize(function() {                    
             if (jQuery("#slPanel").is(":visible")) {
-                var h = jQuery("#slPanel").height() - 20;
+                var h = jQuery("#slPanel").height() - 71;
 
                 jQuery("#slPanel div.slPanelContent").height(h);
             }
@@ -164,6 +173,7 @@
                 if (jQuery('#sl-task-details').is(':visible')) {
                     jQuery('#sl-task-details').hide();
                     jQuery('#sl-task-entry').hide();
+                    jQuery('#sl-cube-badge').hide();
                 }
                 
                 S.flagEditActions = false;
@@ -1583,7 +1593,7 @@
         
         // Check for mismatched cell IDs
         if (data.mismatched == 1) {
-            var btn = '<button type="button" class="redButton sl-mismatched" style="margin-left: 10px;">Fix Mismatched Cells</button>';
+            var btn = '<button type="button" class="redButton sl-mismatched" style="margin-left: 10px;" title="' + S.getLocalizedString("actionFixMismatchedTooltip") + '">' + S.getLocalizedString("actionFixMismatched") + '</button>';
             
             jQuery(btn).insertAfter("#slPanel button.sl-jump-task");
         }
@@ -1629,21 +1639,19 @@
         jQuery.getJSON("http://eyewire.org/1.0/task/" + encodeURIComponent(id), function(d1) {
             var task = {
                 id: d1.id,
-                cell: d1.cell,
-                weight: d1.weightsum
+                cell: d1.cell
             };
             
             jQuery.getJSON("http://eyewire.org/1.0/task/" + encodeURIComponent(id) + "/aggregate", function(d2) {
-                var task2 = task;
+                task.weight = d2.weight;
+                task.votes = d2.votes.total;
+                task.votesMax = d2.votes.max;
                 
-                task2.votes = d2.votes.total;
-                task2.votesMax = d2.votes.max;
-                
-                jQuery.getJSON("http://eyewire.org/1.0/cell/" + encodeURIComponent(task2.cell), function(d3) {
-                    task2.cellName = d3.name;
+                jQuery.getJSON("http://eyewire.org/1.0/cell/" + encodeURIComponent(task.cell), function(d3) {
+                    task.cellName = d3.name;
                     
                     // Send combined task data to original callback
-                    callback(task2);
+                    callback(task);
                 });
             });
         });
@@ -2480,6 +2488,44 @@
             S.getWindowHistory();
         });
     }
+
+
+/**
+ * Get Cube Details Summary
+ *
+ * Function retrieves the number of log entries for the cube if it is still open
+ * ----------------------------------------------------------------------------
+ */
+
+    S.getCubeDetailsSummary = function() {
+        // Get current cube/task
+        var target = S.getTargetCube();
+
+        // Send data request
+        if (typeof target.task != "undefined") {
+            S.sendMessage(
+                "getJSON",
+                {url: S.scoutsLogURIbase + "task/" + target.task + "/actions"},
+                "getCubeDetailsSummary_Data"
+            );
+        }
+    }
+
+    S.getCubeDetailsSummary_Data = function(data) {
+        // Get current cube/task
+        var target = S.getTargetCube();
+
+        // Make sure target cube matches the data
+        if (data.task == target.task) {
+            if (data.status != "good" && data.status != "" && data.actions.length > 0) {
+                jQuery("#sl-cube-badge").show();
+                jQuery("#sl-cube-badge").text(data.actions.length);
+            } else {
+                jQuery("#sl-cube-badge").hide();
+            }
+        }
+    }
+
 
 
 
