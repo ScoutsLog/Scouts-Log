@@ -2,6 +2,9 @@ var SLEW = new ThePlatform();
 
 (function(S) {
 
+    S.userPrefs = {};
+
+
     S.getLocalizedStrings = function(data, callback) {
         var P = S;
 
@@ -55,6 +58,17 @@ var SLEW = new ThePlatform();
         // Update position setting
         chrome.storage.local.set({'position': pos});
     }
+
+    S.getUserPrefs = function(data, callback) {
+        chrome.storage.local.get('prefs', function(d) {
+            S.sendMessage(callback, d.prefs);
+        });
+    }
+
+    S.setUserPrefs = function(msg) {
+        // Update prefs setting
+        chrome.storage.local.set({'prefs': msg});
+    }
     
     S.register = function() {
         var P = S;
@@ -89,7 +103,8 @@ var SLEW = new ThePlatform();
                             {
                                 baseDataURL: chrome.extension.getURL(""),
                                 locale: P.language,
-                                user: P.user
+                                user: P.user,
+                                userPrefs: P.userPrefs
                             }
                         );
                     }
@@ -99,7 +114,13 @@ var SLEW = new ThePlatform();
 
         xhr.send();
     }
-    
+
+
+    // Load user preferences
+        chrome.storage.local.get('prefs', function(d) {
+            S.userPrefs = d.prefs;
+        });
+
 
     // Inject scouts.css into page 
         var c = document.createElement('link');

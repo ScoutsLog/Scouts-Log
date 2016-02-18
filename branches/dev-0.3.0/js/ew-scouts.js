@@ -3,6 +3,7 @@
     S.images = {};
 
     S.user = '';
+    S.userPrefs = {};
     
     S.windowState = '';
 
@@ -99,6 +100,7 @@
         S.baseDataURL = msg.baseDataURL;
         S.locale = msg.locale;
         S.user = msg.user;
+        S.userPrefs = msg.userPrefs;
 
         // Begin creating UI elements
         S.init_ui();
@@ -230,6 +232,7 @@
         S.setMainPanel();
         S.setFloatingPanel();
         S.setGameTools();
+        S.setSettingsPanel();
     }
 
 
@@ -276,7 +279,8 @@
 
         // Set main panel to be draggable
         jQuery("#slPanel").draggable({
-            container: 'window'
+            container: 'window',
+            handle: '.slPanelHeader'
         });
 
         // Set main panel to be resizable
@@ -294,7 +298,9 @@
 
         // Set event handler for close button
         jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
-            if (S.windowState == "error") {
+            if (jQuery(".sl-confirmation")) {
+                jQuery(".sl-confirmation").remove();
+            } else if (S.windowState == "error") {
                 jQuery('#slPanelError').hide();
             } else {
                 jQuery('#slPanel').hide();
@@ -711,6 +717,66 @@
     }
 
 
+    /**
+     * UI: Set Settings Panel Items
+     *
+     * This function loads settings for application within the EyeWire settings panel
+     */
+    S.setSettingsPanel = function() {
+        // Send content request
+        S.getContent("settings.htm", "setSettingsPanel_Content");
+    }
+
+    S.setSettingsPanel_Content = function(data) {
+        // Save content to settings panel
+        jQuery("#settingsMenu").append(data);
+
+        // Apply UI functionality
+	jQuery("#settingsMenu .sl-setting-group [prefcheck]").checkbox().each(function() {
+            var t = jQuery(this).find("[prefcheck]");
+            var p = t.attr("prefcheck").split("_")[1];
+
+            if (typeof S.userPrefs[p] != "undefined") {
+                t.prop("checked", S.userPrefs[p]);
+                
+                if (S.userPrefs[p] == true) {
+                    jQuery(this).removeClass("off").addClass("on");
+                } else {
+                    jQuery(this).removeClass("on").addClass("off");
+                }
+            }
+        });
+
+        jQuery("#settingsMenu .sl-setting-group [prefcheck]").change(function(e) {
+            e.stopPropagation();
+
+            var t = jQuery(this);
+
+            var p = t.attr("prefcheck").split("_")[1];
+            S.userPrefs[p] = t.is(":checked");
+
+            S.sendMessage("setUserPrefs", S.userPrefs, "");
+        });
+
+        jQuery("#settingsMenu .sl-setting-group .checkbox").click(function(e) {
+            var t = jQuery(this).find("[prefcheck]");
+
+            t.prop("checked", !t.is(":checked") );
+            t.change();
+        });
+
+        jQuery("#settingsMenu .sl-setting-group [prefcheck]").closest("div.setting").click(function(e) {
+            e.stopPropagation();
+
+            var t = jQuery(this).find("[prefcheck]");
+
+            t.prop("checked", !t.is(":checked") );
+            t.change();
+        });
+
+    }
+
+
 
 
 
@@ -731,14 +797,18 @@
     S.setLinks = function(o) {
         jQuery(o).find('.sl-jump-task').each(function() {
             var task = jQuery(this).attr('data-task');
+
+            var p = jQuery(this);
             
-            jQuery(this).attr( "title", S.getLocalizedString("actionJumpTaskTooltip") );
-            
-            jQuery(this).click(function() {
+            p.attr( "title", S.getLocalizedString("actionJumpTaskTooltip") );
+
+            var j = function(t) {
+                // Hide main panel
                 jQuery('#slPanel').hide();
                 jQuery('#slPanelShadow').hide();
 
-                jQuery.getJSON("/1.0/task/" + task).done(function(d) {
+                // Get cube details and jump
+                jQuery.getJSON("/1.0/task/" + t).done(function(d) {
                     if (!d.data.channel.metadata) {
                         return;
                     }
@@ -758,6 +828,19 @@
 
                     window.tomni.ui.jumpToTask(d);
                 });
+            };
+            
+            p.click(function() {
+                // See if this is a chat jump link
+                if ( p.hasClass("sl-jump-task-chat") && S.userPrefs.confirmjump == true ) {
+                    if (window.tomni.gameMode) {
+                        S.confirmationDialog("<h2>Confirm Exit Cube</h2><p>Are you sure you want to exit this cube without submitting or reaping first?</p>", function() { j(task); }, "");
+                    } else {
+                        j(task);
+                    }
+                } else {
+                     j(task);
+                }                
             });
         });
         
@@ -805,7 +888,7 @@
         var t = jQuery(o).children('.actualText').html();
 
         // Search for cube links
-        var text = t.replace(/#([0-9]+)/g, '<a class="sl-jump-task" data-task="$1" title="' + S.getLocalizedString("actionJumpTaskTooltip") + '">#$1</a>');
+        var text = t.replace(/#([0-9]+)/g, '<a class="sl-jump-task sl-jump-task-chat" data-task="$1" title="' + S.getLocalizedString("actionJumpTaskTooltip") + '">#$1</a>');
 
         // Replace chat text
         jQuery(o).children('.actualText').html(text);
@@ -949,6 +1032,31 @@
         return {task: t, cell: c};
     }
 
+    S.confirmationDialog = function(content, callback_yes, callback_no) {
+        var box = '<div class="sl-confirmation">';
+        box += content;
+        box += '<button type="button" class="sl-confirmation-yes">' + S.getLocalizedString("labelYes") + '</button> ';
+        box += '<button type="button" class="sl-confirmation-no">' + S.getLocalizedString("labelNo") + '</button> ';
+        box += '</div>';
+
+        jQuery("#slPanelShadow").show();
+        jQuery(".gameBoard").append(box);
+
+        jQuery(".sl-confirmation button.sl-confirmation-yes").click(function() {
+            jQuery("#slPanelShadow").hide();
+            jQuery(".sl-confirmation").remove();
+
+            if (typeof callback_yes == "function") { callback_yes(); }
+        });
+
+        jQuery(".sl-confirmation button.sl-confirmation-no").click(function() {
+            jQuery("#slPanelShadow").hide();
+            jQuery(".sl-confirmation").remove();
+
+            if (typeof callback_no == "function") { callback_no(); }
+        });
+
+    }
 
 
 
