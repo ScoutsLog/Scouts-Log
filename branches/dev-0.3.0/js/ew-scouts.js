@@ -300,9 +300,7 @@
 
         // Set event handler for close button
         jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
-            if (jQuery(".sl-confirmation").length > 0) {
-                jQuery(".sl-confirmation").remove();
-            } else if (S.windowState == "error") {
+            if (S.windowState == "error") {
                 S.windowState = "";
                 jQuery('#slPanelError').hide();
             } else {
@@ -945,31 +943,6 @@
         return {task: t, cell: c};
     }
 
-    S.confirmationDialog = function(content, callback_yes, callback_no) {
-        var box = '<div class="sl-confirmation">';
-        box += content;
-        box += '<button type="button" class="sl-confirmation-yes">' + S.getLocalizedString("labelYes") + '</button> ';
-        box += '<button type="button" class="sl-confirmation-no">' + S.getLocalizedString("labelNo") + '</button> ';
-        box += '</div>';
-
-        jQuery("#slPanelShadow").show();
-        jQuery(".gameBoard").append(box);
-
-        jQuery(".sl-confirmation button.sl-confirmation-yes").click(function() {
-            jQuery("#slPanelShadow").hide();
-            jQuery(".sl-confirmation").remove();
-
-            if (typeof callback_yes == "function") { callback_yes(); }
-        });
-
-        jQuery(".sl-confirmation button.sl-confirmation-no").click(function() {
-            jQuery("#slPanelShadow").hide();
-            jQuery(".sl-confirmation").remove();
-
-            if (typeof callback_no == "function") { callback_no(); }
-        });
-
-    }
 
 
 
