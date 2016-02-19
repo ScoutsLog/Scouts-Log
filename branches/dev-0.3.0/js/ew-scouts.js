@@ -202,13 +202,6 @@
         });
 
 
-        // Hook chat window
-        jQuery('body').on('DOMNodeInserted', '#content .gameBoard .chatMsgContainer', function(e) {
-            if (jQuery(e.target).attr('class') === 'chatMsg') {
-                S.setChatLinks(e.target);
-            }
-        });
-
         // Create listener for cube submission data
         jQuery(document).on('cube-submission-data', function(e, data) {
             // Get current cube/task
@@ -242,7 +235,6 @@
         S.setMainPanel();
         S.setFloatingPanel();
         S.setGameTools();
-        S.setSettingsPanel();
     }
 
 
@@ -730,66 +722,6 @@
     }
 
 
-    /**
-     * UI: Set Settings Panel Items
-     *
-     * This function loads settings for application within the EyeWire settings panel
-     */
-    S.setSettingsPanel = function() {
-        // Send content request
-        S.getContent("settings.htm", "setSettingsPanel_Content");
-    }
-
-    S.setSettingsPanel_Content = function(data) {
-        // Save content to settings panel
-        jQuery("#settingsMenu").append(data);
-
-        // Apply UI functionality
-	jQuery("#settingsMenu .sl-setting-group [prefcheck]").checkbox().each(function() {
-            var t = jQuery(this).find("[prefcheck]");
-            var p = t.attr("prefcheck").split("_")[1];
-
-            if (typeof S.userPrefs[p] != "undefined") {
-                t.prop("checked", S.userPrefs[p]);
-                
-                if (S.userPrefs[p] == true) {
-                    jQuery(this).removeClass("off").addClass("on");
-                } else {
-                    jQuery(this).removeClass("on").addClass("off");
-                }
-            }
-        });
-
-        jQuery("#settingsMenu .sl-setting-group [prefcheck]").change(function(e) {
-            e.stopPropagation();
-
-            var t = jQuery(this);
-
-            var p = t.attr("prefcheck").split("_")[1];
-            S.userPrefs[p] = t.is(":checked");
-
-            S.sendMessage("setUserPrefs", S.userPrefs, "");
-        });
-
-        jQuery("#settingsMenu .sl-setting-group .checkbox").click(function(e) {
-            var t = jQuery(this).find("[prefcheck]");
-
-            t.prop("checked", !t.is(":checked") );
-            t.change();
-        });
-
-        jQuery("#settingsMenu .sl-setting-group [prefcheck]").closest("div.setting").click(function(e) {
-            e.stopPropagation();
-
-            var t = jQuery(this).find("[prefcheck]");
-
-            t.prop("checked", !t.is(":checked") );
-            t.change();
-        });
-
-    }
-
-
 
 
 
@@ -814,14 +746,14 @@
             var p = jQuery(this);
             
             p.attr( "title", S.getLocalizedString("actionJumpTaskTooltip") );
-
-            var j = function(t) {
+            
+            p.click(function() {
                 // Hide main panel
                 jQuery("#slPanel").hide();
                 jQuery("#slPanelShadow").hide();
 
                 // Get cube details and jump
-                jQuery.getJSON("/1.0/task/" + t).done(function(d) {
+                jQuery.getJSON("/1.0/task/" + task).done(function(d) {
                     if (!d.data.channel.metadata) {
                         return;
                     }
@@ -840,20 +772,7 @@
                     }
 
                     window.tomni.ui.jumpToTask(d);
-                });
-            };
-            
-            p.click(function() {
-                // See if this is a chat jump link
-                if ( p.hasClass("sl-jump-task-chat") && S.userPrefs.confirmjump == true ) {
-                    if (window.tomni.gameMode) {
-                        S.confirmationDialog("<h2>Confirm Exit Cube</h2><p>Are you sure you want to exit this cube without submitting or reaping first?</p>", function() { j(task); }, "");
-                    } else {
-                        j(task);
-                    }
-                } else {
-                     j(task);
-                }                
+                });               
             });
         });
         
@@ -890,25 +809,6 @@
             });
         });
         
-    }
-
-
-    /**
-     * Utils: Set Common Links in Chat Window
-     */
-    S.setChatLinks = function(o) {
-        // Get actual chat text
-        var t = jQuery(o).children(".actualText").html();
-
-        // Search for cube links
-        var text = t.replace(/#([0-9]+)/g, '<a class="sl-jump-task sl-jump-task-chat" data-task="$1" title="' + S.getLocalizedString("actionJumpTaskTooltip") + '">#$1</a>');
-
-        // Replace chat text
-        jQuery(o).children(".actualText").html(text);
-
-        // Refresh chat links
-        S.setLinks(o);
-
     }
 
 
