@@ -228,13 +228,6 @@ function nice_number(n) {
         });
 
 
-        // Hook chat window
-        jQuery('body').on('DOMNodeInserted', '#content .gameBoard .chatMsgContainer', function(e) {
-            if (jQuery(e.target).attr('class') === 'chatMsg') {
-                S.setChatLinks(e.target);
-            }
-        });
-
         // Create listener for cube submission data
         jQuery(document).on('cube-submission-data', function(e, data) {
             // Get current cube/task
@@ -1444,24 +1437,6 @@ function nice_number(n) {
         });
         
     };
-
-    /**
-     * Utils: Set Common Links in Chat Window
-     */
-    S.setChatLinks = function(o) {
-        // Get actual chat text
-        var t = jQuery(o).children('.actualText').html();
-
-        // Search for cube links
-        var text = t.replace(/#([0-9]+)/g, '<a class="sl-jump-task" data-task="$1" title="' + S.getLocalizedString("actionJumpTaskTooltip") + '">#$1</a>');
-
-        // Replace chat text
-        jQuery(o).children('.actualText').html(text);
-
-        // Refresh chat links
-        S.setLinks(o);
-
-    }
 
     /**
      * UI: Create Main Window
