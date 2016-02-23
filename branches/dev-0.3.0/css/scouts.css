@@ -281,6 +281,11 @@ div#sl-action-table {
 /* ------------------------------------------------------------------------- */
 
 
+.hidden {
+    display: none !important;
+}
+
+
 .sl-capture {
     color: #d076d7 !important;
 }

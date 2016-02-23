@@ -210,6 +210,9 @@
     "labelImage": {
         "message": "Image"
     },
+    "labelIssue": {
+        "message": "Set Issue Flag"
+    },
     "labelLabel": {
         "message": "Label"
     },
@@ -458,7 +461,25 @@
         "description": "Option text to indicate viewing reaped (admin) submissions."
     },
     
-    
+
+    "issueAIMerger": {
+        "message": "AI Merger"
+    },
+    "issueBlackSpill": {
+        "message": "Black Spill"
+    },
+    "issueDuplicate": {
+        "message": "Duplicate"
+    },
+    "issueInterHalfDuplicate": {
+        "message": "Inter-Half Duplicate"
+    },
+    "issueNone": {
+        "message": "None"
+    },
+    "issueWrongParent": {
+        "message": "Wrong Parent"
+    },
         
     
     "statusAll": {
@@ -502,6 +523,26 @@
     },
     "statusWatch": {
         "message": "Watch"
+    },
+
+
+    "settingsCellList": {
+        "message": "Display Cell List"
+    },
+    "settingsOpenTasks": {
+        "message": "Display Open Tasks"
+    },
+    "settingsNeedAdmin": {
+        "message": "Display Need Admin"
+    },
+    "settingsNeedScythe": {
+        "message": "Display Need Scythe"
+    },
+    "settingsWatch": {
+        "message": "Display Watch"
+    },
+    "settingsHistory": {
+        "message": "Display History"
     },
     
     

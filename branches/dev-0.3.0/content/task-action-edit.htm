@@ -11,8 +11,9 @@
 </div><br />
 
 <form onsubmit="return false;">
-<input type="hidden" id="sl-action-task" name="task" value="" />
-<input type="hidden" id="sl-action-cell" name="cell" value="" />
+<input type="hidden" id="sl-action-task" name="task" value="{task}" />
+<input type="hidden" id="sl-action-cell" name="cell" value="{cell}" />
+<input type="hidden" id="sl-action-entry" name="id" value="{entry}" />
 
 <div id="sl-action-table">
 <table class="sl-table">
@@ -52,14 +53,7 @@
 </tr>
 <tr>
 <td><strong>{%LS_labelImage}:</strong></td>
-<td>
-<input type="hidden" id="sl-action-image" name="image-data" value="" />
-<input type="hidden" id="sl-action-image-3d" name="image-data-3d" value="" />
-<input type="hidden" id="sl-action-image-2d" name="image-data-2d" value="" />
-<input type="hidden" id="sl-action-image-annotated" name="image-data-annotated" value="" />
-<input type="hidden" id="sl-action-image-sketch" name="image-data-sketch" value="" />
-<div id="sl-action-image-status">{%LS_messageProcessing}</div>
-</td>
+<td><div id="sl-action-image-status"></div></td>
 </tr>
 <tr>
 <td><strong>{%LS_labelNotes}:</strong></td>

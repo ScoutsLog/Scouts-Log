@@ -235,6 +235,7 @@
         S.setMainPanel();
         S.setFloatingPanel();
         S.setGameTools();
+        S.setSettingsPanel();
     }
 
 
@@ -500,6 +501,90 @@
         
         S.doPanelStats();
 
+        // Set initial button state
+        S.doPanelButtonState();
+    }
+
+
+    /**
+     * Update Floating Panel Buttons
+     */
+    S.doPanelButtonState = function() {
+        // Get user preferences
+        if (typeof S.userPrefs["display-cell-list"] != "undefined") {
+            var cl = (S.userPrefs["display-cell-list"] == true) ? true : false;
+        } else {
+            var cl = true;
+        }
+
+        if (typeof S.userPrefs["display-open-tasks"] != "undefined") {
+            var ot = (S.userPrefs["display-open-tasks"] == true) ? true : false;
+        } else {
+            var ot = true;
+        }
+
+        if (typeof S.userPrefs["display-need-admin"] != "undefined") {
+            var na = (S.userPrefs["display-need-admin"] == true) ? true : false;
+        } else {
+            var na = true;
+        }
+
+        if (typeof S.userPrefs["display-need-scythe"] != "undefined") {
+            var ns = (S.userPrefs["display-need-scythe"] == true) ? true : false;
+        } else {
+            var ns = true;
+        }
+
+        if (typeof S.userPrefs["display-watch"] != "undefined") {
+            var wt = (S.userPrefs["display-watch"] == true) ? true : false;
+        } else {
+            var wt = true;
+        }
+
+        if (typeof S.userPrefs["display-history"] != "undefined") {
+            var hs = (S.userPrefs["display-history"] == true) ? true : false;
+        } else {
+            var hs = true;
+        }
+
+
+        // Update button states
+        if (cl == true) {
+            jQuery("#scoutsLogFloatingControls a.sl-cell-list").removeClass("hidden");
+        } else {
+            jQuery("#scoutsLogFloatingControls a.sl-cell-list").addClass("hidden");
+        }
+
+        if (ot == true) {
+            jQuery("#scoutsLogFloatingControls a.sl-open").removeClass("hidden");
+        } else {
+            jQuery("#scoutsLogFloatingControls a.sl-open").addClass("hidden");
+        }
+
+        if (na == true) {
+            jQuery("#scoutsLogFloatingControls a.sl-need-admin").removeClass("hidden");
+        } else {
+            jQuery("#scoutsLogFloatingControls a.sl-need-admin").addClass("hidden");
+        }
+
+        if (ns == true) {
+            jQuery("#scoutsLogFloatingControls a.sl-need-scythe").removeClass("hidden");
+        } else {
+            jQuery("#scoutsLogFloatingControls a.sl-need-scythe").addClass("hidden");
+        }
+
+        if (wt == true) {
+            jQuery("#scoutsLogFloatingControls a.sl-watch").removeClass("hidden");
+        } else {
+            jQuery("#scoutsLogFloatingControls a.sl-watch").addClass("hidden");
+        }
+
+        if (hs == true) {
+            jQuery("#scoutsLogFloatingControls a.sl-history").removeClass("hidden");
+        } else {
+            jQuery("#scoutsLogFloatingControls a.sl-history").addClass("hidden");
+        }
+
     }
 
 
@@ -720,6 +805,69 @@
     }
 
 
+    /**
+     * UI: Set Settings Panel Items
+     *
+     * This function loads settings for application within the EyeWire settings panel
+     */
+    S.setSettingsPanel = function() {
+        // Send content request
+        S.getContent("settings.htm", "setSettingsPanel_Content");
+    }
+
+    S.setSettingsPanel_Content = function(data) {
+        // Save content to settings panel
+        jQuery("#settingsMenu").append(data);
+
+        // Apply UI functionality
+	jQuery("#settingsMenu .sl-setting-group [prefcheck]").checkbox().each(function() {
+            var t = jQuery(this).find("[prefcheck]");
+            var p = t.attr("prefcheck").split("_")[1];
+
+            if (typeof S.userPrefs[p] != "undefined") {
+                t.prop("checked", S.userPrefs[p]);
+                
+                if (S.userPrefs[p] == true) {
+                    jQuery(this).removeClass("off").addClass("on");
+                } else {
+                    jQuery(this).removeClass("on").addClass("off");
+                }
+            }
+        });
+
+        jQuery("#settingsMenu .sl-setting-group [prefcheck]").change(function(e) {
+            e.stopPropagation();
+
+            var t = jQuery(this);
+
+            var p = t.attr("prefcheck").split("_")[1];
+            S.userPrefs[p] = t.is(":checked");
+
+            S.sendMessage("setUserPrefs", S.userPrefs, "");
+
+            S.doPanelButtonState();
+        });
+
+        jQuery("#settingsMenu .sl-setting-group .checkbox").click(function(e) {
+            var t = jQuery(this).find("[prefcheck]");
+
+            t.prop("checked", !t.is(":checked") );
+            t.change();
+        });
+
+        jQuery("#settingsMenu .sl-setting-group [prefcheck]").closest("div.setting").click(function(e) {
+            e.stopPropagation();
+
+            var t = jQuery(this).find("[prefcheck]");
+
+            t.prop("checked", !t.is(":checked") );
+            t.change();
+        });
+
+    }
+
+
+
 
 
 
@@ -885,6 +1033,40 @@
                 result = S.getLocalizedString("statusOpen");;
 
                 break;
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Utils: Get Issue Indicator Text
+     */
+    S.getLocalizedStatusIssue = function(issue) {
+        var result = "";
+
+        switch (issue) {
+            case "ai-merger":
+                result = S.getLocalizedString("issueAIMerger");
+
+                break;
+            case "blackspill":
+                result = S.getLocalizedString("issueBlackSpill");
+
+                break;
+            case "duplicate":
+                result = S.getLocalizedString("issueDuplicate");
+
+                break;
+            case "inter-duplicate":
+                result = S.getLocalizedString("issueInterHalfDuplicate");
+
+                break;
+            case "wrong-parent":
+                result = S.getLocalizedString("issueWrongParent");
+
+                break;
+
         }
 
         return result;
@@ -1140,11 +1322,18 @@
             if (s.mismatched == 1) {
                 ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
             }
+
+            // Check for status issue indicator
+            var st = S.getLocalizedStatus(s.status);
+
+            if (s.issue != "" && s.issue != null) {
+                st += " / " + S.getLocalizedStatusIssue(s.issue);
+            }
             
             var row = '<tr>';
             row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent1 + ent2 + '</td>';
             row += '<td><a class="sl-cell" data-cell="' + s.cell + '">' + cn + ' (' + s.cell + ')</a></td>';
-            row += '<td class="sl-' + s.status + '">' + S.getLocalizedStatus(s.status) + '</td>';
+            row += '<td class="sl-' + s.status + '">' + st + '</td>';
             row += '<td>' + s.lastUser + '</td>';
             row += '<td>' + s.lastUpdated + '</td>';
             row += '</tr>';
@@ -1288,10 +1477,17 @@
                 if (s.mismatched == 1) {
                     ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
                 }
+
+                // Check for status issue indicator
+                var st = S.getLocalizedStatus(s.status);
+
+                if (s.issue != "" && s.issue != null) {
+                    st += " / " + S.getLocalizedStatusIssue(s.issue);
+                }
     
                 var row = '<tr>';
                 row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent1 + ent2 + '</td>';
-                row += '<td class="sl-' + s.status + '">' + S.getLocalizedStatus(s.status) + '</td>';
+                row += '<td class="sl-' + s.status + '">' + st + '</td>';
                 row += '<td>' + s.lastUser + '</td>';
                 row += '<td>' + s.lastUpdated + '</td>';
                 row += '</tr>';
@@ -1421,11 +1617,18 @@
         if (data.votes >= 1000000) {
             vstyle = ' class="sl-admin"';
         }
+
+        // Check for status issue indicator
+        var status = S.getLocalizedStatus(data.status);
+
+        if (data.issue != "" && data.issue != null) {
+            status += " / " + S.getLocalizedStatusIssue(data.issue);
+        }
         
         // Display task summary
         jQuery("#sl-summary-table table tbody").empty();
         jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelCell") + ':</strong></td><td><a class="sl-cell" data-cell="' + data.cell + '">' + data.cellName + ' (' + data.cell + ')</a></td></tr>');
-        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelStatus") + ':</strong></td><td class="sl-' + data.status + '">' + S.getLocalizedStatus(data.status) + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelStatus") + ':</strong></td><td class="sl-' + data.status + '">' + status + '</td></tr>');
         jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelWeight") + ':</strong></td><td' + wstyle + '>' + nice_number(data.weight) + '</td></tr>');
         jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelVotes") + ':</strong></td><td' + vstyle + '>' + nice_number(data.votes) + ' / ' + nice_number(data.votesMax) + '</td></tr>');
         jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelLastUser") + ':</strong></td><td>' + data.lastUser + '</td></tr>');
@@ -1452,9 +1655,23 @@
             if (s.reaped == 0) {
                 user = '(' + s.user + ')';
             }
+
+            var edit = "";
+
+            if (S.user == s.user) {
+                edit = '<a href="javascript:void(0);" class="sl-edit-action" data-entry="' + s.id + '" title="' + S.getLocalizedString("actionEditEntryTooltip") + '"><img src="' + S.images.pencil + '" /></a>';
+            }
+
+            // Check for status issue indicator
+            var st = S.getLocalizedStatus(s.status);
+
+            if (s.issue != "" && s.issue != null) {
+                st += " / " + S.getLocalizedStatusIssue(s.issue);
+            }
             
             var row = '<tr>';
-            row += '<td class="sl-' + s.status + '">' + S.getLocalizedStatus(s.status) + '</td>';
+            row += '<td>' + edit + '</td>';
+            row += '<td class="sl-' + s.status + '">' + st + '</td>';
             row += '<td>' + user + '</td>';
             row += '<td>' + s.notes + '</td>';
             row += '<td>' + img + '</td>';
@@ -1483,6 +1700,7 @@
                     cell: data.cell,
                     task: data.task,
                     status: "good",
+                    issue: "",
                     reaped: 0,
                     notes: "",
                     image: ""
@@ -1499,6 +1717,15 @@
                 );
             });
         }
+
+        // Set event handler for edit icons
+        jQuery("#sl-main-table a.sl-edit-action").click(function() {
+            // Get current entry
+            var en = jQuery(this).attr("data-entry");
+
+            // Display edit screen
+            S.prepareTaskActionEditWindow(data.task, en);
+        });
         
         // Set links for panel
         S.setLinks("#slPanel");
@@ -1597,6 +1824,7 @@
                     cell: c,
                     task: t,
                     status: jQuery("#sl-action-status").val(),
+                    issue: jQuery("#sl-action-issue").val(),
                     reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
                     notes: jQuery("#sl-action-notes").val(),
                     image: jQuery("#sl-action-image-annotated").val()
@@ -1606,6 +1834,7 @@
                     cell: c,
                     task: t,
                     status: jQuery("#sl-action-status").val(),
+                    issue: jQuery("#sl-action-issue").val(),
                     reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
                     notes: jQuery("#sl-action-notes").val(),
                     image: jQuery("#sl-action-image").val()
@@ -1625,15 +1854,16 @@
 
         // Get task summary
         S.getTaskSummary(ts);
+
+        // Prepare captured image
+        S.captureImage();
     }
 
     S.submitTaskActionCallback = function(data) {
         if (data.result == true) {
-            // Success
+            // Success, go back to previous screen
 
-            jQuery("#slPanel").hide();
-            jQuery("#slPanelShadow").hide();
-            S.windowState = "";
+            S.navigateWindowHistory(S.windowHistoryPosition);
         } else {
             // Error
 
@@ -1691,7 +1921,15 @@
             status = S.getLocalizedStatus(data.status);
             status_class = ' class="sl-' + data.status + '"';
 
-            jQuery("#sl-action-status").val(data.status);
+            if (data.issue != "") {
+                status += " / " + S.getLocalizedStatusIssue(data.issue);
+            }
+
+            var sp = S.windowState.split("-");
+
+            if (sp.length != 4 && sp[3] != "edit") {
+                jQuery("#sl-action-status").val(data.status);
+            }
         }
         
         // Display task summary
@@ -1705,9 +1943,6 @@
         
         // Set links
         S.setLinks("#slPanel");
-
-        // Prepare captured image
-        S.captureImage();
     }
 
 
@@ -1920,6 +2155,143 @@
             }
         });
 
+    }
+
+
+/**
+ * UI:  Show Edit Task Entry Screen
+ * ----------------------------------------------------------------------------
+ */
+    S.prepareTaskActionEditWindow = function(t, e) {
+        if (typeof t != "undefined") {
+            // Set window state
+            S.windowState = "action-" + t + "-" + e + "-edit";
+
+            // Send content request
+            S.getContent("task-action-edit.htm", "prepareTaskActionEditWindow_Content");
+        } else {
+            // Invalid task/cube
+
+            alert( S.getLocalizedString("error_cube") );
+        }
+    }
+
+    S.prepareTaskActionEditWindow_Content = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "action" && sp[3] != "edit") {
+            return;
+        }
+
+        // Get current task and cell
+        var ts = S.windowState.split("-")[1];
+        var en = S.windowState.split("-")[2];
+
+
+        // Set panel title
+        jQuery("#slPanel h2 small").text( S.getLocalizedString("windowEditEntryTitle") + " (" + S.getLocalizedString("labelTask") + " #" + ts + ")" );
+
+        // Perform content specific string replacements
+        data = data.replace(/{task}/gi, ts);
+        data = data.replace(/{entry}/gi, en);
+
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").show();
+        jQuery("#slPanelShadow").show();
+
+        // Prevent keystrokes for notes from bubbling
+        jQuery("#sl-action-notes").keydown(function(e) {
+            e.stopPropagation();
+        });
+        
+        // Set handlers for buttons
+        jQuery("#slPanel button.sl-cancel").click(function() {
+            S.navigateWindowHistory(S.windowHistoryPosition);
+        });
+
+        jQuery("#slPanel button.sl-submit").click(function() {
+            // Set interface
+            jQuery("#sl-action-buttons button").prop("disabled", true);
+            jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
+
+            // Get current task and cell
+            var t = jQuery("#sl-action-task").val();
+            var c = jQuery("#sl-action-cell").val();
+            var e = jQuery("#sl-action-entry").val();
+
+            // Prepare data object
+            var data = {
+                cell: c,
+                task: t,
+                id: e,
+                status: jQuery("#sl-action-status").val(),
+                issue: jQuery("#sl-action-issue").val(),
+                reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
+                notes: jQuery("#sl-action-notes").val()
+            };
+
+            // Initiate request through plugin
+            S.sendMessage(
+                "postRequest",
+                {
+                     url: S.scoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/update",
+                     data: "data=" + encodeURIComponent(JSON.stringify(data))
+                },
+                "submitTaskActionCallback"
+            );
+        });
+
+        // Get task summary
+        S.getTaskSummary(ts);
+
+        // Initiate data request through plugin
+        S.sendMessage(
+            "getJSON",
+            { url: S.scoutsLogURIbase + "task/" + encodeURIComponent(ts) + "/actions" },
+            "getTaskEditEntries_Data"
+        );
+    }
+
+    S.getTaskEditEntries_Data = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "action" && sp[3] != "edit") {
+            return;
+        }
+
+        // Get current task and cell
+        var t = S.windowState.split("-")[1];
+        var e = S.windowState.split("-")[2];
+
+        // Get specified entry data
+        var entry = jQuery.grep(data.actions, function(a){ return (a.id == e); })[0];
+
+        if (typeof entry != "undefined") {
+            // Populate form with existing data
+
+            jQuery("#sl-action-status").val(entry.status);
+            jQuery("#sl-action-issue").val(entry.issue);
+            jQuery("#sl-action-notes").val(entry.notes);
+
+            if (entry.image != "") {
+                 jQuery("#sl-action-image-status").html('<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '"><img src="' + S.images.photo + '" /></a> <a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a>');
+            } else {
+                 jQuery("#sl-action-image-status").html( S.getLocalizedString("labelNotApplicable") );
+            }
+
+            if (entry.reaped == 1) {
+                jQuery("#sl-action-table input:radio[name=reaped][value=1]").prop("checked", true);
+            } else {
+                jQuery("#sl-action-table input:radio[name=reaped][value=0]").prop("checked", true);
+            }
+        } else {
+            // Error
+
+        }
     }
 
 
