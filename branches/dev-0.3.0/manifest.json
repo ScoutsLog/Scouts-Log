@@ -25,7 +25,7 @@
   
 	"content_scripts": [
 		{
-			"js": [ "js/version-compare.js", "js/platform.js", "js/ew-plugin.js" ],
+			"js": [ "js/version-compare.js", "js/ew-plugin.js" ],
 			"css": [ "css/scouts.css" ],
 			"matches": [ "http://eyewire.org/*" ]
 		},

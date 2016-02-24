@@ -1,32 +1,127 @@
 
-(function (S) {
-    S.images = {};
 
-    S.user = '';
-    S.userPrefs = {};
+function ScoutsLogPlatformContent() {
+    var S = this;
+
+
+    this.locale = 'en';
+    this.localizedStrings = {};
+
+    this.baseDataURL = '';
+    this.images = {};
+
+    this.user = '';
+    this.userPrefs = {};
+    this.userRoles = [];
     
-    S.windowState = '';
+    this.windowState = '';
 
-    S.windowHistory = [];
-    S.windowHistoryPosition = -1;
-    S.windowHistoryNavigating = false;
+    this.windowHistory = [];
+    this.windowHistoryPosition = -1;
+    this.windowHistoryNavigating = false;
 
-    S.panelVertical = false;
-    S.panelPosition = {};
+    this.panelVertical = false;
+    this.panelPosition = {};
 
-    S.statsInterval = 20000;
+    this.statsInterval = 20000;
 
-    S.historyType = '';
-    S.historyCell = 0;
-    S.historyAccuracy = 1;
-    S.historyPosition = 0;
-    S.historyDisplay = 4;
+    this.historyType = '';
+    this.historyCell = 0;
+    this.historyAccuracy = 1;
+    this.historyPosition = 0;
+    this.historyDisplay = 4;
 
-    S.scoutsLogURIbase = 'http://scoutslog.org/1.1/';
-
-
+    this.scoutsLogURIbase = 'http://scoutslog.org/1.1/';
 
 
+
+    /**
+     * Receive Routed Message
+     *
+     * This function accepts a dispatched event object from the plugin
+     * script and executes the specified 'callback' function.
+     */
+    S.receiveMessage = function(e) {
+        // Extract message parameters
+        var dst = e.detail.destination;
+        var data = e.detail.data;
+
+        if (dst != "") {
+            if (typeof S[dst] == "function") {
+                S[dst](data);
+            } else {
+                // Error: Unknown callback
+                console.log("Unknown callback function: " + dst.toString() );
+            }
+        }
+    }
+
+    document.addEventListener('RoutedMessageCS', S.receiveMessage);
+
+
+    /**
+     * Send Routed Message
+     * 
+     * This function routes a message from the main page script
+     * to the main content script.
+     */
+    S.sendMessage = function(dst, data, callback) {
+        var d = {detail: {
+            destination: dst,
+            data: data,
+            callback: callback
+        }};
+        
+        var ev = new CustomEvent('RoutedMessagePS', d);
+        
+        document.dispatchEvent(ev);
+    }
+
+
+    /**
+     * Get Localized String Text
+     *
+     * This function retrieve the translated text for a given
+     * localized key name.
+     */
+    S.getLocalizedString = function(key) {
+        if (S.localizedStrings[key]) {
+            return S.localizedStrings[key];
+        } else {
+            return '__' + key + '__';
+        }
+    }
+
+
+    /**
+     * Get Content Template
+     *
+     * This function retrieves the text of a content template file
+     * and sends the text to the specified callback function.
+     *
+     * The returned text is already processed for localized strings.
+     */
+    S.getContent = function(name, callback) {
+        S.sendMessage(
+            "getContent",
+            { name: name },
+            callback
+        );
+    }
+
+
+    /**
+     * Error Handler
+     *
+     * This function is executed when a platform request has failed.
+     */
+    S.platformError = function(data) {
+        console.log("Platform Error: source: " + data.source + "; status: " + data.status + "; url: " + data.url + ";");
+
+        var ev = new CustomEvent('PlatformContentError', {detail: data});
+
+        document.dispatchEvent(ev);
+    }
 
 
 
@@ -101,6 +196,7 @@
         S.locale = msg.locale;
         S.user = msg.user;
         S.userPrefs = msg.userPrefs;
+        S.userRoles = msg.userRoles;
 
         // Begin creating UI elements
         S.init_ui();
@@ -411,9 +507,12 @@
                 jQuery('#scoutsLogFloatingControls').css('width', '');
 
                 // Update position in settings
+                S.panelPosition = ui.position;
+                S.panelVertical = jQuery('#scoutsLogFloatingControls').hasClass('sl-vertical');
+
                 S.sendMessage(
                     "setPosition",
-                    { position: ui.position, vertical: jQuery('#scoutsLogFloatingControls').hasClass('vertical') },
+                    { position: S.panelPosition, vertical: S.panelVertical },
                     ""
                 );
             }
@@ -446,6 +545,15 @@
                 jQuery('#scoutsLogFloatingControls #sl-task-details').html( S.getLocalizedString("panelTaskDetailsShort") );
                 jQuery('#scoutsLogFloatingControls #sl-task-entry').html( S.getLocalizedString("panelTaskEntryShort") );
             }
+
+            // Update position in settings
+            S.panelVertical = jQuery('#scoutsLogFloatingControls').hasClass('sl-vertical');
+
+            S.sendMessage(
+                "setPosition",
+                { position: S.panelPosition, vertical: S.panelVertical },
+                ""
+            );
             
             // Set timer to update panel stats
             window.scoutsLog.doPanelStats();
@@ -1683,9 +1791,14 @@
         
         // Check for mismatched cell IDs
         if (data.mismatched == 1) {
+            // Create button
             var btn = '<button type="button" class="redButton sl-mismatched" style="margin-left: 10px;" title="' + S.getLocalizedString("actionFixMismatchedTooltip") + '">' + S.getLocalizedString("actionFixMismatched") + '</button>';
-            
+
+            // Add button to window            
             jQuery(btn).insertAfter("#slPanel button.sl-jump-task");
+
+            // Set event handler
+            jQuery("#slPanel button.sl-mismatched").click(function() { S.prepareTaskMismatchWindow(data.task); });
         }
         
         // Check 'set good' button status
@@ -1854,9 +1967,6 @@
 
         // Get task summary
         S.getTaskSummary(ts);
-
-        // Prepare captured image
-        S.captureImage();
     }
 
     S.submitTaskActionCallback = function(data) {
@@ -1921,7 +2031,7 @@
             status = S.getLocalizedStatus(data.status);
             status_class = ' class="sl-' + data.status + '"';
 
-            if (data.issue != "") {
+            if (data.issue != "" && data.issue != null) {
                 status += " / " + S.getLocalizedStatusIssue(data.issue);
             }
 
@@ -1943,6 +2053,11 @@
         
         // Set links
         S.setLinks("#slPanel");
+
+        // Get captured image
+        if (jQuery("#sl-action-entry").length == 0) {
+            S.captureImage();
+        }
     }
 
 
@@ -2288,11 +2403,85 @@
             } else {
                 jQuery("#sl-action-table input:radio[name=reaped][value=0]").prop("checked", true);
             }
+
+            jQuery("#sl-action-image-status a.sl-preview").click(function() {
+                window.open(entry.image);
+            });
         } else {
             // Error
 
         }
     }
+
+
+/**
+ * UI:  Show Task Cell Mismatch Screen
+ * ----------------------------------------------------------------------------
+ */
+    S.prepareTaskMismatchWindow = function(t) {
+        if (typeof t != "undefined") {
+            // Set window state
+            S.windowState = "mismatch-" + t;
+
+            // Send content request
+            S.getContent("task-mismatch.htm", "prepareTaskMismatchWindow_Content");
+        } else {
+            // Invalid task/cube
+
+            alert( S.getLocalizedString("error_cube") );
+        }
+    }
+
+    S.prepareTaskMismatchWindow_Content = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "mismatch") {
+            return;
+        }
+
+        // Get current task and cell
+        var ts = S.windowState.split("-")[1];
+
+
+        // Set panel title
+        jQuery("#slPanel h2 small").text( S.getLocalizedString("windowTaskMismatchTitle") + " (" + S.getLocalizedString("labelTask") + " #" + ts + ")" );
+
+        // Perform content specific string replacements
+        data = data.replace(/{task}/gi, ts);
+
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").show();
+        jQuery("#slPanelShadow").show();
+
+        // Prevent keystrokes for notes from bubbling
+        jQuery("#sl-action-notes").keydown(function(e) {
+            e.stopPropagation();
+        });
+        
+        // Set handlers for buttons
+        jQuery("#slPanel button.sl-cancel").click(function() {
+            S.navigateWindowHistory(S.windowHistoryPosition);
+        });
+
+        jQuery("#slPanel button.sl-submit").click(function() {
+            // Set interface
+            jQuery("#sl-action-buttons button").prop("disabled", true);
+            jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
+
+
+        });
+
+        // Get task summary
+        S.getTaskSummary(ts);
+
+        // Initiate data request through plugin
+
+    }
+
+
 
 
 /**
@@ -3006,9 +3195,6 @@
 
     S.sendMessage("getLocalizedStrings", {}, "init_locale");
 
+}
 
-
-
-
-
-})(window.scoutsLog = window.scoutsLog || new ThePlatformContent());
+window.scoutsLog = new ScoutsLogPlatformContent();
