@@ -24,6 +24,7 @@ function ScoutsLogPlatformContent() {
     this.panelPosition = {};
 
     this.statsInterval = 20000;
+    this.taskInterval = 15000;
 
     this.historyType = '';
     this.historyCell = 0;
@@ -256,42 +257,77 @@ function ScoutsLogPlatformContent() {
 
                 jQuery("#slPanel div.slPanelContent").height(h);
             }
+
+            var t = parseInt(jQuery("#scoutsLogFloatingControls").css("top"), 10);
+            var l = parseInt(jQuery("#scoutsLogFloatingControls").css("left"), 10);
+
+            if (t > (jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height())) {
+                t = jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height();
+            }
+
+            if (l > (jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width())) {
+                l = jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width();
+            }
+
+            if (t < -58) {
+                t = -58;
+            }
+
+            if (l < 0) {
+                l = 0;
+            }
+
+            S.panelPosition = {top: t, left: l};
+
+            jQuery("#scoutsLogFloatingControls").css("top", t).css("left", l);
+
+            S.sendMessage(
+                "setPosition",
+                { position: S.panelPosition, vertical: S.panelVertical },
+                ""
+            );
         });
         
         // Hook document keypress
         jQuery(window).keyup(function(k) {
             if (k.keyCode === Keycodes.codes.esc) {
-                if (jQuery('#slPanel').is(':visible')) {
-                    jQuery('#slPanel').hide();
-                    jQuery('#slPanelShadow').hide();
+                if (jQuery("#slPanel").is(":visible")) {
+                    jQuery("#slPanel").hide();
+                    jQuery("#slPanelShadow").hide();
                 }
                 
-                if (jQuery('#sl-task-details').is(':visible')) {
-                    jQuery('#sl-task-details').hide();
-                    jQuery('#sl-task-entry').hide();
-                    jQuery('#sl-cube-badge').hide();
+                if (jQuery("#sl-task-details").is(":visible")) {
+                    jQuery("#sl-task-details").hide();
+                    jQuery("#sl-task-entry").hide();
+                    jQuery("#sl-cube-badge").hide();
                 }
                 
                 S.flagEditActions = false;
                 S.flagRealActions = false;
             } else if (k.keyCode === Keycodes.codes.l && (k.metaKey || k.altKey)) {
-                // Toggle scouts' log panel display
+                // Toggle scouts" log panel display
 
-                if (S.windowState != '') {
-                    if (jQuery('#slPanel').is(':visible')) {
-                        jQuery('#slPanel').hide();
-                        jQuery('#slPanelShadow').hide();
-                        jQuery('#scoutsLogFloatingControls').hide();
+                if (S.windowState != "") {
+                    if (jQuery("#slPanel").is(":visible")) {
+                        jQuery("#slPanel").hide();
+                        jQuery("#slPanelShadow").hide();
+                        jQuery("#scoutsLogFloatingControls").hide();
                     } else {
-                        if (S.windowState == 'history' && S.historyPosition == S.historyDisplay) {
-                            S.windowState = '';
+                        if (S.windowState == "history" && S.historyPosition == S.historyDisplay) {
+                            S.windowState = "";
 
                             S.getHistory();
                         }
 
-                        jQuery('#slPanel').show();
-                        jQuery('#slPanelShadow').show();
-                        jQuery('#scoutsLogFloatingControls').show();
+                        jQuery("#slPanel").show();
+                        jQuery("#slPanelShadow").show();
+                        jQuery("#scoutsLogFloatingControls").show();
+                    }
+                } else {
+                    if (jQuery("#scoutsLogFloatingControls").is(":visible")) {
+                        jQuery("#scoutsLogFloatingControls").hide();
+                    } else {
+                        jQuery("#scoutsLogFloatingControls").show();
                     }
                 }
             }
@@ -299,12 +335,12 @@ function ScoutsLogPlatformContent() {
 
 
         // Create listener for cube submission data
-        jQuery(document).on('cube-submission-data', function(e, data) {
+        jQuery(document).on("cube-submission-data", function(e, data) {
             // Get current cube/task
             var target = S.getTargetCube();
 
             // Update data object
-            if (typeof target.task != 'undefined' && typeof target.cell != 'undefined') {
+            if (typeof target.task != "undefined" && typeof target.cell != "undefined") {
                 data.cell = target.cell;
                 data.task = target.task;
 
@@ -378,8 +414,8 @@ function ScoutsLogPlatformContent() {
 
         // Set main panel to be draggable
         jQuery("#slPanel").draggable({
-            container: 'window',
-            handle: '.slPanelHeader'
+            containment: "window",
+            handle: ".slPanelHeader"
         });
 
         // Set main panel to be resizable
@@ -399,12 +435,12 @@ function ScoutsLogPlatformContent() {
         jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
             if (S.windowState == "error") {
                 S.windowState = "";
-                jQuery('#slPanelError').hide();
+                jQuery("#slPanelError").hide();
             } else {
-                jQuery('#slPanel').hide();
+                jQuery("#slPanel").hide();
             }
 
-            jQuery('#slPanelShadow').hide();
+            jQuery("#slPanelShadow").hide();
         });
 
         // Set event handlers for window history buttons
@@ -460,16 +496,20 @@ function ScoutsLogPlatformContent() {
             var t = data.position.top;
             var l = Math.abs(data.position.left);
 
-            if (l > (jQuery(window).width() - 50)) {
-                l = jQuery(window).width() - 50;
+            if (t > (jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height())) {
+                t = jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height();
             }
 
-            if (t > (jQuery(window).height() - 50)) {
-                t = jQuery(window).height() - 50;
+            if (l > (jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width())) {
+                l = jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width();
             }
 
-            if (t < - 50) {
-                t = 0;
+            if (t < -58) {
+                t = -58;
+            }
+
+            if (l < 0) {
+                l = 0;
             }
 
             S.panelPosition = {top: t, left: l};
@@ -501,10 +541,16 @@ function ScoutsLogPlatformContent() {
         jQuery(data).appendTo('#content .gameBoard');
 
         // Set floating panel to be draggable
-        jQuery('#scoutsLogFloatingControls').draggable({
-            container: 'window',
+        jQuery("#scoutsLogFloatingControls").draggable({
+            containment: 'window',
             stop: function(e, ui) {
-                jQuery('#scoutsLogFloatingControls').css('width', '');
+                jQuery("#scoutsLogFloatingControls").css("width", "");
+
+                if (ui.position.top < -58) {
+                    ui.position.top = -58;
+
+                    jQuery("#scoutsLogFloatingControls").css("top", ui.position.top);
+                }
 
                 // Update position in settings
                 S.panelPosition = ui.position;
@@ -622,7 +668,7 @@ function ScoutsLogPlatformContent() {
         if (typeof S.userPrefs["display-cell-list"] != "undefined") {
             var cl = (S.userPrefs["display-cell-list"] == true) ? true : false;
         } else {
-            var cl = true;
+            var cl = false;
         }
 
         if (typeof S.userPrefs["display-open-tasks"] != "undefined") {
@@ -792,6 +838,12 @@ function ScoutsLogPlatformContent() {
 
                     jQuery("#slPanel").show();
                     jQuery("#slPanelShadow").show();
+                    jQuery("#scoutsLogFloatingControls").show();
+                }
+            } else {
+                if (jQuery("#scoutsLogFloatingControls").is(":visible")) {
+                    jQuery("#scoutsLogFloatingControls").hide();
+                } else {
                     jQuery("#scoutsLogFloatingControls").show();
                 }
             }
@@ -1791,21 +1843,22 @@ function ScoutsLogPlatformContent() {
         
         // Check for mismatched cell IDs
         if (data.mismatched == 1) {
-            // Create button
-            var btn = '<button type="button" class="redButton sl-mismatched" style="margin-left: 10px;" title="' + S.getLocalizedString("actionFixMismatchedTooltip") + '">' + S.getLocalizedString("actionFixMismatched") + '</button>';
-
-            // Add button to window            
-            jQuery(btn).insertAfter("#slPanel button.sl-jump-task");
+            // Display button           
+            jQuery("#slPanel button.sl-mismatched").show();
 
             // Set event handler
+            jQuery("#slPanel button.sl-mismatched").unbind("click");
             jQuery("#slPanel button.sl-mismatched").click(function() { S.prepareTaskMismatchWindow(data.task); });
+        } else {
+            // Hide 'fix mismatch' button
+            jQuery("#slPanel button.sl-mismatched").hide();
         }
         
         // Check 'set good' button status
-        if (data.status != "" && data.status != "good") {
-            var btn = '<button type="button" class="greenButton sl-good-action" style="margin-left: 10px;" title="' + S.getLocalizedString("actionSetToGoodTooltip") + '">' + S.getLocalizedString("actionSetToGood") + '</button>';
-            
-            jQuery(btn).insertAfter("#slPanel button.sl-new-action");
+        if (data.status != "" && data.status != "good") {            
+            jQuery("#slPanel button.sl-good-action").show();
+
+            jQuery("#slPanel button.sl-good-action").unbind("click");
 
             jQuery("#slPanel button.sl-good-action").click(function() {
                 // Prepare data object
@@ -1829,7 +1882,11 @@ function ScoutsLogPlatformContent() {
                     "setTaskGoodCallback"
                 );
             });
+        } else {
+            // Hide 'set good' button
+            jQuery("#slPanel button.sl-good-action").hide();
         }
+
 
         // Set event handler for edit icons
         jQuery("#sl-main-table a.sl-edit-action").click(function() {
@@ -1842,6 +1899,9 @@ function ScoutsLogPlatformContent() {
         
         // Set links for panel
         S.setLinks("#slPanel");
+
+        // Set update timer
+        setTimeout(function() { S.updateTaskDetails(data.task); }, S.taskInterval);
     }
 
     S.setTaskGoodCallback = function(data) {
@@ -1868,6 +1928,20 @@ function ScoutsLogPlatformContent() {
                 });
             });
         });
+    }
+
+    S.updateTaskDetails = function(task) {
+        // Check window state
+        if (S.windowState != "task-" + task) {
+            return;
+        }
+
+        // Initiate data request through plugin
+        S.sendMessage(
+            "getJSON",
+            { url: S.scoutsLogURIbase + "task/" + encodeURIComponent(task) + "/actions" },
+            "getTaskEntries_Data"
+        );
     }
 
 
