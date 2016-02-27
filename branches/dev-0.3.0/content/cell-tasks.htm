@@ -1,5 +1,5 @@
 <div class="slOptions">
-<select>
+<select id="sl-status">
 <option value="" selected>{%LS_statusOpen}</option>
 <option value="all">{%LS_statusAll}</option>
 <option value="-" disabled>---------------</option>
@@ -7,11 +7,18 @@
 <option value="missing-branch">{%LS_statusMissingBranch}</option>
 <option value="merger">{%LS_statusMerger}</option>
 <option value="watch">{%LS_statusWatch}</option>
-<option value="need-scythe">{%LS_statusNeedScythe}</option>
 <option value="need-admin">{%LS_statusNeedAdmin}</option>
 <option value="scythe-complete">{%LS_statusScytheComplete}</option>
 <option value="good">{%LS_statusGood}</option>
 <option value="note">{%LS_statusNote}</option>
+</select>
+<select id="sl-issue">
+<option value="">{%LS_issueNone}</option>
+<option value="ai-merger">{%LS_issueAIMerger}</option>
+<option value="black-spill">{%LS_issueBlackSpill}</option>
+<option value="duplicate">{%LS_issueDuplicate}</option>
+<option value="inter-duplicate">{%LS_issueInterHalfDuplicate}</option>
+<option value="wrong-parent">{%LS_issueWrongParent}</option>
 </select>
 </div><br />
 <div id="sl-main-table">

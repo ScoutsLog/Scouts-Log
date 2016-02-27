@@ -410,12 +410,19 @@ function ScoutsLogPlatformContent() {
 
     S.setMainPanel_Content = function(data) {
         // Add main panel to game board
-        jQuery("#content .gameBoard").append(data);
+        jQuery("body").append(data);
 
         // Set main panel to be draggable
         jQuery("#slPanel").draggable({
             containment: "window",
-            handle: ".slPanelHeader"
+            handle: ".slPanelHeader",
+            stop: function(e, ui) {
+                if (ui.position.top < 0) {
+                    ui.position.top = 0;
+
+                    jQuery("#slPanel").css("top", ui.position.top);
+                }
+            }
         });
 
         // Set main panel to be resizable
@@ -504,8 +511,8 @@ function ScoutsLogPlatformContent() {
                 l = jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width();
             }
 
-            if (t < -58) {
-                t = -58;
+            if (t < 0) {
+                t = 0;
             }
 
             if (l < 0) {
@@ -538,7 +545,7 @@ function ScoutsLogPlatformContent() {
         data = data.replace(/{style}/gi, style);
 
         // Add panel to game board
-        jQuery(data).appendTo('#content .gameBoard');
+        jQuery("body").append(data);
 
         // Set floating panel to be draggable
         jQuery("#scoutsLogFloatingControls").draggable({
@@ -546,8 +553,8 @@ function ScoutsLogPlatformContent() {
             stop: function(e, ui) {
                 jQuery("#scoutsLogFloatingControls").css("width", "");
 
-                if (ui.position.top < -58) {
-                    ui.position.top = -58;
+                if (ui.position.top < 0) {
+                    ui.position.top = 0;
 
                     jQuery("#scoutsLogFloatingControls").css("top", ui.position.top);
                 }
