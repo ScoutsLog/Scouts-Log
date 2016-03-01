@@ -1,11 +1,11 @@
 
 function ScoutsLogPlatform() {
-    var P = this;
+    var P = new Object();
 
-    this.user = "";
-    this.language = "en";
-    this.localizedStrings = {};
-    this.userPrefs = {};
+    var slUser = "";
+    var slLanguage = "en";
+    var slLocalizedStrings = {};
+    var slUserPrefs = {};
 
 
 
@@ -18,14 +18,14 @@ function ScoutsLogPlatform() {
      * content script and calls the appropriate function at
      * the plugin level.
      */
-    this.receiveMessage = function(e) {
+    P.receiveMessage = function(e) {
         // Extract message parameters
         var dst = e.detail.destination;
         var data = e.detail.data;
         var cb = e.detail.callback;
 
         if (dst != "") {
-            if (typeof P[dst] == "function") {
+            if (typeof P[dst] == "function" && dst != "receiveMessage") {
                 P[dst](data, cb);
             } else {
                 // Error: Unknown callback
@@ -34,7 +34,7 @@ function ScoutsLogPlatform() {
         }
     }
 
-    document.addEventListener('RoutedMessagePS', this.receiveMessage);
+    document.addEventListener('RoutedMessagePS', P.receiveMessage);
 
 
     /**
@@ -43,7 +43,7 @@ function ScoutsLogPlatform() {
      * This function routes a message from the main content
      * script to the main page script.
      */
-    this.sendMessage = function(dst, data) {
+    P.sendMessage = function(dst, data) {
         var d = {detail: { destination: dst, data: data } };
         var ev = new CustomEvent('RoutedMessageCS', d);
         
@@ -57,7 +57,7 @@ function ScoutsLogPlatform() {
      * response.  The callback is then fired with the response
      * object.
      */
-    this.getJSON = function(msg, callback) {
+    P.getJSON = function(msg, callback) {
         // Get parameters
         var url = msg.url;
         
@@ -88,7 +88,7 @@ function ScoutsLogPlatform() {
      * Sends a GET request and retrieves the response as text.
      * The callback is then fired with the response text.
      */
-    this.getRequest = function(msg, callback) {
+    P.getRequest = function(msg, callback) {
         // Get parameters
         var url = msg.url;
         
@@ -114,7 +114,7 @@ function ScoutsLogPlatform() {
      * response.  The callback is then fired with the response
      * object.
      */
-    this.postRequest = function(msg, callback) {
+    P.postRequest = function(msg, callback) {
         // Get parameters
         var url = msg.url;
         var data = msg.data;
@@ -142,7 +142,7 @@ function ScoutsLogPlatform() {
     }
 
 
-    this.getContent = function(msg, callback) {
+    P.getContent = function(msg, callback) {
         // Get parameters
         var name = msg.name;
         var url = chrome.extension.getURL("content/" + name);
@@ -163,8 +163,8 @@ function ScoutsLogPlatform() {
                     var m = rs[n];
                     var k = m.substring(5, m.length - 1);
 
-                    if (P.localizedStrings[k]) {
-                        var t = P.localizedStrings[k];
+                    if (slLocalizedStrings[k]) {
+                        var t = slLocalizedStrings[k];
                     } else {
                         var t= '__' + k + '__';
                     }
@@ -206,7 +206,7 @@ function ScoutsLogPlatform() {
      * Retrieves and saves localization strings from the messages.json file
      * for the extension.  The default locale from the manifest is used.
      */
-    this.getLocalizationStrings = function(callback) {
+    P.getLocalizationStrings = function(callback) {
         // Load default locale
         var dlc = chrome.runtime.getManifest().default_locale;
         var url = chrome.extension.getURL("_locales/" + dlc + "/messages.json");
@@ -218,7 +218,7 @@ function ScoutsLogPlatform() {
                 var obj = JSON.parse(this.responseText);
                 
                 for (var k in obj) {
-                    P.localizedStrings[k] = obj[k].message;
+                    slLocalizedStrings[k] = obj[k].message;
                 }
 
                 P.getLocalizationStrings2(callback);
@@ -238,13 +238,13 @@ function ScoutsLogPlatform() {
      *
      * This should be called after calling getLocalizationStrings().
      */
-    this.getLocalizationStrings2 = function(callback) {
+    P.getLocalizationStrings2 = function(callback) {
         // Get current locale
         var url = "";
 
-        switch (this.language) {
+        switch (slLanguage) {
             case "ko":
-                url = chrome.extension.getURL("_locales/" + this.language + "/messages.json");
+                url = chrome.extension.getURL("_locales/" + slLanguage + "/messages.json");
 
                 break;
         }
@@ -257,16 +257,16 @@ function ScoutsLogPlatform() {
                     var obj = JSON.parse(this.responseText);
                 
                     for (var k in obj) {
-                        P.localizedStrings[k] = obj[k].message;
+                        slLocalizedStrings[k] = obj[k].message;
                     }
                     
-                    P.sendMessage(callback, P.localizedStrings);
+                    P.sendMessage(callback, slLocalizedStrings);
                 }
             }
 
             xhr.send();
         } else {
-            P.sendMessage(callback, P.localizedStrings);
+            P.sendMessage(callback, slLocalizedStrings);
         }
     }
 
@@ -274,7 +274,7 @@ function ScoutsLogPlatform() {
 
 
 
-    this.getLocalizedStrings = function(data, callback) {
+    P.getLocalizedStrings = function(data, callback) {
         // See if user is logged in and has a language preference
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "http://eyewire.org/1.0/player/describe", true);
@@ -291,16 +291,16 @@ function ScoutsLogPlatform() {
                         lang = res.language;
                     }
 
-                    P.user = res.username;
+                    slUser = res.username;
                 }
                 
                 switch (lang) {
                     case "ko":
-                        P.language = lang;
+                        slLanguage = lang;
                         
                         break;
                     default:
-                        P.language = "en";
+                        slLanguage = "en";
                 }
                 
                 P.getLocalizationStrings(callback);
@@ -312,13 +312,13 @@ function ScoutsLogPlatform() {
 
     
 
-    this.getPosition = function(data, callback) {
+    P.getPosition = function(data, callback) {
         chrome.storage.local.get('position', function(d) {
             P.sendMessage(callback, { position: d.position });
         });
     }
 
-    this.setPosition = function(msg) {
+    P.setPosition = function(msg) {
         var pos = msg.position;
         pos.vertical = msg.vertical;
         
@@ -326,18 +326,18 @@ function ScoutsLogPlatform() {
         chrome.storage.local.set({'position': pos});
     }
 
-    this.getUserPrefs = function(data, callback) {
+    P.getUserPrefs = function(data, callback) {
         chrome.storage.local.get('prefs', function(d) {
             P.sendMessage(callback, d.prefs);
         });
     }
 
-    this.setUserPrefs = function(msg) {
+    P.setUserPrefs = function(msg) {
         // Update prefs setting
         chrome.storage.local.set({'prefs': msg});
     }
     
-    this.register = function() {
+    P.register = function() {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "http://scoutslog.org/1.1/internal/status", true);
         xhr.onreadystatechange = function() {
@@ -367,9 +367,9 @@ function ScoutsLogPlatform() {
                             "slew_init",
                             {
                                 baseDataURL: chrome.extension.getURL(""),
-                                locale: P.language,
-                                user: P.user,
-                                userPrefs: P.userPrefs,
+                                locale: slLanguage,
+                                user: slUser,
+                                userPrefs: slUserPrefs,
                                 userRoles: res.roles
                             }
                         );
@@ -386,16 +386,16 @@ function ScoutsLogPlatform() {
         chrome.storage.local.get('prefs', function(d) {
             if (typeof d != "undefined") {
                 if (typeof d.prefs != "undefined") {
-                    P.userPrefs = d.prefs;
+                    slUserPrefs = d.prefs;
                 } else {
-                    P.userPrefs = {confirmjump: true};
+                    slUserPrefs = {confirmjump: true};
 
-                    chrome.storage.local.set({'prefs': P.userPrefs});
+                    chrome.storage.local.set({'prefs': slUserPrefs});
                 }
             } else {
-                P.userPrefs = {confirmjump: true};
+                slUserPrefs = {confirmjump: true};
 
-                chrome.storage.local.set({'prefs': P.userPrefs});
+                chrome.storage.local.set({'prefs': slUserPrefs});
             }
         });
 

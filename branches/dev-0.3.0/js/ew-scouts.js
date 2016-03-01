@@ -1,38 +1,38 @@
 
 
 function ScoutsLogPlatformContent() {
-    var S = this;
+    var S = new Object();
 
 
-    this.locale = 'en';
-    this.localizedStrings = {};
+    var slLocale = 'en';
+    var slLocalizedStrings = {};
 
-    this.baseDataURL = '';
-    this.images = {};
+    var slBaseDataURL = '';
+    var slImages = {};
 
-    this.user = '';
-    this.userPrefs = {};
-    this.userRoles = [];
+    var slUser = '';
+    var slUserPrefs = {};
+    var slUserRoles = [];
     
-    this.windowState = '';
+    var slWindowState = '';
 
-    this.windowHistory = [];
-    this.windowHistoryPosition = -1;
-    this.windowHistoryNavigating = false;
+    var slWindowHistory = [];
+    var slWindowHistoryPosition = -1;
+    var slWindowHistoryNavigating = false;
 
-    this.panelVertical = false;
-    this.panelPosition = {};
+    var slPanelVertical = false;
+    var slPanelPosition = {};
 
-    this.statsInterval = 20000;
-    this.taskInterval = 15000;
+    var slStatsInterval = 20000;
+    var slTaskInterval = 15000;
 
-    this.historyType = '';
-    this.historyCell = 0;
-    this.historyAccuracy = 1;
-    this.historyPosition = 0;
-    this.historyDisplay = 4;
+    var slHistoryType = '';
+    var slHistoryCell = 0;
+    var slHistoryAccuracy = 1;
+    var slHistoryPosition = 0;
+    var slHistoryDisplay = 4;
 
-    this.scoutsLogURIbase = 'http://scoutslog.org/1.1/';
+    var slScoutsLogURIbase = 'http://scoutslog.org/1.1/';
 
 
 
@@ -86,8 +86,8 @@ function ScoutsLogPlatformContent() {
      * localized key name.
      */
     S.getLocalizedString = function(key) {
-        if (S.localizedStrings[key]) {
-            return S.localizedStrings[key];
+        if (slLocalizedStrings[key]) {
+            return slLocalizedStrings[key];
         } else {
             return '__' + key + '__';
         }
@@ -142,7 +142,7 @@ function ScoutsLogPlatformContent() {
      */
     S.init_locale = function(data) {
         // Store localized strings
-        S.localizedStrings = data;
+        slLocalizedStrings = data;
         
         // Begin user registration process
         S.sendMessage("register", {}, "");
@@ -193,11 +193,11 @@ function ScoutsLogPlatformContent() {
      */
     S.slew_init = function(msg) {
         // Store extension details
-        S.baseDataURL = msg.baseDataURL;
-        S.locale = msg.locale;
-        S.user = msg.user;
-        S.userPrefs = msg.userPrefs;
-        S.userRoles = msg.userRoles;
+        slBaseDataURL = msg.baseDataURL;
+        slLocale = msg.locale;
+        slUser = msg.user;
+        slUserPrefs = msg.userPrefs;
+        slUserRoles = msg.userRoles;
 
         // Begin creating UI elements
         S.init_ui();
@@ -277,13 +277,13 @@ function ScoutsLogPlatformContent() {
                 l = 0;
             }
 
-            S.panelPosition = {top: t, left: l};
+            slPanelPosition = {top: t, left: l};
 
             jQuery("#scoutsLogFloatingControls").css("top", t).css("left", l);
 
             S.sendMessage(
                 "setPosition",
-                { position: S.panelPosition, vertical: S.panelVertical },
+                { position: slPanelPosition, vertical: slPanelVertical },
                 ""
             );
         });
@@ -307,14 +307,14 @@ function ScoutsLogPlatformContent() {
             } else if (k.keyCode === Keycodes.codes.l && (k.metaKey || k.altKey)) {
                 // Toggle scouts" log panel display
 
-                if (S.windowState != "") {
+                if (slWindowState != "") {
                     if (jQuery("#slPanel").is(":visible")) {
                         jQuery("#slPanel").hide();
                         jQuery("#slPanelShadow").hide();
                         jQuery("#scoutsLogFloatingControls").hide();
                     } else {
-                        if (S.windowState == "history" && S.historyPosition == S.historyDisplay) {
-                            S.windowState = "";
+                        if (slWindowState == "history" && slHistoryPosition == slHistoryDisplay) {
+                            slWindowState = "";
 
                             S.getHistory();
                         }
@@ -351,7 +351,7 @@ function ScoutsLogPlatformContent() {
                 S.sendMessage(
                     "postRequest",
                     {
-                        url: S.scoutsLogURIbase + "task/" + encodeURIComponent(target.task) + "/submit",
+                        url: slScoutsLogURIbase + "task/" + encodeURIComponent(target.task) + "/submit",
                         data: "data=" + encodeURIComponent(JSON.stringify(data))
                     },
                     ""
@@ -378,25 +378,25 @@ function ScoutsLogPlatformContent() {
      * for common images.
      */
     S.loadImages = function() {
-        S.images = {
-            close: S.baseDataURL + "images/close.png",
-            delete: S.baseDataURL + "images/delete.png",
-            error: S.baseDataURL + "images/error.png",
-            history: S.baseDataURL + "images/history.png",
-            historyDisabled: S.baseDataURL + "images/history-disabled.png",
-            lock: S.baseDataURL + "images/lock.png",
-            logo: S.baseDataURL + "images/icon48.png",
-            logoSmall: S.baseDataURL + "images/icon32.png",
-            magnifier: S.baseDataURL + "images/magnifier.png",
-            next: S.baseDataURL + "images/next.png",
-            nextDisabled: S.baseDataURL + "images/next-disabled.png",
-            pencil: S.baseDataURL + "images/pencil.png",
-            photo: S.baseDataURL + "images/photo.png",
-            previous: S.baseDataURL + "images/previous.png",
-            previousDisabled: S.baseDataURL + "images/previous-disabled.png",
-            refresh: S.baseDataURL + "images/arrow_refresh.png",
-            star: S.baseDataURL + "images/bullet_star.png",
-            tick: S.baseDataURL + "images/tick.png"
+        slImages = {
+            close: slBaseDataURL + "images/close.png",
+            delete: slBaseDataURL + "images/delete.png",
+            error: slBaseDataURL + "images/error.png",
+            history: slBaseDataURL + "images/history.png",
+            historyDisabled: slBaseDataURL + "images/history-disabled.png",
+            lock: slBaseDataURL + "images/lock.png",
+            logo: slBaseDataURL + "images/icon48.png",
+            logoSmall: slBaseDataURL + "images/icon32.png",
+            magnifier: slBaseDataURL + "images/magnifier.png",
+            next: slBaseDataURL + "images/next.png",
+            nextDisabled: slBaseDataURL + "images/next-disabled.png",
+            pencil: slBaseDataURL + "images/pencil.png",
+            photo: slBaseDataURL + "images/photo.png",
+            previous: slBaseDataURL + "images/previous.png",
+            previousDisabled: slBaseDataURL + "images/previous-disabled.png",
+            refresh: slBaseDataURL + "images/arrow_refresh.png",
+            star: slBaseDataURL + "images/bullet_star.png",
+            tick: slBaseDataURL + "images/tick.png"
         };
     }
 
@@ -409,6 +409,9 @@ function ScoutsLogPlatformContent() {
     }
 
     S.setMainPanel_Content = function(data) {
+        // Add main panel shadow
+        jQuery(".gameBoard").append('<div id="slPanelShadow" style="display:none;"></div>');
+
         // Add main panel to game board
         jQuery("body").append(data);
 
@@ -440,8 +443,8 @@ function ScoutsLogPlatformContent() {
 
         // Set event handler for close button
         jQuery("#slPanel a.sl-close-window, #slPanelShadow").click(function() {
-            if (S.windowState == "error") {
-                S.windowState = "";
+            if (slWindowState == "error") {
+                slWindowState = "";
                 jQuery("#slPanelError").hide();
             } else {
                 jQuery("#slPanel").hide();
@@ -454,10 +457,10 @@ function ScoutsLogPlatformContent() {
         jQuery("#slPanel a.sl-window-previous").click(function() {
             if (jQuery(this).hasClass("disabled") == false) {
                 // Update window history position
-                if (S.windowHistoryPosition > 0) {
-                    var p = S.windowHistoryPosition;
+                if (slWindowHistoryPosition > 0) {
+                    var p = slWindowHistoryPosition;
                     p--;
-                    S.windowHistoryPosition = p;
+                    slWindowHistoryPosition = p;
 
                     // Navigate to history point
                     S.navigateWindowHistory(p);
@@ -468,10 +471,10 @@ function ScoutsLogPlatformContent() {
         jQuery("#slPanel a.sl-window-next").click(function() {
             if (jQuery(this).hasClass("disabled") == false) {
                 // Update window history position
-                if (S.windowHistoryPosition < S.windowHistory.length) {
-                    var p = S.windowHistoryPosition;
+                if (slWindowHistoryPosition < slWindowHistory.length) {
+                    var p = slWindowHistoryPosition;
                     p++;
-                    S.windowHistoryPosition = p;
+                    slWindowHistoryPosition = p;
 
                     // Navigate to history point
                     S.navigateWindowHistory(p);
@@ -481,8 +484,8 @@ function ScoutsLogPlatformContent() {
 
         jQuery("#slPanel a.sl-window-history").click(function() {
             if (jQuery(this).hasClass("disabled") == false) {
-                if (S.windowState == "window-history") {
-                    S.navigateWindowHistory(S.windowHistoryPosition);
+                if (slWindowState == "window-history") {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
                 } else {
                     S.getWindowHistory();
                 }
@@ -519,14 +522,14 @@ function ScoutsLogPlatformContent() {
                 l = 0;
             }
 
-            S.panelPosition = {top: t, left: l};
+            slPanelPosition = {top: t, left: l};
 
             if (data.position.vertical) {
-                S.panelVertical = true;
+                slPanelVertical = true;
             }
         }
 
-        if (S.panelVertical == true) {
+        if (slPanelVertical == true) {
             S.getContent("panel-floating-vertical.htm", "setFloatingPanel_Content");
         } else {
             S.getContent("panel-floating-horizontal.htm", "setFloatingPanel_Content");
@@ -535,9 +538,9 @@ function ScoutsLogPlatformContent() {
 
     S.setFloatingPanel_Content = function(data) {
         // Generate CSS for panel position
-        var style = ' style="top:' + S.panelPosition.top + 'px;left:' + S.panelPosition.left + 'px;"';
+        var style = ' style="top:' + slPanelPosition.top + 'px;left:' + slPanelPosition.left + 'px;"';
             
-        if (S.panelVertical == true) {
+        if (slPanelVertical == true) {
             style += ' class="sl-vertical"';
         }
 
@@ -560,12 +563,12 @@ function ScoutsLogPlatformContent() {
                 }
 
                 // Update position in settings
-                S.panelPosition = ui.position;
-                S.panelVertical = jQuery('#scoutsLogFloatingControls').hasClass('sl-vertical');
+                slPanelPosition = ui.position;
+                slPanelVertical = jQuery('#scoutsLogFloatingControls').hasClass('sl-vertical');
 
                 S.sendMessage(
                     "setPosition",
-                    { position: S.panelPosition, vertical: S.panelVertical },
+                    { position: slPanelPosition, vertical: slPanelVertical },
                     ""
                 );
             }
@@ -600,11 +603,11 @@ function ScoutsLogPlatformContent() {
             }
 
             // Update position in settings
-            S.panelVertical = jQuery('#scoutsLogFloatingControls').hasClass('sl-vertical');
+            slPanelVertical = jQuery('#scoutsLogFloatingControls').hasClass('sl-vertical');
 
             S.sendMessage(
                 "setPosition",
-                { position: S.panelPosition, vertical: S.panelVertical },
+                { position: slPanelPosition, vertical: slPanelVertical },
                 ""
             );
             
@@ -655,10 +658,10 @@ function ScoutsLogPlatformContent() {
 
         // Set stats refresh function
         setInterval(function() {
-            if (S.windowState != "error") {
+            if (slWindowState != "error") {
                 S.doPanelStats();
             }
-        }, S.statsInterval);
+        }, slStatsInterval);
         
         S.doPanelStats();
 
@@ -672,38 +675,38 @@ function ScoutsLogPlatformContent() {
      */
     S.doPanelButtonState = function() {
         // Get user preferences
-        if (typeof S.userPrefs["display-cell-list"] != "undefined") {
-            var cl = (S.userPrefs["display-cell-list"] == true) ? true : false;
+        if (typeof slUserPrefs["display-cell-list"] != "undefined") {
+            var cl = (slUserPrefs["display-cell-list"] == true) ? true : false;
         } else {
             var cl = false;
         }
 
-        if (typeof S.userPrefs["display-open-tasks"] != "undefined") {
-            var ot = (S.userPrefs["display-open-tasks"] == true) ? true : false;
+        if (typeof slUserPrefs["display-open-tasks"] != "undefined") {
+            var ot = (slUserPrefs["display-open-tasks"] == true) ? true : false;
         } else {
             var ot = true;
         }
 
-        if (typeof S.userPrefs["display-need-admin"] != "undefined") {
-            var na = (S.userPrefs["display-need-admin"] == true) ? true : false;
+        if (typeof slUserPrefs["display-need-admin"] != "undefined") {
+            var na = (slUserPrefs["display-need-admin"] == true) ? true : false;
         } else {
             var na = true;
         }
 
-        if (typeof S.userPrefs["display-need-scythe"] != "undefined") {
-            var ns = (S.userPrefs["display-need-scythe"] == true) ? true : false;
+        if (typeof slUserPrefs["display-need-scythe"] != "undefined") {
+            var ns = (slUserPrefs["display-need-scythe"] == true) ? true : false;
         } else {
             var ns = true;
         }
 
-        if (typeof S.userPrefs["display-watch"] != "undefined") {
-            var wt = (S.userPrefs["display-watch"] == true) ? true : false;
+        if (typeof slUserPrefs["display-watch"] != "undefined") {
+            var wt = (slUserPrefs["display-watch"] == true) ? true : false;
         } else {
             var wt = true;
         }
 
-        if (typeof S.userPrefs["display-history"] != "undefined") {
-            var hs = (S.userPrefs["display-history"] == true) ? true : false;
+        if (typeof slUserPrefs["display-history"] != "undefined") {
+            var hs = (slUserPrefs["display-history"] == true) ? true : false;
         } else {
             var hs = true;
         }
@@ -755,7 +758,7 @@ function ScoutsLogPlatformContent() {
     S.doPanelStats = function() {
         S.sendMessage(
             "getJSON",
-            { url: S.scoutsLogURIbase + "stats/header" },
+            { url: slScoutsLogURIbase + "stats/header" },
             "doPanelStatsCallback"
         );
     }
@@ -824,21 +827,21 @@ function ScoutsLogPlatformContent() {
      * UI: Create Window Display Toggle Button
      */
     S.setGameTools = function() {
-        var button = '<div title="' + S.getLocalizedString("actionShowWindowTooltip") + '" id="scoutsLogPanelButton" class="menuButton"><img src="' + S.images.logo + '" height="20" width="20" alt="' + S.getLocalizedString("actionShowWindowTooltip") + '" /></div>';
+        var button = '<div title="' + S.getLocalizedString("actionShowWindowTooltip") + '" id="scoutsLogPanelButton" class="menuButton"><img src="' + slImages.logo + '" height="20" width="20" alt="' + S.getLocalizedString("actionShowWindowTooltip") + '" /></div>';
 
         jQuery("#gameTools").append(button);
 
         jQuery('#scoutsLogPanelButton').click(function() {
-            if (S.windowState == "error") { return; }
+            if (slWindowState == "error") { return; }
 
-            if (S.windowState != "") {
+            if (slWindowState != "") {
                 if (jQuery("#slPanel").is(":visible")) {
                     jQuery("#slPanel").hide();
                     jQuery("#slPanelShadow").hide();
                     jQuery("#scoutsLogFloatingControls").hide();
                 } else {
-                    if (S.windowState == "history" && S.historyPosition == S.historyDisplay) {
-                        S.windowState = "";
+                    if (slWindowState == "history" && slHistoryPosition == slHistoryDisplay) {
+                        slWindowState = "";
 
                         S.getHistory();
                     }
@@ -862,7 +865,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display Cell List
      */
     S.showCells = function() {
-        if (S.windowState != "cell") {
+        if (slWindowState != "cell") {
             S.getCellList();
         } else {
             if (jQuery("#slPanel").is(":visible")) {
@@ -880,7 +883,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display Open Tasks List
      */
     S.showOpen = function() {
-        if (S.windowState != "status-open") {
+        if (slWindowState != "status-open") {
             S.getStatusSummary("open", false);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
@@ -898,7 +901,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display 'Need Admin' Tasks
      */
     S.showAdmin = function() {
-        if (S.windowState != "status-need-admin") {
+        if (slWindowState != "status-need-admin") {
             S.getStatusSummary("need-admin", false);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
@@ -916,7 +919,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display 'Need Scythe' Tasks
      */
     S.showScythe = function() {
-        if (S.windowState != "status-need-scythe") {
+        if (slWindowState != "status-need-scythe") {
             S.getStatusSummary("need-scythe", true);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
@@ -934,7 +937,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display 'Watch List' Tasks
      */
     S.showWatch = function() {
-        if (S.windowState != "status-watch") {
+        if (slWindowState != "status-watch") {
             S.getStatusSummary("watch", false);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
@@ -952,15 +955,15 @@ function ScoutsLogPlatformContent() {
      * Button: Display User Submission History
      */
     S.showHistory = function() {
-        if (S.windowState != "history") {
+        if (slWindowState != "history") {
             S.getHistory();
         } else {
             if (jQuery("#slPanel").is(":visible")) {
                 jQuery("#slPanel").hide();
                 jQuery("#slPanelShadow").hide();
             } else {
-                if (S.historyPosition == S.historyDisplay) {
-                    S.windowState ="";
+                if (slHistoryPosition == slHistoryDisplay) {
+                    slWindowState ="";
 
                     S.getHistory();
                 }
@@ -991,10 +994,10 @@ function ScoutsLogPlatformContent() {
             var t = jQuery(this).find("[prefcheck]");
             var p = t.attr("prefcheck").split("_")[1];
 
-            if (typeof S.userPrefs[p] != "undefined") {
-                t.prop("checked", S.userPrefs[p]);
+            if (typeof slUserPrefs[p] != "undefined") {
+                t.prop("checked", slUserPrefs[p]);
                 
-                if (S.userPrefs[p] == true) {
+                if (slUserPrefs[p] == true) {
                     jQuery(this).removeClass("off").addClass("on");
                 } else {
                     jQuery(this).removeClass("on").addClass("off");
@@ -1008,9 +1011,9 @@ function ScoutsLogPlatformContent() {
             var t = jQuery(this);
 
             var p = t.attr("prefcheck").split("_")[1];
-            S.userPrefs[p] = t.is(":checked");
+            slUserPrefs[p] = t.is(":checked");
 
-            S.sendMessage("setUserPrefs", S.userPrefs, "");
+            S.sendMessage("setUserPrefs", slUserPrefs, "");
 
             S.doPanelButtonState();
         });
@@ -1122,8 +1125,8 @@ function ScoutsLogPlatformContent() {
             jQuery(this).attr( "title", S.getLocalizedString("actionCellTooltip") );
             
             jQuery(this).click(function() {    
-                S.historyCell = c;
-                S.windowState = "";
+                slHistoryCell = c;
+                slWindowState = "";
 
                 S.getHistory();
             });
@@ -1319,14 +1322,14 @@ function ScoutsLogPlatformContent() {
  */
     S.getCellList = function() {
         // Set window state
-        S.windowState = "cell";
+        slWindowState = "cell";
 
         // Update window history
-        if (S.windowHistoryNavigating == false) {
-            S.pushWindowHistory({ state: S.windowState, data: {} });
+        if (slWindowHistoryNavigating == false) {
+            S.pushWindowHistory({ state: slWindowState, data: {} });
         }
 
-        S.windowHistoryNavigating = false;
+        slWindowHistoryNavigating = false;
 
         // Send content request
         S.getContent("cell-list.htm", "getCellList_Content");
@@ -1334,7 +1337,7 @@ function ScoutsLogPlatformContent() {
 
     S.getCellList_Content = function(data) {
         // Check window state
-        if (S.windowState != "cell") {
+        if (slWindowState != "cell") {
             return;
         }
 
@@ -1346,14 +1349,14 @@ function ScoutsLogPlatformContent() {
         // Send data request through plugin
         S.sendMessage(
             "getJSON",
-            { url: S.scoutsLogURIbase + "stats" },
+            { url: slScoutsLogURIbase + "stats" },
             "getCellList_Data"
         );
     }
 
     S.getCellList_Data = function(data) {
         // Check window state
-        if (S.windowState != "cell") {
+        if (slWindowState != "cell") {
             return;
         }
 
@@ -1365,10 +1368,10 @@ function ScoutsLogPlatformContent() {
 
             var cn;
 
-            if (S.locale == "en") {
+            if (slLocale == "en") {
                 cn = s.cellName;
             } else {
-                cn = s["cellName" + S.locale.toUpperCase()];
+                cn = s["cellName" + slLocale.toUpperCase()];
             }
 
             var row = '<tr>';
@@ -1393,18 +1396,18 @@ function ScoutsLogPlatformContent() {
         
         if (status != "") {
             // Update window state
-            S.windowState = "status-" + s;
+            slWindowState = "status-" + s;
 
             if (h == true) {
-                S.windowState += "-header";
+                slWindowState += "-header";
             }
 
             // Update window history
-            if (S.windowHistoryNavigating == false) {
-                S.pushWindowHistory({ state: S.windowState, data: {} });
+            if (slWindowHistoryNavigating == false) {
+                S.pushWindowHistory({ state: slWindowState, data: {} });
             }
 
-            S.windowHistoryNavigating = false;
+            slWindowHistoryNavigating = false;
 
             // Send content request
             S.getContent("cell-summary.htm", "getStatusSummary_Content");
@@ -1413,7 +1416,7 @@ function ScoutsLogPlatformContent() {
 
     S.getStatusSummary_Content = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "status") {
             return;
@@ -1425,8 +1428,8 @@ function ScoutsLogPlatformContent() {
         jQuery("#slPanelShadow").show();
 
         // Generate data URL
-        var url = S.scoutsLogURIbase + "status/";
-        var sp = S.windowState.split("-");
+        var url = slScoutsLogURIbase + "status/";
+        var sp = slWindowState.split("-");
         sp.shift();
 
         var st;
@@ -1445,7 +1448,7 @@ function ScoutsLogPlatformContent() {
         }
 
         // Update window state
-        S.windowState = "status-" + st;
+        slWindowState = "status-" + st;
             
         // Set window title
         var status = S.getLocalizedStatus(st);
@@ -1461,7 +1464,7 @@ function ScoutsLogPlatformContent() {
 
     S.getStatusSummary_Data = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "status") {
             return;
@@ -1475,10 +1478,10 @@ function ScoutsLogPlatformContent() {
             // Determine cell name
             var cn;
 
-            if (S.locale == "en") {
+            if (slLocale == "en") {
                 cn = s.cellName;
             } else {
-                cn = s["cellName" + S.locale.toUpperCase()];
+                cn = s["cellName" + slLocale.toUpperCase()];
             }
 
             // Check if current user has log entry or watch indicators
@@ -1486,15 +1489,15 @@ function ScoutsLogPlatformContent() {
             var ent2 = "";
             
             if (s.has_entries == 1) {
-                ent2 = ' <img src="' + S.images.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                ent2 = ' <img src="' + slImages.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
             }
 
             if (s.has_watch == 1) {
-                ent2 = ' <img src="' + S.images.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
             }
             
             if (s.mismatched == 1) {
-                ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
+                ent1 = ' <img src="' + slImages.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
             }
 
             // Check for status issue indicator
@@ -1525,10 +1528,10 @@ function ScoutsLogPlatformContent() {
  */
     S.getCellEntries = function(c, s) {
         // Set window state
-        S.windowState = "cell-entries-" + c;
+        slWindowState = "cell-entries-" + c;
 
         if (typeof s != "undefined" && s != "") {
-            S.windowState += "-" + s;
+            slWindowState += "-" + s;
         }
 
         // Send content request
@@ -1537,7 +1540,7 @@ function ScoutsLogPlatformContent() {
 
     S.getCellEntries_Content = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "cell" && sp[1] != "entries") {
             return;
@@ -1549,7 +1552,7 @@ function ScoutsLogPlatformContent() {
         jQuery("#slPanelShadow").show();
 
         // Get state options
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
         var c = sp[2];
         var s = "";
 
@@ -1575,7 +1578,7 @@ function ScoutsLogPlatformContent() {
         });
 
         // Build data URl
-        var url = S.scoutsLogURIbase + "cell/" + encodeURIComponent(c) + "/tasks";
+        var url = slScoutsLogURIbase + "cell/" + encodeURIComponent(c) + "/tasks";
 
         if (s != "") {
             url += "/status/" + encodeURIComponent(s);
@@ -1591,7 +1594,7 @@ function ScoutsLogPlatformContent() {
 
     S.getCellEntries_Data = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "cell" && sp[1] != "entries" && sp[2] != data.cell) {
             return;
@@ -1600,16 +1603,16 @@ function ScoutsLogPlatformContent() {
         var cn;
 
         // Set window title
-        if (S.locale == "en") {
+        if (slLocale == "en") {
             cn = data.cellName;
         } else {
-            cn = data["cellName" + S.locale.toUpperCase()];
+            cn = data["cellName" + slLocale.toUpperCase()];
         }
 
         jQuery("#slPanel h2 small").text(cn + " (" + data.cell + ")");
 
         // Update window history
-        if (S.windowHistoryNavigating == false) {
+        if (slWindowHistoryNavigating == false) {
             // Get state options
             var st = "";
 
@@ -1625,10 +1628,10 @@ function ScoutsLogPlatformContent() {
 
             var sts = S.getLocalizedStatus(st);
 
-            S.pushWindowHistory({ state: S.windowState, data: {title: cn + " (" + data.cell + ") - " + sts} });
+            S.pushWindowHistory({ state: slWindowState, data: {title: cn + " (" + data.cell + ") - " + sts} });
         }
 
-        S.windowHistoryNavigating = false;
+        slWindowHistoryNavigating = false;
 
         jQuery("#sl-main-table table tbody").empty();
 
@@ -1641,15 +1644,15 @@ function ScoutsLogPlatformContent() {
                 var ent2 = "";
                 
                 if (s.has_entries == 1) {
-                    ent2 = ' <img src="' + S.images.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                    ent2 = ' <img src="' + slImages.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
                 }
 
                 if (s.has_watch == 1) {
-                    ent2 = ' <img src="' + S.images.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                    ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
                 }
                 
                 if (s.mismatched == 1) {
-                    ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
+                    ent1 = ' <img src="' + slImages.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
                 }
 
                 // Check for status issue indicator
@@ -1686,14 +1689,14 @@ function ScoutsLogPlatformContent() {
 
     S.getTaskEntries = function(t) {
         // Update window state
-        S.windowState = "task-" + t;
+        slWindowState = "task-" + t;
 
         // Update window history
-        if (S.windowHistoryNavigating == false) {
-            S.pushWindowHistory({ state: S.windowState, data: {} });
+        if (slWindowHistoryNavigating == false) {
+            S.pushWindowHistory({ state: slWindowState, data: {} });
         }
 
-        S.windowHistoryNavigating = false;
+        slWindowHistoryNavigating = false;
 
         // Send content request
         S.getContent("task-detail.htm", "getTaskEntries_Content");
@@ -1705,14 +1708,14 @@ function ScoutsLogPlatformContent() {
         
         if (typeof target.task != "undefined") {
             // Update window state
-            S.windowState = "task-" + target.task;
+            slWindowState = "task-" + target.task;
 
             // Update window history
-            if (S.windowHistoryNavigating == false) {
-                S.pushWindowHistory({ state: S.windowState, data: {} });
+            if (slWindowHistoryNavigating == false) {
+                S.pushWindowHistory({ state: slWindowState, data: {} });
             }
 
-            S.windowHistoryNavigating = false;
+            slWindowHistoryNavigating = false;
 
             // Send content request
             S.getContent("task-detail.htm", "getTaskEntries_Content");
@@ -1723,14 +1726,14 @@ function ScoutsLogPlatformContent() {
 
     S.getTaskEntries_Content = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "task") {
             return;
         }
 
         // Get current task
-        var t = S.windowState.split("-")[1];
+        var t = slWindowState.split("-")[1];
 
         // Set panel title
         jQuery("#slPanel h2 small").text( S.getLocalizedString("labelTask") + " #" + t );
@@ -1752,7 +1755,7 @@ function ScoutsLogPlatformContent() {
         // Initiate data request through plugin
         S.sendMessage(
             "getJSON",
-            { url: S.scoutsLogURIbase + "task/" + encodeURIComponent(t) + "/actions" },
+            { url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/actions" },
             "getTaskEntries_Data"
         );
     }
@@ -1773,7 +1776,7 @@ function ScoutsLogPlatformContent() {
 
     S.getTaskEntries_Data2 = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "task" && sp[1] != data.task) {
             return;
@@ -1832,8 +1835,8 @@ function ScoutsLogPlatformContent() {
 
             var edit = "";
 
-            if (S.user == s.user) {
-                edit = '<a href="javascript:void(0);" class="sl-edit-action" data-entry="' + s.id + '" title="' + S.getLocalizedString("actionEditEntryTooltip") + '"><img src="' + S.images.pencil + '" /></a>';
+            if (slUser == s.user) {
+                edit = '<a href="javascript:void(0);" class="sl-edit-action" data-entry="' + s.id + '" title="' + S.getLocalizedString("actionEditEntryTooltip") + '"><img src="' + slImages.pencil + '" /></a>';
             }
 
             // Check for status issue indicator
@@ -1892,7 +1895,7 @@ function ScoutsLogPlatformContent() {
                 S.sendMessage(
                     "postRequest",
                     {
-                        url: S.scoutsLogURIbase + "task/" + encodeURIComponent(data.task) + "/action/create",
+                        url: slScoutsLogURIbase + "task/" + encodeURIComponent(data.task) + "/action/create",
                         data: "data=" + encodeURIComponent(JSON.stringify(d))
                     },
                     "setTaskGoodCallback"
@@ -1917,7 +1920,7 @@ function ScoutsLogPlatformContent() {
         S.setLinks("#slPanel");
 
         // Set update timer
-        setTimeout(function() { S.updateTaskDetails(data.task); }, S.taskInterval);
+        setTimeout(function() { S.updateTaskDetails(data.task); }, slTaskInterval);
     }
 
     S.setTaskGoodCallback = function(data) {
@@ -1948,14 +1951,14 @@ function ScoutsLogPlatformContent() {
 
     S.updateTaskDetails = function(task) {
         // Check window state
-        if (S.windowState != "task-" + task) {
+        if (slWindowState != "task-" + task) {
             return;
         }
 
         // Initiate data request through plugin
         S.sendMessage(
             "getJSON",
-            { url: S.scoutsLogURIbase + "task/" + encodeURIComponent(task) + "/actions" },
+            { url: slScoutsLogURIbase + "task/" + encodeURIComponent(task) + "/actions" },
             "getTaskEntries_Data"
         );
     }
@@ -1968,7 +1971,7 @@ function ScoutsLogPlatformContent() {
     S.prepareTaskActionWindow = function(t) {
         if (typeof t != "undefined") {
             // Set window state
-            S.windowState = "action-" + t;
+            slWindowState = "action-" + t;
 
             // Send content request
             S.getContent("task-action.htm", "prepareTaskActionWindow_Content");
@@ -1981,14 +1984,14 @@ function ScoutsLogPlatformContent() {
 
     S.prepareTaskActionWindow_Content = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "action") {
             return;
         }
 
         // Get current task and cell
-        var ts = S.windowState.split("-")[1];
+        var ts = slWindowState.split("-")[1];
 
         // Set panel title
         jQuery("#slPanel h2 small").text( S.getLocalizedString("windowNewEntryTitle") + " (" + S.getLocalizedString("labelTask") + " #" + ts + ")" );
@@ -2048,7 +2051,7 @@ function ScoutsLogPlatformContent() {
             S.sendMessage(
                 "postRequest",
                 {
-                     url: S.scoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/create",
+                     url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/create",
                      data: "data=" + encodeURIComponent(JSON.stringify(data))
                 },
                 "submitTaskActionCallback"
@@ -2063,7 +2066,7 @@ function ScoutsLogPlatformContent() {
         if (data.result == true) {
             // Success, go back to previous screen
 
-            S.navigateWindowHistory(S.windowHistoryPosition);
+            S.navigateWindowHistory(slWindowHistoryPosition);
         } else {
             // Error
 
@@ -2076,7 +2079,7 @@ function ScoutsLogPlatformContent() {
     S.getTaskSummary = function(t) {
         S.sendMessage(
             "getJSON",
-            { url: S.scoutsLogURIbase + "task/" + encodeURIComponent(t) },
+            { url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) },
             "getTaskSummary_Data"
         );
     }
@@ -2125,7 +2128,7 @@ function ScoutsLogPlatformContent() {
                 status += " / " + S.getLocalizedStatusIssue(data.issue);
             }
 
-            var sp = S.windowState.split("-");
+            var sp = slWindowState.split("-");
 
             if (sp.length != 4 && sp[3] != "edit") {
                 jQuery("#sl-action-status").val(data.status);
@@ -2253,7 +2256,7 @@ function ScoutsLogPlatformContent() {
             cx.fillText('Cell: ' + cell, 10, 23);
             cx.fillText('Cube: ' + task, 10, 43);
             cx.fillText('Plane: ' + dir, 10, 63);
-            cx.fillText('User: ' + S.user, 10, 83);
+            cx.fillText('User: ' + slUser, 10, 83);
 
         } else {
             cx.drawImage(cvA, 0, 0);
@@ -2266,7 +2269,7 @@ function ScoutsLogPlatformContent() {
             cx.font = 'normal 10pt sans-serif';
             cx.fillStyle = '#bbb';      
             cx.fillText('Cell: ' + cell, 10, 23);
-            cx.fillText('User: ' + S.user, 10, 43);
+            cx.fillText('User: ' + slUser, 10, 43);
         }
 
 
@@ -2279,10 +2282,10 @@ function ScoutsLogPlatformContent() {
         jQuery("#sl-action-image-sketch").val("");
 
         // Update status, set links
-        var status = '<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '"><img src="' + S.images.photo + '" /></a> <a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | ';
-        status += '<a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '"><img src="' + S.images.pencil + '" /></a> <a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a> | ';
-        status += '<a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '"><img src="' + S.images.refresh + '" /></a> <a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | ';
-        status += '<a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '"><img src="' + S.images.delete + '" /></a> <a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>';
+        var status = '<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '"><img src="' + slImages.photo + '" /></a> <a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a> | ';
+        status += '<a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '"><img src="' + slImages.pencil + '" /></a> <a class="sl-annotate" title="' + S.getLocalizedString("actionAnnotateTooltip") + '">' + S.getLocalizedString("actionAnnotate") + '</a> | ';
+        status += '<a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '"><img src="' + slImages.refresh + '" /></a> <a class="sl-capture" title="' + S.getLocalizedString("actionRecaptureTooltip") + '">' + S.getLocalizedString("actionRecapture") + '</a> | ';
+        status += '<a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '"><img src="' + slImages.delete + '" /></a> <a class="sl-remove" title="' + S.getLocalizedString("actionRemoveTooltip") + '">' + S.getLocalizedString("actionRemove") + '</a>';
 
         jQuery("#sl-action-image-status").html(status);
 
@@ -2370,7 +2373,7 @@ function ScoutsLogPlatformContent() {
     S.prepareTaskActionEditWindow = function(t, e) {
         if (typeof t != "undefined") {
             // Set window state
-            S.windowState = "action-" + t + "-" + e + "-edit";
+            slWindowState = "action-" + t + "-" + e + "-edit";
 
             // Send content request
             S.getContent("task-action-edit.htm", "prepareTaskActionEditWindow_Content");
@@ -2383,15 +2386,15 @@ function ScoutsLogPlatformContent() {
 
     S.prepareTaskActionEditWindow_Content = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "action" && sp[3] != "edit") {
             return;
         }
 
         // Get current task and cell
-        var ts = S.windowState.split("-")[1];
-        var en = S.windowState.split("-")[2];
+        var ts = slWindowState.split("-")[1];
+        var en = slWindowState.split("-")[2];
 
 
         // Set panel title
@@ -2414,7 +2417,7 @@ function ScoutsLogPlatformContent() {
         
         // Set handlers for buttons
         jQuery("#slPanel button.sl-cancel").click(function() {
-            S.navigateWindowHistory(S.windowHistoryPosition);
+            S.navigateWindowHistory(slWindowHistoryPosition);
         });
 
         jQuery("#slPanel button.sl-submit").click(function() {
@@ -2442,7 +2445,7 @@ function ScoutsLogPlatformContent() {
             S.sendMessage(
                 "postRequest",
                 {
-                     url: S.scoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/update",
+                     url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/update",
                      data: "data=" + encodeURIComponent(JSON.stringify(data))
                 },
                 "submitTaskActionCallback"
@@ -2455,22 +2458,22 @@ function ScoutsLogPlatformContent() {
         // Initiate data request through plugin
         S.sendMessage(
             "getJSON",
-            { url: S.scoutsLogURIbase + "task/" + encodeURIComponent(ts) + "/actions" },
+            { url: slScoutsLogURIbase + "task/" + encodeURIComponent(ts) + "/actions" },
             "getTaskEditEntries_Data"
         );
     }
 
     S.getTaskEditEntries_Data = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "action" && sp[3] != "edit") {
             return;
         }
 
         // Get current task and cell
-        var t = S.windowState.split("-")[1];
-        var e = S.windowState.split("-")[2];
+        var t = slWindowState.split("-")[1];
+        var e = slWindowState.split("-")[2];
 
         // Get specified entry data
         var entry = jQuery.grep(data.actions, function(a){ return (a.id == e); })[0];
@@ -2483,7 +2486,7 @@ function ScoutsLogPlatformContent() {
             jQuery("#sl-action-notes").val(entry.notes);
 
             if (entry.image != "") {
-                 jQuery("#sl-action-image-status").html('<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '"><img src="' + S.images.photo + '" /></a> <a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a>');
+                 jQuery("#sl-action-image-status").html('<a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '"><img src="' + slImages.photo + '" /></a> <a class="sl-preview" title="' + S.getLocalizedString("actionPreviewTooltip") + '">' + S.getLocalizedString("actionPreview") + '</a>');
             } else {
                  jQuery("#sl-action-image-status").html( S.getLocalizedString("labelNotApplicable") );
             }
@@ -2511,7 +2514,7 @@ function ScoutsLogPlatformContent() {
     S.prepareTaskMismatchWindow = function(t) {
         if (typeof t != "undefined") {
             // Set window state
-            S.windowState = "mismatch-" + t;
+            slWindowState = "mismatch-" + t;
 
             // Send content request
             S.getContent("task-mismatch.htm", "prepareTaskMismatchWindow_Content");
@@ -2524,7 +2527,7 @@ function ScoutsLogPlatformContent() {
 
     S.prepareTaskMismatchWindow_Content = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "mismatch") {
             return;
@@ -2553,7 +2556,7 @@ function ScoutsLogPlatformContent() {
         
         // Set handlers for buttons
         jQuery("#slPanel button.sl-cancel").click(function() {
-            S.navigateWindowHistory(S.windowHistoryPosition);
+            S.navigateWindowHistory(slWindowHistoryPosition);
         });
 
         jQuery("#slPanel button.sl-submit").click(function() {
@@ -2579,18 +2582,21 @@ function ScoutsLogPlatformContent() {
         // Initiate data request through plugin
         S.sendMessage(
             "getJSON",
-            { url: S.scoutsLogURIbase + "task/" + ts + "/summary/mismatch" },
+            { url: slScoutsLogURIbase + "task/" + ts + "/mismatch" },
             "prepareTaskMismatchWindow_Data"
         );
     }
 
     S.prepareTaskMismatchWindow_Data = function(data) {
         // Check window state
-        var sp = S.windowState.split("-");
+        var sp = slWindowState.split("-");
 
         if (sp[0] != "mismatch" || sp[1] != data.task) {
             return;
         }
+
+	// Set proposed new cell ID
+	jQuery("#sl-new-cell").val(data.new_cell);
         
         // Display task actions
         jQuery("#sl-main-table table tbody").empty();
@@ -2614,7 +2620,6 @@ function ScoutsLogPlatformContent() {
             var row = '<tr>';
             row += '<td>' + s.cell + '</td>';
             row += '<td>' + s.id + '</td>';
-            row += '<td><input type="text" name="new_cell:' + s.id + '" value="' + s.new_cell + '" size="6" /></td>';
             row += '<td><input type="text" name="new_id:' + s.id + '" value="' + s.new_id + '" size="6" /></td>';
             row += '<td class="sl-' + s.status + '">' + st + '</td>';
             row += '<td>' + user + '</td>';
@@ -2693,11 +2698,11 @@ function ScoutsLogPlatformContent() {
 
 
     S.getHistory = function() {
-        if (S.windowState != "history") {
+        if (slWindowState != "history") {
             // Set window state
-            S.windowState = "history";
-            S.historyDisplay = 4;
-            S.historyPosition = 0;
+            slWindowState = "history";
+            slHistoryDisplay = 4;
+            slHistoryPosition = 0;
 
             // Send content request
             S.getContent("history.htm", "getHistory_Content");
@@ -2709,7 +2714,7 @@ function ScoutsLogPlatformContent() {
 
     S.getHistory_Content = function(data) {
         // Check window state
-        if (S.windowState != "history") {
+        if (slWindowState != "history") {
             return;
         }
 
@@ -2729,15 +2734,15 @@ function ScoutsLogPlatformContent() {
 
 
         // Set default values
-        jQuery("#sl-history-type").val(S.historyType);
+        jQuery("#sl-history-type").val(slHistoryType);
         
-        if (S.historyCell != 0) {
-            jQuery("#sl-history-cell").val(S.historyCell);
+        if (slHistoryCell != 0) {
+            jQuery("#sl-history-cell").val(slHistoryCell);
         } else {
             jQuery("#sl-history-cell").val("");
         }
         
-        jQuery("#sl-history-accuracy").val(S.historyAccuracy);
+        jQuery("#sl-history-accuracy").val(slHistoryAccuracy);
         
         // Prevent bubbling for cell ID
         jQuery("#sl-history-cell").keydown(function(e) {
@@ -2750,7 +2755,7 @@ function ScoutsLogPlatformContent() {
 
         // Set event handlers
         jQuery("#sl-history-refresh").click(function() {
-            S.historyType = jQuery("#sl-history-type").val();
+            slHistoryType = jQuery("#sl-history-type").val();
 
             var c = parseInt(jQuery("#sl-history-cell").val(), 10);
             
@@ -2759,10 +2764,10 @@ function ScoutsLogPlatformContent() {
                 jQuery("#sl-history-cell").val("");
             }
             
-            S.historyCell = c;
-            S.historyAccuracy = jQuery("#sl-history-accuracy").val();
+            slHistoryCell = c;
+            slHistoryAccuracy = jQuery("#sl-history-accuracy").val();
             
-            S.windowState = "";
+            slWindowState = "";
 
             S.getHistory();
         });
@@ -2773,24 +2778,24 @@ function ScoutsLogPlatformContent() {
 
     S.getHistory_GetData = function() {
         // Check window state
-        if (S.windowState != "history") {
+        if (slWindowState != "history") {
             return;
         }
 
         // Generate request URL
-        var url = S.scoutsLogURIbase + "history/";
-        url += encodeURIComponent(S.historyPosition) + "/" + encodeURIComponent(S.historyDisplay);
+        var url = slScoutsLogURIbase + "history/";
+        url += encodeURIComponent(slHistoryPosition) + "/" + encodeURIComponent(slHistoryDisplay);
 
-        if (S.historyType != "") {
-            url += "/type/" + encodeURIComponent(S.historyType);
+        if (slHistoryType != "") {
+            url += "/type/" + encodeURIComponent(slHistoryType);
         }
         
-        if (S.historyCell > 0) {
-            url += "/cell/" + encodeURIComponent(S.historyCell);
+        if (slHistoryCell > 0) {
+            url += "/cell/" + encodeURIComponent(slHistoryCell);
         }
         
-        if (S.historyAccuracy != "1") {
-            url += "/accuracy/" + encodeURIComponent(S.historyAccuracy);
+        if (slHistoryAccuracy != "1") {
+            url += "/accuracy/" + encodeURIComponent(slHistoryAccuracy);
         }
 
         // Initiate request
@@ -2803,27 +2808,27 @@ function ScoutsLogPlatformContent() {
 
     S.getHistory_Data = function(data) {
         // Check window state
-        if (S.windowState != "history") {
+        if (slWindowState != "history") {
             return;
         }
 
         // Update history position
-        S.historyType = data.type;
-        S.historyCell = data.cell;
-        S.historyAccuracy = data.accuracy;
-        S.historyPosition = data.start + data.limit;
-        S.historyDisplay = data.limit;
+        slHistoryType = data.type;
+        slHistoryCell = data.cell;
+        slHistoryAccuracy = data.accuracy;
+        slHistoryPosition = data.start + data.limit;
+        slHistoryDisplay = data.limit;
 
         // Update window history
-        if (S.windowHistoryNavigating == false) {
+        if (slWindowHistoryNavigating == false) {
             var updated = false;
 
-            if (S.windowHistory.length > 0) {
-                if (S.windowHistory[S.windowHistoryPosition].state == "history") {
+            if (slWindowHistory.length > 0) {
+                if (slWindowHistory[slWindowHistoryPosition].state == "history") {
                     // Update current history point
 
-                    S.windowHistory[S.windowHistoryPosition] = {
-                        state: S.windowState,
+                    slWindowHistory[slWindowHistoryPosition] = {
+                        state: slWindowState,
                         data: {
                             historyType: data.type,
                             historyCell: data.cell,
@@ -2841,7 +2846,7 @@ function ScoutsLogPlatformContent() {
                 // Create new window history point
 
                 S.pushWindowHistory({
-                    state: S.windowState,
+                    state: slWindowState,
                     data: {
                         historyType: data.type,
                         historyCell: data.cell,
@@ -2853,18 +2858,18 @@ function ScoutsLogPlatformContent() {
             }
         }
 
-        S.windowHistoryNavigating = false;
+        slWindowHistoryNavigating = false;
         
         // Set default values
-        jQuery("#sl-history-type").val(S.historyType);
+        jQuery("#sl-history-type").val(slHistoryType);
         
-        if (S.historyCell != 0) {
-            jQuery("#sl-history-cell").val(S.historyCell);
+        if (slHistoryCell != 0) {
+            jQuery("#sl-history-cell").val(slHistoryCell);
         } else {
             jQuery("#sl-history-cell").val("");
         }
         
-        jQuery("#sl-history-accuracy").val(S.historyAccuracy);
+        jQuery("#sl-history-accuracy").val(slHistoryAccuracy);
 
         // Display history data
         if (data.tasks.length > 0) {
@@ -2886,10 +2891,10 @@ function ScoutsLogPlatformContent() {
 
                 var cn;
 
-                if (S.locale == "en") {
+                if (slLocale == "en") {
                     cn = h.cellName;
                 } else {
-                    cn = h["cellName" + S.locale.toUpperCase()];
+                    cn = h["cellName" + slLocale.toUpperCase()];
                 }
 
                 // Check if current user has log entry or watch indicators
@@ -2897,15 +2902,15 @@ function ScoutsLogPlatformContent() {
                 var ent2 = "";
                 
                 if (h.has_entries == 1) {
-                    ent2 = ' <img src="' + S.images.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+                    ent2 = ' <img src="' + slImages.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
                 }
 
                 if (h.has_watch == 1) {
-                    ent2 = ' <img src="' + S.images.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+                    ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
                 }
                 
                 if (h.mismatched == 1) {
-                    ent1 = ' <img src="' + S.images.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
+                    ent1 = ' <img src="' + slImages.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
                 }
 
     
@@ -2948,7 +2953,7 @@ function ScoutsLogPlatformContent() {
         S.setLinks("#slPanel");
 
         // Reset display value
-        S.historyDisplay = 4;
+        slHistoryDisplay = 4;
     }
 
 
@@ -2960,7 +2965,7 @@ function ScoutsLogPlatformContent() {
 
     S.getWindowHistory = function() {
         // Set window state
-        S.windowState = "window-history";
+        slWindowState = "window-history";
 
         // Send content request
         S.getContent("window-history.htm", "getWindowHistory_Content");
@@ -2968,7 +2973,7 @@ function ScoutsLogPlatformContent() {
 
     S.getWindowHistory_Content = function(data) {
         // Check window state
-        if (S.windowState != "window-history") {
+        if (slWindowState != "window-history") {
             return;
         }
 
@@ -2983,9 +2988,9 @@ function ScoutsLogPlatformContent() {
         // Display window history entries
         jQuery("#sl-main-table table tbody").empty();
 
-        for (var n=S.windowHistory.length-1; n >= 0; n--) {
+        for (var n=slWindowHistory.length-1; n >= 0; n--) {
             // Get history data
-            var h = S.windowHistory[n];
+            var h = slWindowHistory[n];
 
             // Get window state
             var sp = h.state.split("-");
@@ -3039,8 +3044,8 @@ function ScoutsLogPlatformContent() {
             // Check if this entry is the current point
             var icon = "";
 
-            if (S.windowHistoryPosition == n) {
-                icon = ' <img src="' + S.images.star + '" />';
+            if (slWindowHistoryPosition == n) {
+                icon = ' <img src="' + slImages.star + '" />';
             }
 
             var row = '<tr><td><a href="javascript:void(0);" class="sl-history" data-history="' + n + '">' + title + '</a>' + icon + '</td></tr>';
@@ -3054,7 +3059,7 @@ function ScoutsLogPlatformContent() {
              var p = parseInt(jQuery(this).attr("data-history"), 10);
 
              // Set history point position
-             S.windowHistoryPosition = p;
+             slWindowHistoryPosition = p;
 
              // Navigate to history point
              S.navigateWindowHistory(p);
@@ -3085,7 +3090,7 @@ function ScoutsLogPlatformContent() {
         if (typeof target.task != "undefined") {
             S.sendMessage(
                 "getJSON",
-                {url: S.scoutsLogURIbase + "task/" + target.task + "/actions"},
+                {url: slScoutsLogURIbase + "task/" + target.task + "/actions"},
                 "getCubeDetailsSummary_Data"
             );
         }
@@ -3125,16 +3130,16 @@ function ScoutsLogPlatformContent() {
      * Clear Window History
      */
     S.clearWindowHistory = function() {
-        if (S.windowHistory.length > 0) {
-            var cur = S.windowHistory[S.windowHistoryPosition];
+        if (slWindowHistory.length > 0) {
+            var cur = slWindowHistory[slWindowHistoryPosition];
 
-            S.windowHistory = [];
-            S.windowHistoryPosition = 0;
+            slWindowHistory = [];
+            slWindowHistoryPosition = 0;
 
-            S.windowHistory.push(cur);
+            slWindowHistory.push(cur);
         } else {
-            S.windowHistory = [];
-            S.windowHistoryPosition = -1;
+            slWindowHistory = [];
+            slWindowHistoryPosition = -1;
         }
 
         // Update button status
@@ -3148,12 +3153,12 @@ function ScoutsLogPlatformContent() {
      * @param p integer History point index
      */
     S.navigateWindowHistory = function(p) {
-        if (typeof S.windowHistory[p] != "undefined") {
+        if (typeof slWindowHistory[p] != "undefined") {
             // Set navigating flag
-            S.windowHistoryNavigating = true;
+            slWindowHistoryNavigating = true;
 
             // Get history data
-            var h = S.windowHistory[p];
+            var h = slWindowHistory[p];
 
             // Get window state
             var sp = h.state.split("-");
@@ -3186,12 +3191,12 @@ function ScoutsLogPlatformContent() {
                     break;
                 case "history":
                     // Set history view
-                    S.windowState = "history";
-                    S.historyType = h.data.historyType;
-                    S.historyCell = h.data.historyCell;
-                    S.historyAccuracy = h.data.historyAccuracy;
-                    S.historyPosition = 0;
-                    S.historyDisplay = h.data.historyPosition;
+                    slWindowState = "history";
+                    slHistoryType = h.data.historyType;
+                    slHistoryCell = h.data.historyCell;
+                    slHistoryAccuracy = h.data.historyAccuracy;
+                    slHistoryPosition = 0;
+                    slHistoryDisplay = h.data.historyPosition;
 
                     // Send content request
                     S.getContent("history.htm", "getHistory_Content");
@@ -3243,15 +3248,15 @@ function ScoutsLogPlatformContent() {
     S.pushWindowHistory = function(o) {
         // Check if we are not at the most recent point
         // and if so clear any remaining points
-        if (S.windowHistoryPosition < (S.windowHistory.length - 1)) {
-            S.windowHistory.splice(S.windowHistoryPosition + 1, S.windowHistory.length - S.windowHistoryPosition);
+        if (slWindowHistoryPosition < (slWindowHistory.length - 1)) {
+            slWindowHistory.splice(slWindowHistoryPosition + 1, slWindowHistory.length - slWindowHistoryPosition);
         }
 
         // Add history point
-        S.windowHistory.push(o);
+        slWindowHistory.push(o);
 
         // Increment history position
-        S.windowHistoryPosition++;
+        slWindowHistoryPosition++;
 
         // Update button status
         S.updateWindowHistoryButtons();
@@ -3262,28 +3267,28 @@ function ScoutsLogPlatformContent() {
      * Update History Buttons Status
      */
     S.updateWindowHistoryButtons = function() {
-        if (S.windowHistoryPosition <= 0) {
+        if (slWindowHistoryPosition <= 0) {
             jQuery("#slPanel .slPanelHeader a.sl-window-previous").addClass("disabled");
-            jQuery("#slPanel .slPanelHeader a.sl-window-previous img").attr("src", S.images.previousDisabled);
+            jQuery("#slPanel .slPanelHeader a.sl-window-previous img").attr("src", slImages.previousDisabled);
         } else {
             jQuery("#slPanel .slPanelHeader a.sl-window-previous").removeClass("disabled");
-            jQuery("#slPanel .slPanelHeader a.sl-window-previous img").attr("src", S.images.previous);
+            jQuery("#slPanel .slPanelHeader a.sl-window-previous img").attr("src", slImages.previous);
         }
 
-        if (S.windowHistoryPosition == (S.windowHistory.length - 1)) {
+        if (slWindowHistoryPosition == (slWindowHistory.length - 1)) {
             jQuery("#slPanel .slPanelHeader a.sl-window-next").addClass("disabled");
-            jQuery("#slPanel .slPanelHeader a.sl-window-next img").attr("src", S.images.nextDisabled);
+            jQuery("#slPanel .slPanelHeader a.sl-window-next img").attr("src", slImages.nextDisabled);
         } else {
             jQuery("#slPanel .slPanelHeader a.sl-window-next").removeClass("disabled");
-            jQuery("#slPanel .slPanelHeader a.sl-window-next img").attr("src", S.images.next);
+            jQuery("#slPanel .slPanelHeader a.sl-window-next img").attr("src", slImages.next);
         }
 
-        if (S.windowHistory.length > 0) {
+        if (slWindowHistory.length > 0) {
             jQuery("#slPanel .slPanelHeader a.sl-window-history").removeClass("disabled");
-            jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", S.images.history);
+            jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", slImages.history);
         } else {
             jQuery("#slPanel .slPanelHeader a.sl-window-history").addClass("disabled");
-            jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", S.images.historyDisabled);
+            jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", slImages.historyDisabled);
         }
     }
 
@@ -3301,7 +3306,7 @@ function ScoutsLogPlatformContent() {
         jQuery("#slPanel").hide();
 
         // Set window state
-        S.windowState = "error";
+        slWindowState = "error";
 
         if (e.detail.status == "invalid authentication-token") {
             // Hide controls
@@ -3317,7 +3322,7 @@ function ScoutsLogPlatformContent() {
             jQuery("#slPanelErrorMessage").html( S.getLocalizedString("error_request") );
 
             jQuery("#slPanelError button").click(function() {
-                S.windowState = "";
+                slWindowState = "";
 
                 jQuery("#slPanelShadow").hide();
                 jQuery("#slPanelError").hide();

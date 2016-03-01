@@ -13,6 +13,8 @@
 <form onsubmit="return false;">
 <input type="hidden" id="sl-action-task" name="task" value="{task}" />
 
+<p><label>New Cell ID: <input type="text" name="new_cell" id="sl-new-cell" value="" size="10" /></label></p>
+
 <div id="sl-main-table">
 <table class="sl-table">
 <colgroup>
@@ -21,15 +23,13 @@
 <col style="width:10%;" />
 <col style="width:10%;" />
 <col style="width:10%;" />
-<col style="width:10%;" />
-<col style="width:20%;" />
+<col style="width:30%;" />
 <col style="width:15%;" />
 </colgroup>
 <thead>
 <tr>
 <th>{%LS_columnCell}</th>
 <th>{%LS_columnEntry}</th>
-<th>{%LS_columnNewCell}</th>
 <th>{%LS_columnNewEntry}</th>
 <th>{%LS_columnStatus}</th>
 <th>{%LS_columnUser}</th>
