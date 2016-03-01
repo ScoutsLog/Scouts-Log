@@ -1061,31 +1061,38 @@ function ScoutsLogPlatformContent() {
             p.attr( "title", S.getLocalizedString("actionJumpTaskTooltip") );
             
             p.click(function() {
-                // Hide main panel
-                jQuery("#slPanel").hide();
-                jQuery("#slPanelShadow").hide();
+                var v = jQuery("#slPanel").is(":visible");
 
-                // Get cube details and jump
-                jQuery.getJSON("/1.0/task/" + task).done(function(d) {
-                    if (!d.data.channel.metadata) {
-                        return;
-                    }
+                if (v) {
+                    jQuery("#slPanel").hide();
+                    jQuery("#slPanelShadow").hide();
+                }
 
-                    var am = window.tomni.getCurrentCell();
-
-                    if (am) {
-                        am.killPendingCubeSelection();
-                    }
-
-                    if (window.tomni.gameMode) {
-                        window.tomni.leave();
-                    } else {
-                        window.tomni.threeD.setTarget(null);
-                        window.tomni.ui.setControls(4);
-                    }
-
-                    window.tomni.ui.jumpToTask(d);
-                });               
+                if (window.tomni.gameMode) {
+                    var o = new Attention.Confirmation({
+                        situation: "information calm",
+                        title: _("Jump to Task #{0}?", task),
+                        message: _("You will lose your progress on this cube."),
+                        ok: {
+                            label: _("Jump to Task"),
+                            klass: "flat"
+                        },
+                        cancel: {
+                            label: _("Stay Here"),
+                            klass: "flat"
+                        }
+                    });
+                    o.on("ok", function() {
+                        window.tomni.jumpToTaskID(task);
+                    }).on("cancel", function() {
+                        if (v) {
+                            jQuery("#slPanel").show();
+                            jQuery("#slPanelShadow").show();
+                        }
+                    }).show();
+                } else {
+                    window.tomni.jumpToTaskID(task);
+                }
             });
         });
         
