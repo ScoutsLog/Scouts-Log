@@ -35,6 +35,9 @@
     "windowNewEntryTitle": {
         "message": "New Log Entry"
     },
+    "windowTaskMismatchTitle": {
+        "message": "Fix Task Cell Mismatch"
+    },
     "windowUpdateTitle": {
         "message": "Scouts' Log Update"
     },
@@ -132,6 +135,10 @@
         "message": "Cube",
         "description": "Column header text when displaying cube numbers."
     },
+    "columnEntry": {
+        "message": "Entry",
+        "description": "Column header text when display log entry ID numbers."
+    },
     "columnHistoryEntry": {
         "message": "History Entry",
         "description": "Column header text for window history entries"
@@ -146,6 +153,14 @@
     "columnLastUser": {
         "message": "Last User",
         "description": "Column header text when displaying the most recent username of the most recent action of a task."
+    },
+    "columnNewCell": {
+        "message": "New Cell",
+        "description": "Column header text for updated cell ID number."
+    },
+    "columnNewEntry": {
+        "message": "New Entry",
+        "description": "Column header text for updated log entry ID number."
     },
     "columnNotes": {
         "message": "Notes",
@@ -321,6 +336,14 @@
     "actionClearHistoryTooltip": {
         "message": "Delete all window history entries",
         "description": "Text to display when hovering over the button to delete history entries."
+    },
+    "actionFixMismatched": {
+        "message": "Fix Cell Mismatch",
+        "description": "Action text to indicate correcting cell and entry ID number mistmatches."
+    },
+    "actionFixMismatchedTooltip": {
+        "message": "Click to correct cell and entry ID number mismatches",
+        "description": "Text to display when hovering over the 'Fix Cell Mismatch' button."
     },
     "actionHideWindowTooltip": {
         "message": "Hide this window",

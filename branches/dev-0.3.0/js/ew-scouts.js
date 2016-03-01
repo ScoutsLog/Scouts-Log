@@ -1862,7 +1862,9 @@ function ScoutsLogPlatformContent() {
 
             // Set event handler
             jQuery("#slPanel button.sl-mismatched").unbind("click");
-            jQuery("#slPanel button.sl-mismatched").click(function() { S.prepareTaskMismatchWindow(data.task); });
+            jQuery("#slPanel button.sl-mismatched").click(function() {
+                S.prepareTaskMismatchWindow(data.task);
+            });
         } else {
             // Hide 'fix mismatch' button
             jQuery("#slPanel button.sl-mismatched").hide();
@@ -2529,7 +2531,7 @@ function ScoutsLogPlatformContent() {
         }
 
         // Get current task and cell
-        var ts = S.windowState.split("-")[1];
+        var ts = sp[1];
 
 
         // Set panel title
@@ -2560,12 +2562,68 @@ function ScoutsLogPlatformContent() {
             jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
 
 
+
+
+
+
+
+
+
+
+
         });
 
         // Get task summary
         S.getTaskSummary(ts);
 
         // Initiate data request through plugin
+        S.sendMessage(
+            "getJSON",
+            { url: S.scoutsLogURIbase + "task/" + ts + "/summary/mismatch" },
+            "prepareTaskMismatchWindow_Data"
+        );
+    }
+
+    S.prepareTaskMismatchWindow_Data = function(data) {
+        // Check window state
+        var sp = S.windowState.split("-");
+
+        if (sp[0] != "mismatch" || sp[1] != data.task) {
+            return;
+        }
+        
+        // Display task actions
+        jQuery("#sl-main-table table tbody").empty();
+
+        for (var c in data.entries) {
+            var s = data.entries[c];
+
+            var user = s.user;
+
+            if (s.reaped == 0) {
+                user = '(' + s.user + ')';
+            }
+
+            // Check for status issue indicator
+            var st = S.getLocalizedStatus(s.status);
+
+            if (s.issue != "" && s.issue != null) {
+                st += " / " + S.getLocalizedStatusIssue(s.issue);
+            }
+            
+            var row = '<tr>';
+            row += '<td>' + s.cell + '</td>';
+            row += '<td>' + s.id + '</td>';
+            row += '<td><input type="text" name="new_cell:' + s.id + '" value="' + s.new_cell + '" size="6" /></td>';
+            row += '<td><input type="text" name="new_id:' + s.id + '" value="' + s.new_id + '" size="6" /></td>';
+            row += '<td class="sl-' + s.status + '">' + st + '</td>';
+            row += '<td>' + user + '</td>';
+            row += '<td>' + s.notes + '</td>';
+            row += '<td>' + s.timestamp + '</td>';
+            row += '</tr>';
+
+            jQuery("#sl-main-table table tbody").append(row);
+        }
 
     }
 
