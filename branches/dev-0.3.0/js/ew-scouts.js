@@ -2120,6 +2120,8 @@ function ScoutsLogPlatformContent() {
         var status = "n/a";
         var status_class = "";
 
+        var sp = slWindowState.split("-");
+
         if (data.status != "") {
             status = S.getLocalizedStatus(data.status);
             status_class = ' class="sl-' + data.status + '"';
@@ -2127,8 +2129,6 @@ function ScoutsLogPlatformContent() {
             if (data.issue != "" && data.issue != null) {
                 status += " / " + S.getLocalizedStatusIssue(data.issue);
             }
-
-            var sp = slWindowState.split("-");
 
             if (sp.length != 4 && sp[3] != "edit") {
                 jQuery("#sl-action-status").val(data.status);
@@ -2150,6 +2150,11 @@ function ScoutsLogPlatformContent() {
         // Get captured image
         if (jQuery("#sl-action-entry").length == 0) {
             S.captureImage();
+        }
+
+        // Set new cell ID (for task mismatch only)
+	if (sp[0] == "mismatch" && sp[1] == data.task) {
+            jQuery("#sl-new-cell").val(data.cell);
         }
     }
 
@@ -2594,9 +2599,6 @@ function ScoutsLogPlatformContent() {
         if (sp[0] != "mismatch" || sp[1] != data.task) {
             return;
         }
-
-	// Set proposed new cell ID
-	jQuery("#sl-new-cell").val(data.new_cell);
         
         // Display task actions
         jQuery("#sl-main-table table tbody").empty();
