@@ -612,7 +612,7 @@ function ScoutsLogPlatformContent() {
             );
             
             // Set timer to update panel stats
-            window.scoutsLog.doPanelStats();
+            S.doPanelStats();
         });
         
         // Add individual button event handlers
@@ -631,7 +631,7 @@ function ScoutsLogPlatformContent() {
             var test = 'task-' + target.task;
             
             // Check window state
-            if (window.scoutsLog.windowState == test || window.scoutsLog.windowState == 'task') {
+            if (slWindowState == test || slWindowState == 'task') {
                 // Same task window is open, close instead
                 
                 if (jQuery('#slPanel').is(':visible')) {
@@ -643,7 +643,7 @@ function ScoutsLogPlatformContent() {
                 }
             } else {
                 // Show log entries for currently selected cube
-                window.scoutsLog.getTaskEntriesInspect();
+                S.getTaskEntriesInspect();
             }
         });
         
@@ -1239,6 +1239,10 @@ function ScoutsLogPlatformContent() {
                 result = S.getLocalizedString("issueInterHalfDuplicate");
 
                 break;
+            case "stashed":
+                result = S.getLocalizedString("issueStashed");
+
+                break;
             case "wrong-parent":
                 result = S.getLocalizedString("issueWrongParent");
 
@@ -1571,7 +1575,7 @@ function ScoutsLogPlatformContent() {
 
         // Set handler for display option dropdown
         jQuery("#slPanel div.slOptions select").change(function() {
-            var cell = window.scoutsLog.windowState.split("-")[2];
+            var cell = slWindowState.split("-")[2];
             var status = jQuery("#slPanel div.slOptions select").val();
             
             S.getCellEntries(cell, status);
@@ -2340,7 +2344,7 @@ function ScoutsLogPlatformContent() {
 
                 jQuery("#sl-action-image-status").html( S.getLocalizedString("messageProcessing") );
                 
-                setTimeout(function() { window.scoutsLog.captureImage(); }, 1000);
+                setTimeout(function() { S.captureImage(); }, 1000);
             }
         });
 
@@ -2363,7 +2367,7 @@ function ScoutsLogPlatformContent() {
                 jQuery("#sl-action-image-status a.sl-capture").click(function() {
                     jQuery("#sl-action-image-status").html( S.getLocalizedString("messageProcessing") );
                     
-                    setTimeout(function() { window.scoutsLog.captureImage(); }, 1000);
+                    setTimeout(function() { S.captureImage(); }, 1000);
                 });
             }
         });
@@ -2569,16 +2573,32 @@ function ScoutsLogPlatformContent() {
             jQuery("#sl-action-buttons button").prop("disabled", true);
             jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
 
+            // Prepare data object
+            var data = {
+                task: ts,
+                new_cell: parseInt(jQuery("#sl-new-cell").val(), 10),
+                entries: []
+            };
 
+            jQuery("#sl-main-table input").each(function() {
+                var n = jQuery(this).attr("name").split(":");
 
+                data.entries.push({
+                    cell: parseInt(n[1], 10),
+                    id: parseInt(n[2], 10),
+                    new_id: parseInt(jQuery(this).val(), 10)
+                });
+            });
 
-
-
-
-
-
-
-
+            // Initiate request through plugin
+            S.sendMessage(
+                "postRequest",
+                {
+                     url: slScoutsLogURIbase + "task/" + encodeURIComponent(ts) + "/mismatch/save",
+                     data: "data=" + encodeURIComponent(JSON.stringify(data))
+                },
+                "submitTaskMismatchCallback"
+            );
         });
 
         // Get task summary
@@ -2622,7 +2642,7 @@ function ScoutsLogPlatformContent() {
             var row = '<tr>';
             row += '<td>' + s.cell + '</td>';
             row += '<td>' + s.id + '</td>';
-            row += '<td><input type="text" name="new_id:' + s.id + '" value="' + s.new_id + '" size="6" /></td>';
+            row += '<td><input type="text" name="new_id:' + s.cell + ':' + s.id + '" value="' + s.new_id + '" size="6" /></td>';
             row += '<td class="sl-' + s.status + '">' + st + '</td>';
             row += '<td>' + user + '</td>';
             row += '<td>' + s.notes + '</td>';
@@ -2634,7 +2654,18 @@ function ScoutsLogPlatformContent() {
 
     }
 
+    S.submitTaskMismatchCallback = function(data) {
+        if (data.result == true) {
+            // Success, go back to previous screen
 
+            S.navigateWindowHistory(slWindowHistoryPosition);
+        } else {
+            // Error
+
+            jQuery("#sl-action-buttons button").prop("disabled", false);
+            jQuery("#sl-action-buttons p").html( S.getLocalizedString("error_submission") );
+        }
+    }
 
 
 /**

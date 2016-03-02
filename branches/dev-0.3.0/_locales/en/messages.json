@@ -26,6 +26,12 @@
     "windowCellSummary": {
         "message": "Cell Summary"
     },
+    "windowEditEntryTitle": {
+        "message": "Edit Log Entry"
+    },
+    "windowErrorTitle": {
+        "message": "Error"
+    },
     "windowHistoryTitle": {
         "message": "Cube Submission History"
     },
@@ -47,7 +53,20 @@
     "windowWindowHistoryTitle": {
         "message": "Window History"
     },
-    
+
+
+    "windowHistoryNextTooltip": {
+        "message": "Navigate to next window",
+        "description": "Text to display when hovering over the 'Next' window history navigation button"
+    },
+    "windowHistoryPreviousTooltip": {
+        "message": "Navigate to previous window",
+        "description": "Text to display when hovering over the 'Back' window history navigation button"
+    },
+    "windowHistoryWindowTooltip": {
+        "message": "Display window history",
+        "description": "Text to display when hovering over the button to display window history entries"
+    },
     
     
     
@@ -137,11 +156,11 @@
     },
     "columnEntry": {
         "message": "Entry",
-        "description": "Column header text when display log entry ID numbers."
+        "description": "Column header text when displaying log entry ID numbers."
     },
     "columnHistoryEntry": {
         "message": "History Entry",
-        "description": "Column header text for window history entries"
+        "description": "Column header text when displaying window history entries"
     },
     "columnImage": {
         "message": "Image"
@@ -222,6 +241,18 @@
     "labelEraser": {
         "message": "Eraser"
     },
+    "labelIconEntries": {
+        "message": "You have made a log entry for this cube",
+        "description": "Text to display when hovering over the icon indicator for log entries on the cube."
+    },
+    "labelIconError": {
+        "message": "The log entreis for this cube have mismatched cell IDs",
+        "description": "Text to display when hovering over the icon indicator for cube errors"
+    },
+    "labelIconWatch": {
+        "message": "You placed this cube on watch",
+        "description": "Text to display when hovering over the icon indicator for the user being the oen to set the cube to watch status."
+    },
     "labelImage": {
         "message": "Image"
     },
@@ -244,6 +275,9 @@
     },
     "labelMarker": {
         "message": "Marker"
+    },
+    "labelNewCell": {
+        "message": "New Cell ID"
     },
     "labelNo": {
         "message": "No"
@@ -337,9 +371,21 @@
         "message": "Delete all window history entries",
         "description": "Text to display when hovering over the button to delete history entries."
     },
+    "actionClose": {
+        "message": "Close",
+        "description": "Button text to display on the close button for error messages"
+    },
+    "actionCloseTooltip": {
+        "message": "Close this window",
+        "description": "Text to display when hovering over the 'close' button"
+    },
+    "actionEditEntryTooltip": {
+        "message": "Click here to edit your log entry",
+        "description": "Text displayed when hovering over the edit log entry icon"
+    },
     "actionFixMismatched": {
         "message": "Fix Cell Mismatch",
-        "description": "Action text to indicate correcting cell and entry ID number mistmatches."
+        "description": "Button text used when log entries for a task have different cell IDs and must be fixed."
     },
     "actionFixMismatchedTooltip": {
         "message": "Click to correct cell and entry ID number mismatches",
@@ -500,6 +546,9 @@
     "issueNone": {
         "message": "None"
     },
+    "issueStashed": {
+        "message": "Stashed"
+    },
     "issueWrongParent": {
         "message": "Wrong Parent"
     },
@@ -566,6 +615,9 @@
     },
     "settingsHistory": {
         "message": "Display History"
+    },
+    "settingsTitle": {
+        "message": "Scouts' Log Settings"
     },
     
     
