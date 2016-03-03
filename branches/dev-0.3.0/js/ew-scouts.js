@@ -2162,9 +2162,12 @@ function ScoutsLogPlatformContent() {
 
     S.submitTaskActionCallback = function(data) {
         if (data.result == true) {
-            // Success, go back to previous screen
+            // Success, hide screen
 
-            S.navigateWindowHistory(slWindowHistoryPosition);
+            slWindowState = "";
+
+            jQuery("#slPanel").hide();
+            jQuery("#slPanelShadow").hide();
         } else {
             // Error
 
