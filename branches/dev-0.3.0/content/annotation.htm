@@ -834,13 +834,19 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
         var im = cv.toDataURL();
 
-        var S = window.opener.scoutsLog;
-      
-        S.saveAnnotation({
-            image: im,
-            sketch: JSON.stringify( jQuery('#annotations-sketch').sketch().actions )
-        });
-      
+        // Save annotation (via window event)
+        var d = {detail: {
+            destination: "saveAnnotation",
+            data: {
+                image: im,
+                sketch: JSON.stringify( jQuery('#annotations-sketch').sketch().actions )
+            }
+        }};
+
+        var ev = new CustomEvent('RoutedMessageCS', d);
+        window.opener.document.dispatchEvent(ev);
+
+        // Close annotation window
         window.close();
     });
     

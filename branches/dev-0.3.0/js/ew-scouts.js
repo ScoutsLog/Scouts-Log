@@ -1530,12 +1530,16 @@ function ScoutsLogPlatformContent() {
  * UI: Get Cell Task Entries
  * ----------------------------------------------------------------------------
  */
-    S.getCellEntries = function(c, s) {
+    S.getCellEntries = function(c, s, i) {
         // Set window state
         slWindowState = "cell-entries-" + c;
 
         if (typeof s != "undefined" && s != "") {
             slWindowState += "-" + s;
+        }
+
+        if (typeof i != "undefined" && i != "") {
+            slWindowState += ":" + i;
         }
 
         // Send content request
@@ -1558,7 +1562,8 @@ function ScoutsLogPlatformContent() {
         // Get state options
         var sp = slWindowState.split("-");
         var c = sp[2];
-        var s = "";
+        var st = "";
+        var is = "";
 
         if (sp.length > 3) {
             // Remove cell entry parts
@@ -1567,25 +1572,38 @@ function ScoutsLogPlatformContent() {
             sp.shift();
 
             // Get status
-            s = sp.join("-");
+            var spp = sp.join("-").split(":");
+
+            if (spp.length > 1) {
+                st = spp[0];
+                is = spp[1];
+            } else {
+                st = sp.join("-");
+            }
         }
 
         // Update status display
-        jQuery("#slPanel div.slOptions select").val(s);
+        jQuery("#slPanel div.slOptions #sl-status").val(st);
+        jQuery("#slPanel div.slOptions #sl-issue").val(is);
 
         // Set handler for display option dropdown
         jQuery("#slPanel div.slOptions select").change(function() {
             var cell = slWindowState.split("-")[2];
-            var status = jQuery("#slPanel div.slOptions select").val();
+            var status = jQuery("#slPanel div.slOptions #sl-status").val();
+            var issue = jQuery("#slPanel div.slOptions #sl-issue").val();
             
-            S.getCellEntries(cell, status);
+            S.getCellEntries(cell, status, issue);
         });
 
         // Build data URl
         var url = slScoutsLogURIbase + "cell/" + encodeURIComponent(c) + "/tasks";
 
-        if (s != "") {
-            url += "/status/" + encodeURIComponent(s);
+        if (st != "") {
+            url += "/status/" + encodeURIComponent(st);
+        }
+
+        if (is != "") {
+            url += "/issue/" + encodeURIComponent(is);
         }
 
         // Send data request through plugin
