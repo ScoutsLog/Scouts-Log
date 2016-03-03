@@ -1227,7 +1227,7 @@ function ScoutsLogPlatformContent() {
                 result = S.getLocalizedString("issueAIMerger");
 
                 break;
-            case "blackspill":
+            case "black-spill":
                 result = S.getLocalizedString("issueBlackSpill");
 
                 break;
