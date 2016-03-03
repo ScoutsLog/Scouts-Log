@@ -902,7 +902,7 @@ function ScoutsLogPlatformContent() {
      */
     S.showAdmin = function() {
         if (slWindowState != "status-need-admin") {
-            S.getStatusSummary("need-admin", false);
+            S.getStatusSummary("need-admin", true);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
                 jQuery("#slPanel").hide();
@@ -938,7 +938,7 @@ function ScoutsLogPlatformContent() {
      */
     S.showWatch = function() {
         if (slWindowState != "status-watch") {
-            S.getStatusSummary("watch", false);
+            S.getStatusSummary("watch", true);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
                 jQuery("#slPanel").hide();
@@ -1394,7 +1394,7 @@ function ScoutsLogPlatformContent() {
  * UI: Get Status Summary
  * ----------------------------------------------------------------------------
  */
-    S.getStatusSummary = function(s, h) {
+    S.getStatusSummary = function(s, h, i) {
         // Get window subtitle
         var status = S.getLocalizedStatus(s);
         
@@ -1406,6 +1406,10 @@ function ScoutsLogPlatformContent() {
                 slWindowState += "-header";
             }
 
+            if (typeof i != "undefined" && i != "") {
+                slWindowState += ":" + i;
+            }
+
             // Update window history
             if (slWindowHistoryNavigating == false) {
                 S.pushWindowHistory({ state: slWindowState, data: {} });
@@ -1414,13 +1418,20 @@ function ScoutsLogPlatformContent() {
             slWindowHistoryNavigating = false;
 
             // Send content request
-            S.getContent("cell-summary.htm", "getStatusSummary_Content");
+            if (h == true) {
+                S.getContent("cell-summary.htm", "getStatusSummary_Content");
+            } else {
+                S.getContent("status-open.htm", "getStatusSummary_Content");
+            }
         }
     }
 
     S.getStatusSummary_Content = function(data) {
         // Check window state
-        var sp = slWindowState.split("-");
+        var spp = slWindowState.split(":");
+        var sp = spp[0].split("-");
+        var si = spp[1] || "";
+        var hd = false;
 
         if (sp[0] != "status") {
             return;
@@ -1433,7 +1444,7 @@ function ScoutsLogPlatformContent() {
 
         // Generate data URL
         var url = slScoutsLogURIbase + "status/";
-        var sp = slWindowState.split("-");
+
         sp.shift();
 
         var st;
@@ -1443,16 +1454,61 @@ function ScoutsLogPlatformContent() {
 
              st = sp.join("-");
 
-             url += st;
+             url += encodeURIComponent(st);
              url += "/header";
+
+             hd = true;
         } else {
              st = sp.join("-");
 
-             url += st;
+             url += encodeURIComponent(st);
         }
 
-        // Update window state
-        slWindowState = "status-" + st;
+        if (si != "") {
+             url += "/issue/" + encodeURIComponent(si);
+        }
+
+        // Set status flag dropdown
+        if (hd == false) {
+            jQuery("#sl-status").dropdown({
+                value: st,
+                change: function(status) {
+                    var spp2 = slWindowState.split(":");
+                    var sp2 = spp2[0].split("-");
+                    var si2 = spp2[1];
+
+                    var hd2 = false;
+
+                    if (sp2[sp2.length - 1] == "header") {
+                        sp2.pop();
+                        hd2 = true;   
+                    }
+
+                    S.getStatusSummary(status, hd2, si2);
+                }
+            });
+
+            // Set issue flag dropdown
+            jQuery("#sl-issue").dropdown({
+                value: si,
+                change: function(issue) {
+                    var spp2 = slWindowState.split(":");
+                    var sp2 = spp2[0].split("-");
+                    sp2.shift();
+
+                    var hd2 = false;
+
+                    if (sp2[sp2.length - 1] == "header") {
+                        sp2.pop();
+                        hd2 = true;   
+                    }
+
+                    var st2 = sp2.join("-");
+
+                    S.getStatusSummary(st2, hd2, issue);
+                }
+            });
+        }
             
         // Set window title
         var status = S.getLocalizedStatus(st);
@@ -1468,7 +1524,8 @@ function ScoutsLogPlatformContent() {
 
     S.getStatusSummary_Data = function(data) {
         // Check window state
-        var sp = slWindowState.split("-");
+        var spp = slWindowState.split(":");
+        var sp = spp[0].split("-");
 
         if (sp[0] != "status") {
             return;
@@ -1560,42 +1617,61 @@ function ScoutsLogPlatformContent() {
         jQuery("#slPanelShadow").show();
 
         // Get state options
-        var sp = slWindowState.split("-");
+        var spp = slWindowState.split(":");
+        var sp = spp[0].split("-");
         var c = sp[2];
-        var st = "";
-        var is = "";
 
-        if (sp.length > 3) {
+        // Remove cell entry parts
+        sp.shift();
+        sp.shift();
+        sp.shift();
+
+        var st = sp.join("-");
+        var is = spp[1] || "";
+
+        // Set display option dropdown menus
+        var ch = function(v) {
+            var spp2 = slWindowState.split(":");
+            var sp2 = spp2[0].split("-");
+            var cell = sp2[2];
+
             // Remove cell entry parts
-            sp.shift();
-            sp.shift();
-            sp.shift();
+            sp2.shift();
+            sp2.shift();
+            sp2.shift();
 
-            // Get status
-            var spp = sp.join("-").split(":");
+            // Get status and issue settings
+            var status = sp2.join("-");
+            var issue = spp2[1] || "";
 
-            if (spp.length > 1) {
-                st = spp[0];
-                is = spp[1];
-            } else {
-                st = sp.join("-");
+            // Update from current selection
+            var cn = this.selector[0].id;
+
+            switch (cn) {
+                case "sl-status":
+                    status = v;
+
+                    break;
+                case "sl-issue":
+                    issue = v;
+
+                    break;
             }
-        }
-
-        // Update status display
-        jQuery("#slPanel div.slOptions #sl-status").val(st);
-        jQuery("#slPanel div.slOptions #sl-issue").val(is);
-
-        // Set handler for display option dropdown
-        jQuery("#slPanel div.slOptions select").change(function() {
-            var cell = slWindowState.split("-")[2];
-            var status = jQuery("#slPanel div.slOptions #sl-status").val();
-            var issue = jQuery("#slPanel div.slOptions #sl-issue").val();
             
             S.getCellEntries(cell, status, issue);
+        };
+
+        jQuery("#slPanel div.slOptions #sl-status").dropdown({
+            value: st,
+            change: ch
         });
 
-        // Build data URl
+        jQuery("#slPanel div.slOptions #sl-issue").dropdown({
+            value: is,
+            change: ch
+        });
+
+        // Build data URL
         var url = slScoutsLogURIbase + "cell/" + encodeURIComponent(c) + "/tasks";
 
         if (st != "") {
@@ -2154,6 +2230,7 @@ function ScoutsLogPlatformContent() {
 
             if (sp.length != 4 && sp[3] != "edit") {
                 jQuery("#sl-action-status").val(data.status);
+                jQuery("#sl-action-issue").val(data.issue);
             }
         }
         
@@ -3212,7 +3289,8 @@ function ScoutsLogPlatformContent() {
             var h = slWindowHistory[p];
 
             // Get window state
-            var sp = h.state.split("-");
+            var spp = h.state.split(":");
+            var sp = spp[0].split("-");
 
             // Determine navigation function
             switch (sp[0]) {
@@ -3232,7 +3310,7 @@ function ScoutsLogPlatformContent() {
                             s = sp.join("-");
                         }
 
-                        S.getCellEntries(c, s);
+                        S.getCellEntries(c, s, spp[1]);
                     } else {
                         // Show Cell List
 
@@ -3267,7 +3345,7 @@ function ScoutsLogPlatformContent() {
                     var st = sp.join("-");
 
                     // Display status summary
-                    S.getStatusSummary(st, hdr);
+                    S.getStatusSummary(st, hdr, spp[1]);
 
                     break;
                 case "task":

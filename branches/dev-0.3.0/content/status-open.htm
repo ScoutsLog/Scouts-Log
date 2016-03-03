@@ -1,14 +1,12 @@
 <div class="slOptions">
 <select id="sl-status">
-<option value="" selected>{%LS_statusOpen}</option>
-<option value="all">{%LS_statusAll}</option>
+<option value="open" selected>{%LS_statusOpen}</option>
 <option value="missing-nub">{%LS_statusMissingNub}</option>
 <option value="missing-branch">{%LS_statusMissingBranch}</option>
 <option value="merger">{%LS_statusMerger}</option>
 <option value="watch">{%LS_statusWatch}</option>
 <option value="need-admin">{%LS_statusNeedAdmin}</option>
 <option value="scythe-complete">{%LS_statusScytheComplete}</option>
-<option value="good">{%LS_statusGood}</option>
 </select>
 <select id="sl-issue">
 <option value="">{%LS_issueNone}</option>
@@ -22,13 +20,15 @@
 </div>
 <div id="sl-main-table">
 <table class="sl-table">
+<col style="width:15%;" />
+<col style="width:20%;" />
 <col style="width:25%;" />
-<col style="width:25%;" />
-<col style="width:25%;" />
-<col style="width:25%;" />
+<col style="width:20%;" />
+<col style="width:20%;" />
 <thead>
 <tr>
 <th>{%LS_columnCube}</th>
+<th>{%LS_columnCell}</th>
 <th>{%LS_columnStatus}</th>
 <th>{%LS_columnLastUser}</th>
 <th>{%LS_columnLastUpdated}</th>

@@ -260,23 +260,26 @@ div#sl-action-table {
     font-weight: normal;
 }
 
-.sl-confirmation {
+
+.slOptions .dropdown,
+.sl-table td .dropdown {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 480px;
-    height: 240px;
-    margin-left: -240px;
-    margin-top: -120px;
-    padding: 10px;
-    background: rgba(27,27,27,1);
-    border: 1px solid #0cf;
-    border-radius: 6px;
-    color: #eee;
-    z-index: 1600;
-    font-size: 14pt;
-    font-weight: normal;
+    width: 250px;
 }
+
+.slOptions .dropdown:nth-child(2) {
+    margin-left: 260px;
+}
+
+.slOptions .dropdown .menu {
+    background: rgb(27,27,27);
+}
+
+.slOptions + #sl-main-table {
+    margin-top: 48px;
+}
+
+
 
 
 /* ------------------------------------------------------------------------- */
