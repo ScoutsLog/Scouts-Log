@@ -19,6 +19,7 @@ function ScoutsLogPlatformContent() {
     var slWindowHistory = [];
     var slWindowHistoryPosition = -1;
     var slWindowHistoryNavigating = false;
+    var slWindowHistoryLimit = 100;
 
     var slPanelVertical = false;
     var slPanelPosition = {};
@@ -3386,6 +3387,14 @@ function ScoutsLogPlatformContent() {
         // and if so clear any remaining points
         if (slWindowHistoryPosition < (slWindowHistory.length - 1)) {
             slWindowHistory.splice(slWindowHistoryPosition + 1, slWindowHistory.length - slWindowHistoryPosition);
+        }
+
+        // See if we have reached the limit for items
+        if (slWindowHistory.length == slWindowHistoryLimit) {
+            // Remove oldest item
+
+            slWindowHistory.shift();
+            slWindowHistoryPosition--;
         }
 
         // Add history point
