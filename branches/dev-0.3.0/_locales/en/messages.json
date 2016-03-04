@@ -540,6 +540,9 @@
     "issueDuplicate": {
         "message": "Duplicate"
     },
+    "issueFusedMerger": {
+        "message": "Fused Merger"
+    },
     "issueInterHalfDuplicate": {
         "message": "Inter-Half Duplicate"
     },
@@ -549,8 +552,8 @@
     "issueStashed": {
         "message": "Stashed"
     },
-    "issueWrongParent": {
-        "message": "Wrong Parent"
+    "issueWrongSeed": {
+        "message": "Wrong Seed Merger"
     },
         
     

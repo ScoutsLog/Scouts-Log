@@ -1235,6 +1235,10 @@ function ScoutsLogPlatformContent() {
                 result = S.getLocalizedString("issueDuplicate");
 
                 break;
+            case "fused-merger":
+                result = S.getLocalizedString("issueFusedMerger");
+
+                break;
             case "inter-duplicate":
                 result = S.getLocalizedString("issueInterHalfDuplicate");
 
@@ -1243,8 +1247,8 @@ function ScoutsLogPlatformContent() {
                 result = S.getLocalizedString("issueStashed");
 
                 break;
-            case "wrong-parent":
-                result = S.getLocalizedString("issueWrongParent");
+            case "wrong-seed":
+                result = S.getLocalizedString("issueWrongSeed");
 
                 break;
 
