@@ -1417,7 +1417,7 @@ function ScoutsLogPlatformContent() {
 
             // Update window history
             if (slWindowHistoryNavigating == false) {
-                S.pushWindowHistory({ state: slWindowState, data: {} });
+                S.pushWindowHistory({ state: slWindowState, data: {title: S.getLocalizedString("panelOpen") + ": " + status} });
             }
 
             slWindowHistoryNavigating = false;
@@ -1517,7 +1517,7 @@ function ScoutsLogPlatformContent() {
             
         // Set window title
         var status = S.getLocalizedStatus(st);
-        jQuery("#slPanel h2 small").html(status);
+        jQuery("#slPanel h2 small").html(S.getLocalizedString("panelOpen") + ": " + status);
 
         // Send data request through plugin
         S.sendMessage(
@@ -3166,7 +3166,11 @@ function ScoutsLogPlatformContent() {
 
                     var st = sp.join("-");
 
-                    title = S.getLocalizedStatus(st);
+                    if (typeof h.data.title != "undefined" && h.data.title != "") {
+                        title = h.data.title;
+                    } else {
+                        title = S.getLocalizedStatus(st);
+                    }
 
                     break;
                 case "task":
