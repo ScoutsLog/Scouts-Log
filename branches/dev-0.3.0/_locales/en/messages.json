@@ -41,9 +41,6 @@
     "windowNewEntryTitle": {
         "message": "New Log Entry"
     },
-    "windowTaskMismatchTitle": {
-        "message": "Fix Task Cell Mismatch"
-    },
     "windowUpdateTitle": {
         "message": "Scouts' Log Update"
     },
@@ -245,10 +242,6 @@
         "message": "You have made a log entry for this cube",
         "description": "Text to display when hovering over the icon indicator for log entries on the cube."
     },
-    "labelIconError": {
-        "message": "The log entreis for this cube have mismatched cell IDs",
-        "description": "Text to display when hovering over the icon indicator for cube errors"
-    },
     "labelIconWatch": {
         "message": "You placed this cube on watch",
         "description": "Text to display when hovering over the icon indicator for the user being the oen to set the cube to watch status."
@@ -382,14 +375,6 @@
     "actionEditEntryTooltip": {
         "message": "Click here to edit your log entry",
         "description": "Text displayed when hovering over the edit log entry icon"
-    },
-    "actionFixMismatched": {
-        "message": "Fix Cell Mismatch",
-        "description": "Button text used when log entries for a task have different cell IDs and must be fixed."
-    },
-    "actionFixMismatchedTooltip": {
-        "message": "Click to correct cell and entry ID number mismatches",
-        "description": "Text to display when hovering over the 'Fix Cell Mismatch' button."
     },
     "actionHideWindowTooltip": {
         "message": "Hide this window",
