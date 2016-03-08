@@ -552,6 +552,9 @@
     "issueStashed": {
         "message": "Stashed"
     },
+    "issueTestExtension": {
+        "message": "Test Extension"
+    },
     "issueWrongSeed": {
         "message": "Wrong Seed Merger"
     },

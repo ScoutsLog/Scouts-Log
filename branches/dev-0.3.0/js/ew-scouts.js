@@ -15,6 +15,7 @@ function ScoutsLogPlatformContent() {
     var slUserRoles = [];
     
     var slWindowState = '';
+    var slWindowSubmitting = false;
 
     var slWindowHistory = [];
     var slWindowHistoryPosition = -1;
@@ -1052,6 +1053,25 @@ function ScoutsLogPlatformContent() {
 ///////////////////////////////////////////////////////////////////////////////
 
 
+    /**
+     * Utils: Disable Form and Link Elements
+     */
+    S.disableForm = function(frm) {
+        jQuery(jQuery(frm).prop("elements")).each(function() {
+            jQuery(this).prop("disabled", true);
+        });
+    }
+
+
+    /**
+     * Utils: Disable Form and Link Elements
+     */
+    S.enableForm = function(frm) {
+        jQuery(jQuery(frm).prop("elements")).each(function() {
+            jQuery(this).prop("disabled", false);
+        });
+    }
+
 
     /**
      * Utils: Set Links for Common Items
@@ -1562,9 +1582,6 @@ function ScoutsLogPlatformContent() {
                 ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
             }
             
-            if (s.mismatched == 1) {
-                ent1 = ' <img src="' + slImages.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
-            }
 
             // Check for status issue indicator
             var st = S.getLocalizedStatus(s.status);
@@ -1754,10 +1771,6 @@ function ScoutsLogPlatformContent() {
                     ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
                 }
                 
-                if (s.mismatched == 1) {
-                    ent1 = ' <img src="' + slImages.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
-                }
-
                 // Check for status issue indicator
                 var st = S.getLocalizedStatus(s.status);
 
@@ -1960,22 +1973,7 @@ function ScoutsLogPlatformContent() {
 
             jQuery("#sl-main-table table tbody").append(row);
         }
-        
-        // Check for mismatched cell IDs
-        if (data.mismatched == 1) {
-            // Display button           
-            jQuery("#slPanel button.sl-mismatched").show();
-
-            // Set event handler
-            jQuery("#slPanel button.sl-mismatched").unbind("click");
-            jQuery("#slPanel button.sl-mismatched").click(function() {
-                S.prepareTaskMismatchWindow(data.task);
-            });
-        } else {
-            // Hide 'fix mismatch' button
-            jQuery("#slPanel button.sl-mismatched").hide();
-        }
-        
+                
         // Check 'set good' button status
         if (data.status != "" && data.status != "good") {            
             jQuery("#slPanel button.sl-good-action").show();
@@ -2093,6 +2091,9 @@ function ScoutsLogPlatformContent() {
             return;
         }
 
+        // Clear submission flag
+        slWindowSubmitting = false;
+
         // Get current task and cell
         var ts = slWindowState.split("-")[1];
 
@@ -2119,8 +2120,11 @@ function ScoutsLogPlatformContent() {
         });
 
         jQuery("#slPanel button.sl-submit").click(function() {
+            // Set submission flag
+            slWindowSubmitting = true;
+
             // Set interface
-            jQuery("#sl-action-buttons button").prop("disabled", true);
+            S.disableForm("#slPanel form");
             jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
 
             // Get current task and cell
@@ -2166,6 +2170,9 @@ function ScoutsLogPlatformContent() {
     }
 
     S.submitTaskActionCallback = function(data) {
+        // Clear submission flag
+        slWindowSubmitting = false;
+
         if (data.result == true) {
             // Success, hide screen
 
@@ -2257,11 +2264,6 @@ function ScoutsLogPlatformContent() {
         // Get captured image
         if (jQuery("#sl-action-entry").length == 0) {
             S.captureImage();
-        }
-
-        // Set new cell ID (for task mismatch only)
-	if (sp[0] == "mismatch" && sp[1] == data.task) {
-            jQuery("#sl-new-cell").val(data.cell);
         }
     }
 
@@ -2404,6 +2406,9 @@ function ScoutsLogPlatformContent() {
         // Set event handlers
 
         jQuery("#sl-action-image-status a.sl-preview").click(function() {
+            // Exit if we are submitting
+            if (slWindowSubmitting == true) return;
+
             var w = window.open();
 
             var im;
@@ -2424,6 +2429,9 @@ function ScoutsLogPlatformContent() {
         });
 
         jQuery("#sl-action-image-status a.sl-annotate").click(function() {
+            // Exit if we are submitting
+            if (slWindowSubmitting == true) return;
+
             if (jQuery("#sl-action-image-annotated").val() == "") {
                 S.createAnnotation();
             } else {
@@ -2432,6 +2440,9 @@ function ScoutsLogPlatformContent() {
         });
 
         jQuery("#sl-action-image-status a.sl-capture").click(function() {
+            // Exit if we are submitting
+            if (slWindowSubmitting == true) return;
+
             var res = true;
 
             if (jQuery("#sl-action-image-sketch").val() != "") {
@@ -2452,6 +2463,9 @@ function ScoutsLogPlatformContent() {
         });
 
         jQuery("#sl-action-image-status a.sl-remove").click(function() {
+            // Exit if we are submitting
+            if (slWindowSubmitting == true) return;
+
             var res = true;
 
             if (jQuery("#sl-action-image-sketch").val() != "") {
@@ -2615,158 +2629,6 @@ function ScoutsLogPlatformContent() {
         } else {
             // Error
 
-        }
-    }
-
-
-/**
- * UI:  Show Task Cell Mismatch Screen
- * ----------------------------------------------------------------------------
- */
-    S.prepareTaskMismatchWindow = function(t) {
-        if (typeof t != "undefined") {
-            // Set window state
-            slWindowState = "mismatch-" + t;
-
-            // Send content request
-            S.getContent("task-mismatch.htm", "prepareTaskMismatchWindow_Content");
-        } else {
-            // Invalid task/cube
-
-            alert( S.getLocalizedString("error_cube") );
-        }
-    }
-
-    S.prepareTaskMismatchWindow_Content = function(data) {
-        // Check window state
-        var sp = slWindowState.split("-");
-
-        if (sp[0] != "mismatch") {
-            return;
-        }
-
-        // Get current task and cell
-        var ts = sp[1];
-
-
-        // Set panel title
-        jQuery("#slPanel h2 small").text( S.getLocalizedString("windowTaskMismatchTitle") + " (" + S.getLocalizedString("labelTask") + " #" + ts + ")" );
-
-        // Perform content specific string replacements
-        data = data.replace(/{task}/gi, ts);
-
-
-        // Set panel content
-        jQuery("#slPanel div.slPanelContent").html(data);
-        jQuery("#slPanel").show();
-        jQuery("#slPanelShadow").show();
-
-        // Prevent keystrokes for notes from bubbling
-        jQuery("#sl-action-notes").keydown(function(e) {
-            e.stopPropagation();
-        });
-        
-        // Set handlers for buttons
-        jQuery("#slPanel button.sl-cancel").click(function() {
-            S.navigateWindowHistory(slWindowHistoryPosition);
-        });
-
-        jQuery("#slPanel button.sl-submit").click(function() {
-            // Set interface
-            jQuery("#sl-action-buttons button").prop("disabled", true);
-            jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
-
-            // Prepare data object
-            var data = {
-                task: ts,
-                new_cell: parseInt(jQuery("#sl-new-cell").val(), 10),
-                entries: []
-            };
-
-            jQuery("#sl-main-table input").each(function() {
-                var n = jQuery(this).attr("name").split(":");
-
-                data.entries.push({
-                    cell: parseInt(n[1], 10),
-                    id: parseInt(n[2], 10),
-                    new_id: parseInt(jQuery(this).val(), 10)
-                });
-            });
-
-            // Initiate request through plugin
-            S.sendMessage(
-                "postRequest",
-                {
-                     url: slScoutsLogURIbase + "task/" + encodeURIComponent(ts) + "/mismatch/save",
-                     data: "data=" + encodeURIComponent(JSON.stringify(data))
-                },
-                "submitTaskMismatchCallback"
-            );
-        });
-
-        // Get task summary
-        S.getTaskSummary(ts);
-
-        // Initiate data request through plugin
-        S.sendMessage(
-            "getJSON",
-            { url: slScoutsLogURIbase + "task/" + ts + "/mismatch" },
-            "prepareTaskMismatchWindow_Data"
-        );
-    }
-
-    S.prepareTaskMismatchWindow_Data = function(data) {
-        // Check window state
-        var sp = slWindowState.split("-");
-
-        if (sp[0] != "mismatch" || sp[1] != data.task) {
-            return;
-        }
-        
-        // Display task actions
-        jQuery("#sl-main-table table tbody").empty();
-
-        for (var c in data.entries) {
-            var s = data.entries[c];
-
-            var user = s.user;
-
-            if (s.reaped == 0) {
-                user = '(' + s.user + ')';
-            }
-
-            // Check for status issue indicator
-            var st = S.getLocalizedStatus(s.status);
-
-            if (s.issue != "" && s.issue != null) {
-                st += " / " + S.getLocalizedStatusIssue(s.issue);
-            }
-            
-            var row = '<tr>';
-            row += '<td>' + s.cell + '</td>';
-            row += '<td>' + s.id + '</td>';
-            row += '<td><input type="text" name="new_id:' + s.cell + ':' + s.id + '" value="' + s.new_id + '" size="6" /></td>';
-            row += '<td class="sl-' + s.status + '">' + st + '</td>';
-            row += '<td>' + user + '</td>';
-            row += '<td>' + s.notes + '</td>';
-            row += '<td>' + s.timestamp + '</td>';
-            row += '</tr>';
-
-            jQuery("#sl-main-table table tbody").append(row);
-        }
-
-    }
-
-    S.submitTaskMismatchCallback = function(data) {
-        if (data.result == true) {
-            // Success, go back to previous screen
-
-            S.navigateWindowHistory(slWindowHistoryPosition);
-        } else {
-            // Error
-
-            jQuery("#sl-action-buttons button").prop("disabled", false);
-            jQuery("#sl-action-buttons p").html( S.getLocalizedString("error_submission") );
         }
     }
 
@@ -3045,10 +2907,6 @@ function ScoutsLogPlatformContent() {
                     ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
                 }
                 
-                if (h.mismatched == 1) {
-                    ent1 = ' <img src="' + slImages.error + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconError") + '" />';
-                }
-
     
                 var row = '<tr>';
                 row += '<td>' + ent1 + ent2 + h.task + '<br /><a class="sl-task" data-task="' + h.task + '">' + S.getLocalizedString("actionTask") + '</a> | <a class="sl-jump-task" data-task="' + h.task + '">' + S.getLocalizedString("actionJumpTask") + '</a></td>';
@@ -3456,6 +3314,7 @@ function ScoutsLogPlatformContent() {
 
         // Set window state
         slWindowState = "error";
+        slWindowSubmitting = false;
 
         if (e.detail.status == "invalid authentication-token") {
             // Hide controls
