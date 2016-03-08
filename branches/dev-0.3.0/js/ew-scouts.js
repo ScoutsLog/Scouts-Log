@@ -457,6 +457,9 @@ function ScoutsLogPlatformContent() {
 
         // Set event handlers for window history buttons
         jQuery("#slPanel a.sl-window-previous").click(function() {
+            // Check submission flag
+            if (slWindowSubmitting == true) return;
+
             if (jQuery(this).hasClass("disabled") == false) {
                 // Update window history position
                 if (slWindowHistoryPosition > 0) {
@@ -471,6 +474,9 @@ function ScoutsLogPlatformContent() {
         });
 
         jQuery("#slPanel a.sl-window-next").click(function() {
+            // Check submission flag
+            if (slWindowSubmitting == true) return;
+
             if (jQuery(this).hasClass("disabled") == false) {
                 // Update window history position
                 if (slWindowHistoryPosition < slWindowHistory.length) {
@@ -485,6 +491,9 @@ function ScoutsLogPlatformContent() {
         });
 
         jQuery("#slPanel a.sl-window-history").click(function() {
+            // Check submission flag
+            if (slWindowSubmitting == true) return;
+
             if (jQuery(this).hasClass("disabled") == false) {
                 if (slWindowState == "window-history") {
                     S.navigateWindowHistory(slWindowHistoryPosition);
