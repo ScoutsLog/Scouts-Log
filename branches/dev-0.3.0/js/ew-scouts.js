@@ -2141,37 +2141,46 @@ function ScoutsLogPlatformContent() {
             var c = jQuery("#sl-action-cell").val();
 
             // Prepare data object
+            var data = {
+                cell: c,
+                task: t,
+                status: jQuery("#sl-action-status").val(),
+                issue: jQuery("#sl-action-issue").val(),
+                reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
+                notes: jQuery("#sl-action-notes").val()
+            };
+
+            // Prepare image data
+            var im = "";
+
             if (jQuery("#sl-action-image-annotated").val() != "") {
-                var data = {
-                    cell: c,
-                    task: t,
-                    status: jQuery("#sl-action-status").val(),
-                    issue: jQuery("#sl-action-issue").val(),
-                    reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
-                    notes: jQuery("#sl-action-notes").val(),
-                    image: jQuery("#sl-action-image-annotated").val()
-                };
+                im = jQuery("#sl-action-image-annotated").val();
             } else {
-                var data = {
-                    cell: c,
-                    task: t,
-                    status: jQuery("#sl-action-status").val(),
-                    issue: jQuery("#sl-action-issue").val(),
-                    reaped: jQuery("#sl-action-table input:radio[name=reaped]:checked").val(),
-                    notes: jQuery("#sl-action-notes").val(),
-                    image: jQuery("#sl-action-image").val()
-                };
+                im = jQuery("#sl-action-image").val();
+            }
+
+            var bs = atob(im.split(',')[1]);
+            var ms = im.split(',')[0].split(':')[1].split(';')[0]
+
+            var ab = new ArrayBuffer(bs.length);
+            var ia = new Uint8Array(ab);
+
+            for (var i = 0; i < bs.length; i++)
+            {
+                ia[i] = bs.charCodeAt(i);
             }
 
             // Initiate request through plugin
             S.sendMessage(
-                "postRequest",
+                "fileRequest",
                 {
-                     url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/create",
-                     data: "data=" + encodeURIComponent(JSON.stringify(data))
+                     url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/create/upload",
+                     form: { data: JSON.stringify(data) },
+                     files: [{ name: "image", filename: "capture.png", type: ms, data: ab }]
                 },
                 "submitTaskActionCallback"
             );
+
         });
 
         // Get task summary

@@ -141,6 +141,47 @@ function ScoutsLogPlatform() {
         xhr.send(data);
     }
 
+    P.fileRequest = function(msg, callback) {
+        // Get parameters
+        var url = msg.url;
+        var data = msg.form;
+        var files = msg.files;
+
+        // Create FormData object
+        var frm = new FormData();
+
+        for (var k in data) {
+            frm.append(k, data[k]);
+        }
+
+        for (var i in files) {
+            var b = new Blob([files[i].data], {type: files[i].type});
+
+            frm.append(files[i].name, b, files[i].filename);
+        }
+    
+        // Send POST request
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        //xhr.setRequestHeader("Content-type", "multipart/form-data");
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var obj = JSON.parse(this.responseText);
+                
+                if (obj.error) {
+                    P.sendMessage("platformError", {source: 'postJSON', url: url, status: obj.error});
+                } else {
+                    P.sendMessage(callback, obj);
+                }
+            }
+            if (this.readyState == 4 && this.status != 200) {
+                P.sendMessage("platformError", {source: 'postRequest', url: url, status: this.status});
+            }
+        }
+
+        xhr.send(frm);
+    }
+
 
     P.getContent = function(msg, callback) {
         // Get parameters
