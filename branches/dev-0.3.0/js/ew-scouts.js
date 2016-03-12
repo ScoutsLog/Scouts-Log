@@ -912,7 +912,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display 'Need Admin' Tasks
      */
     S.showAdmin = function() {
-        if (slWindowState != "status-need-admin") {
+        if (slWindowState != "status-need-admin-header") {
             S.getStatusSummary("need-admin", true);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
@@ -930,7 +930,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display 'Need Scythe' Tasks
      */
     S.showScythe = function() {
-        if (slWindowState != "status-need-scythe") {
+        if (slWindowState != "status-need-scythe-header") {
             S.getStatusSummary("need-scythe", true);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
@@ -948,7 +948,7 @@ function ScoutsLogPlatformContent() {
      * Button: Display 'Watch List' Tasks
      */
     S.showWatch = function() {
-        if (slWindowState != "status-watch") {
+        if (slWindowState != "status-watch-header") {
             S.getStatusSummary("watch", true);
         } else {
             if (jQuery("#slPanel").is(":visible")) {
