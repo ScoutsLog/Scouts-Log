@@ -2159,27 +2159,39 @@ function ScoutsLogPlatformContent() {
                 im = jQuery("#sl-action-image").val();
             }
 
-            var bs = atob(im.split(',')[1]);
-            var ms = im.split(',')[0].split(':')[1].split(';')[0]
+            if (im != "") {
+                var bs = atob(im.split(',')[1]);
+                var ms = im.split(',')[0].split(':')[1].split(';')[0]
 
-            var ab = new ArrayBuffer(bs.length);
-            var ia = new Uint8Array(ab);
+                var ab = new ArrayBuffer(bs.length);
+                var ia = new Uint8Array(ab);
 
-            for (var i = 0; i < bs.length; i++)
-            {
-                ia[i] = bs.charCodeAt(i);
-            }
-
-            // Initiate request through plugin
-            S.sendMessage(
-                "fileRequest",
+                for (var i = 0; i < bs.length; i++)
                 {
-                     url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/create/upload",
-                     form: { data: JSON.stringify(data) },
-                     files: [{ name: "image", filename: "capture.png", type: ms, data: ab }]
-                },
-                "submitTaskActionCallback"
-            );
+                    ia[i] = bs.charCodeAt(i);
+                }
+
+                // Initiate request through plugin with image upload
+                S.sendMessage(
+                    "fileRequest",
+                    {
+                         url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/create/upload",
+                         form: { data: JSON.stringify(data) },
+                         files: [{ name: "image", filename: "capture.png", type: ms, data: ab }]
+                    },
+                    "submitTaskActionCallback"
+                );
+            } else {
+                // Initiate request through plugin, no image
+                S.sendMessage(
+                    "postRequest",
+                    {
+                         url: slScoutsLogURIbase + "task/" + encodeURIComponent(t) + "/action/create",
+                         data: "data=" + encodeURIComponent(JSON.stringify(data))
+                    },
+                    "submitTaskActionCallback"
+                );
+            }
 
         });
 
