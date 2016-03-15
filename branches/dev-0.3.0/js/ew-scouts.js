@@ -1277,6 +1277,10 @@ function ScoutsLogPlatformContent() {
                 result = S.getLocalizedString("issueStashed");
 
                 break;
+            case "test":
+                result = S.getLocalizedString("issueTestExtension");
+
+                break;
             case "wrong-seed":
                 result = S.getLocalizedString("issueWrongSeed");
 
