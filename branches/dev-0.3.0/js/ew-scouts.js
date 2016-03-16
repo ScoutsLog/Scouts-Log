@@ -4,13 +4,13 @@ function ScoutsLogPlatformContent() {
     var S = new Object();
 
 
-    var slLocale = 'en';
+    var slLocale = "en";
     var slLocalizedStrings = {};
 
-    var slBaseDataURL = '';
+    var slBaseDataURL = "";
     var slImages = {};
 
-    var slUser = '';
+    var slUser = "";
     var slUserPrefs = {};
     var slUserRoles = [];
     
@@ -22,19 +22,22 @@ function ScoutsLogPlatformContent() {
     var slWindowHistoryNavigating = false;
     var slWindowHistoryLimit = 100;
 
+    var slWindowHistoryTimestamp = Date.now();
+    var slWindowHistoryStale = 60;
+
     var slPanelVertical = false;
     var slPanelPosition = {};
 
     var slStatsInterval = 20000;
     var slTaskInterval = 15000;
 
-    var slHistoryType = '';
+    var slHistoryType = "";
     var slHistoryCell = 0;
     var slHistoryAccuracy = 1;
     var slHistoryPosition = 0;
     var slHistoryDisplay = 4;
 
-    var slScoutsLogURIbase = 'http://scoutslog.org/1.1/';
+    var slScoutsLogURIbase = "http://scoutslog.org/1.1/";
 
 
 
@@ -321,9 +324,15 @@ function ScoutsLogPlatformContent() {
                             S.getHistory();
                         }
 
+                        // Display window
                         jQuery("#slPanel").show();
                         jQuery("#slPanelShadow").show();
                         jQuery("#scoutsLogFloatingControls").show();
+
+                        // Check if window is stale
+                        if (S.isStaleWindow() == true) {
+                            S.navigateWindowHistory(slWindowHistoryPosition);
+                        }
                     }
                 } else {
                     if (jQuery("#scoutsLogFloatingControls").is(":visible")) {
@@ -883,8 +892,14 @@ function ScoutsLogPlatformContent() {
                 jQuery("#slPanel").hide();
                 jQuery("#slPanelShadow").hide();
             } else {
+                // Display window
                 jQuery("#slPanel").show();
                 jQuery("#slPanelShadow").show();
+
+                // Check if window is stale
+                if (S.isStaleWindow() == true) {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
+                }
             }
         }
     }
@@ -901,8 +916,14 @@ function ScoutsLogPlatformContent() {
                 jQuery("#slPanel").hide();
                 jQuery("#slPanelShadow").hide();
             } else {
+                // Display window
                 jQuery("#slPanel").show();
                 jQuery("#slPanelShadow").show();
+
+                // Check if window is stale
+                if (S.isStaleWindow() == true) {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
+                }
             }
         }
     }
@@ -919,8 +940,14 @@ function ScoutsLogPlatformContent() {
                 jQuery("#slPanel").hide();
                 jQuery("#slPanelShadow").hide();
             } else {
+                // Display window
                 jQuery("#slPanel").show();
                 jQuery("#slPanelShadow").show();
+
+                // Check if window is stale
+                if (S.isStaleWindow() == true) {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
+                }
             }
         }
     }
@@ -937,8 +964,14 @@ function ScoutsLogPlatformContent() {
                 jQuery("#slPanel").hide();
                 jQuery("#slPanelShadow").hide();
             } else {
+                // Display window
                 jQuery("#slPanel").show();
                 jQuery("#slPanelShadow").show();
+
+                // Check if window is stale
+                if (S.isStaleWindow() == true) {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
+                }
             }
         }
     }
@@ -955,8 +988,14 @@ function ScoutsLogPlatformContent() {
                 jQuery("#slPanel").hide();
                 jQuery("#slPanelShadow").hide();
             } else {
+                // Display window
                 jQuery("#slPanel").show();
                 jQuery("#slPanelShadow").show();
+
+                // Check if window is stale
+                if (S.isStaleWindow() == true) {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
+                }
             }
         }
     }
@@ -977,10 +1016,19 @@ function ScoutsLogPlatformContent() {
                     slWindowState ="";
 
                     S.getHistory();
-                }
 
-                jQuery("#slPanel").show();
-                jQuery("#slPanelShadow").show();
+                    jQuery("#slPanel").show();
+                    jQuery("#slPanelShadow").show();
+                } else {
+                    // Display window
+                    jQuery("#slPanel").show();
+                    jQuery("#slPanelShadow").show();
+
+                    // Check if window is stale
+                    if (S.isStaleWindow() == true) {
+                        S.navigateWindowHistory(slWindowHistoryPosition);
+                    }
+                }
             }
         }
     }
@@ -3301,6 +3349,9 @@ function ScoutsLogPlatformContent() {
 
         // Update button status
         S.updateWindowHistoryButtons();
+
+        // Update window timestamp
+        slWindowHistoryTimestamp = Date.now();
     }
 
 
@@ -3330,6 +3381,25 @@ function ScoutsLogPlatformContent() {
         } else {
             jQuery("#slPanel .slPanelHeader a.sl-window-history").addClass("disabled");
             jQuery("#slPanel .slPanelHeader a.sl-window-history img").attr("src", slImages.historyDisabled);
+        }
+    }
+
+
+    S.isStaleWindow = function() {
+        var n = Date.now();
+        var t = (n - slWindowHistoryTimestamp) / 1000;
+        var sp;
+
+        if (slWindowState != "") {
+            sp = slWindowState.split("-");
+        } else {
+            sp = [""];
+        }
+
+        if (t >= slWindowHistoryStale && sp[0] != "action") {
+            return true;
+        } else {
+            return false;
         }
     }
 
