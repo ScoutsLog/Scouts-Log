@@ -1756,9 +1756,9 @@ function nice_number(n) {
         }
 
         // Capture 2D image
-        if (jQuery('#twoD canvas').length == 1 && window.tomni.gameMode) {
+        if (jQuery('#twoD').length == 1 && window.tomni.gameMode) {
             // Get 2D canvas object
-            var c = jQuery('#twoD canvas')[0];
+            var c = jQuery('#twoD')[0];
             
             // Force a render
             window.tomni.twoD.render();
@@ -1788,10 +1788,10 @@ function nice_number(n) {
         cx.fillStyle = '#232323';
         cx.fill();
 
-        var cvB = jQuery("#twoD canvas")[0];
+        var cvB = jQuery("#twoD")[0];
 
         if (cvB && window.tomni.gameMode) {
-            var imC = jQuery('#twoD')[0];
+            var imC = jQuery('#twoD').parent()[0];
             var sX = Math.floor((cvA.width - imC.clientWidth) / 2);
             //var sX = Math.floor(cvA.width / 4);
 
@@ -1799,7 +1799,41 @@ function nice_number(n) {
 
             cx.drawImage(cvA, sX, 0, sW, cvA.height, 0, 0, sW, cvA.height);
 
-            cx.drawImage(cvB, sW, 0);
+            function parse_transform(a)
+            {
+                var m=a.match(/([0-9\.]+)/g);
+
+                var tra={x:m[4], y:m[5]},
+                    rot=0,
+                    sca={x:1, y:1},
+                    ske={x:0, y:0},
+                    det=m[0] * m[3] - m[1] * m[2];
+                
+                if (m[0] || m[1]) {
+                    var r = Math.sqrt(m[0]*m[0] + m[1]*m[1]);
+                    rot = m[1] > 0 ? Math.acos(m[0] / r) : -Math.acos(m[0] / r);
+                    sca = {x: r, y: det / r};
+                    ske.x = Math.atan((m[0]*m[2] + m[1]*m[3]) / (r*r));
+                } else if (c || d) {
+                    var s = Math.sqrt(m[2]*m[2] + m[3]*m[3]);
+                    rot = Math.pi * 0.5 - (m[3] > 0 ? Math.acos(-m[2] / s) : -Math.acos(m[2] / s));
+                    sca = {x: det / s, y: s};
+                    ske.y = Math.atan((m[0]*m[2] + m[1]*m[3]) / (s*s));
+                } else {
+                    sca = {x:0, y:0};
+                }
+
+                return {
+                    scale: sca,
+                    translate: tra,
+                    rotation: rot,
+                    skew: ske
+                };
+            }
+
+            var tB = parse_transform( jQuery(cvB).css("transform") );
+
+            cx.drawImage(cvB, sW + (cvB.offsetLeft/4), (cvA.height-(cvB.height*tB.scale.y))/2, cvB.width * tB.scale.x, cvB.height * tB.scale.y);
 
             cx.beginPath();
             cx.setLineDash([3, 3]);
