@@ -1791,12 +1791,11 @@ function nice_number(n) {
         var cvB = jQuery("#twoD")[0];
 
         if (cvB && window.tomni.gameMode) {
-            var imC = jQuery('#twoD').parent()[0];
+            var imC = jQuery("#twoD").parent()[0];
             var sX = Math.floor((cvA.width - imC.clientWidth) / 2);
-            //var sX = Math.floor(cvA.width / 4);
-
             var sW = Math.floor(cvA.width / 2);
 
+            // Draw 3D canvas
             cx.drawImage(cvA, sX, 0, sW, cvA.height, 0, 0, sW, cvA.height);
 
             function parse_transform(a)
@@ -1831,9 +1830,48 @@ function nice_number(n) {
                 };
             }
 
+            // Get 2D canvas scaling and offset
             var tB = parse_transform( jQuery(cvB).css("transform") );
+            var tL = parseFloat(jQuery(cvB).css("left"));
+            var tT = parseFloat(jQuery(cvB).css("bottom")) * -1;
 
-            cx.drawImage(cvB, sW + (cvB.offsetLeft/4), (cvA.height-(cvB.height*tB.scale.y))/2, cvB.width * tB.scale.x, cvB.height * tB.scale.y);
+            // Get view coordinates
+            var v1 = {x: 0, y: 0};
+            var v2 = {x: sW, y: cvA.height};
+
+            // Get scaled canvas coordinates (relative to view)
+            var c1 = {
+                x: ((sW - (cvB.width * tB.scale.x)) / 2) + tL,
+                y: ((cvA.height - (cvB.height * tB.scale.y)) / 2) + tT
+            };
+
+            var c2 = {
+                x: c1.x + (cvB.width * tB.scale.x),
+                y: c1.y + (cvB.height * tB.scale.y)
+            };
+
+            // Calculate intersection of view and canvas coordinates
+            var i1 = {
+                x: Math.max( v1.x, c1.x ),
+                y: Math.max( v1.y, c1.y )
+            };
+
+            var i2 = {
+                x: Math.min( v2.x, c2.x ),
+                y: Math.min( v2.y, c2.y )
+            };
+
+            // Calculate clip region for non-scaled 2D canvas
+            var clip = {
+                x: (c1.x < i1.x) ? ((Math.abs(i1.x - c1.x) / tB.scale.x) < 0 ? 0 : (Math.abs(i1.x - c1.x) / tB.scale.x) > cvB.width ? cvB.width-1 : (Math.abs(i1.x - c1.x) / tB.scale.x)) : 0,
+                y: (c1.y < i1.y) ? ((Math.abs(i1.y - c1.y) / tB.scale.y) < 0 ? 0 : (Math.abs(i1.y - c1.y) / tB.scale.y) > cvB.height ? cvB.height-1 : (Math.abs(i1.y - c1.y) / tB.scale.y)) : 0,
+                w: Math.abs( (i2.x - i1.x) / tB.scale.x ),
+                h: Math.abs( (i2.y - i1.y) / tB.scale.y )
+            }
+
+            // Draw, and scale, clipped region to the working canvas
+            cx.drawImage(cvB, clip.x, clip.y, clip.w, clip.h, sW + i1.x, i1.y, i2.x - i1.x, i2.y - i1.y);
+
 
             cx.beginPath();
             cx.setLineDash([3, 3]);
