@@ -358,14 +358,6 @@ div#sl-action-table {
     cursor: pointer;
 }
 
-#scoutsLogPanelButton {
-    width: 30px;
-    height: 22px;
-    padding: 0 5px;
-    border: 2px solid #e7e7e7;
-    background-color: #383838;
-    margin-top: 10px;
-    text-align: center;
-    color: #e7e7e7;
-    cursor: pointer;
+#scoutsLogButton {
+    background-image: url("../images/scythe.svg");
 }

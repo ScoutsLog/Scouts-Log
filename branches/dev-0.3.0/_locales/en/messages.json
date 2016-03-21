@@ -151,10 +151,6 @@
         "message": "Cube",
         "description": "Column header text when displaying cube numbers."
     },
-    "columnEntry": {
-        "message": "Entry",
-        "description": "Column header text when displaying log entry ID numbers."
-    },
     "columnHistoryEntry": {
         "message": "History Entry",
         "description": "Column header text when displaying window history entries"
@@ -169,14 +165,6 @@
     "columnLastUser": {
         "message": "Last User",
         "description": "Column header text when displaying the most recent username of the most recent action of a task."
-    },
-    "columnNewCell": {
-        "message": "New Cell",
-        "description": "Column header text for updated cell ID number."
-    },
-    "columnNewEntry": {
-        "message": "New Entry",
-        "description": "Column header text for updated log entry ID number."
     },
     "columnNotes": {
         "message": "Notes",
@@ -269,9 +257,6 @@
     "labelMarker": {
         "message": "Marker"
     },
-    "labelNewCell": {
-        "message": "New Cell ID"
-    },
     "labelNo": {
         "message": "No"
     },
@@ -356,6 +341,9 @@
     "actionClear": {
         "message": "Clear"
     },
+    "actionClearTooltip": {
+        "message": "Click to erase all annotations"
+    },
     "actionClearHistory": {
         "message": "Clear History",
         "description": "Action word to indicate deleting all window history entries"
@@ -439,6 +427,9 @@
     "actionSave": {
         "message": "Save"
     },
+    "actionSaveTooltip": {
+        "message": "Click to save your annotations"
+    },
     "actionSetToGood": {
         "message": "Set to Good",
         "description": "Action phrase to indicate there are no further issues for a given task."
@@ -502,6 +493,10 @@
         "message": "Normal",
         "description": "Option text to indicate viewing submissions from normal EyeWire play."
     },
+    "historyTypeReaped": {
+        "message": "Reaped (Admin)",
+        "description": "Option text to indicate viewing reaped (admin) submissions."
+    },
     "historyTypesTrailblazer": {
         "message": "Normal Trailblazer",
         "description": "Option text to indicate viewing trailblazed submissions from normal EyeWire play."
@@ -510,10 +505,7 @@
         "message": "Scythed",
         "description": "Option text to indicate viewing scythed submissions."
     },
-    "historyTypeReaped": {
-        "message": "Reaped (Admin)",
-        "description": "Option text to indicate viewing reaped (admin) submissions."
-    },
+
     
 
     "issueAIMerger": {

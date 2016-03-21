@@ -847,11 +847,11 @@ function ScoutsLogPlatformContent() {
      * UI: Create Window Display Toggle Button
      */
     S.setGameTools = function() {
-        var button = '<div title="' + S.getLocalizedString("actionShowWindowTooltip") + '" id="scoutsLogPanelButton" class="menuButton"><img src="' + slImages.logo + '" height="20" width="20" alt="' + S.getLocalizedString("actionShowWindowTooltip") + '" /></div>';
+        var button = '<div title="' + S.getLocalizedString("actionShowWindowTooltip") + '" class="menuButton" id="scoutsLogButton"></div>';
 
-        jQuery("#gameTools").append(button);
+        jQuery("#gameTools").prepend(button);
 
-        jQuery('#scoutsLogPanelButton').click(function() {
+        jQuery('#scoutsLogButton').click(function() {
             if (slWindowState == "error") { return; }
 
             if (slWindowState != "") {
@@ -3500,7 +3500,7 @@ function ScoutsLogPlatformContent() {
         if (e.detail.status == "invalid authentication-token") {
             // Hide controls
             jQuery("#scoutsLogFloatingControls").hide();
-            jQuery("#scoutsLogPanelButton").hide();
+            jQuery("#scoutsLogButton").hide();
 
             // Display authorization prompt
             S.slew_auth();

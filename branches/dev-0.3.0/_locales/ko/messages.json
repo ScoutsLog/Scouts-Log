@@ -26,6 +26,14 @@
     "windowCellSummary": {
         "message": "세포 요약 리스트"
     },
+    "windowEditEntryTitle": {
+        "message": "로그 입력 수정",
+        "description": "입력이 되어있는 로그를 수정할 때 보이는 텍스트"
+    },
+    "windowErrorTitle": {
+        "message": "에러",
+        "description": "에러를 알리는 창에 사용되는 타이틀"
+    },
     "windowHistoryTitle": {
         "message": "큐브 제출 기록"
     },
@@ -41,10 +49,27 @@
     "windowUpdateText": {
         "message": "<p>오래된 확장 프로그램입니다!</p><p>걱정마세요, 구글 크롬이 자동으로 업데이트합니다.</p><p>계속 이 메세지를 본다면, 확장 프로그램을 새로 설치하세요.</p><p style=\"text-align:center;\"><a class=\"sl-cell\" href=\"javascript:void(0);\">창 종료</a></p>"
     },
-    
-    
-    
-    
+    "windowWindowHistoryTitle": {
+        "message": "로그 기록 창"
+    },
+
+
+
+    "windowHistoryNextTooltip": {
+        "message": "다음 창으로 이동",
+        "description": "'다음' 창으로 이동 버튼 위에 마우스 커서를 옮기면 보이는 텍스트"
+    },
+    "windowHistoryPreviousTooltip": {
+        "message": "이전 창으로 이동",
+        "description": "'이전' 창으로 이동 버튼 위에 마우스 커서를 옮기면 보이는 텍스트"
+    },
+    "windowHistoryWindowTooltip": {
+        "message": "로그 기록 창 보기",
+        "description": "입력된 로그 기록 창을 보기 위한 버튼 위에 마우스 커서를 옮기면 보이는 텍스트"
+    },
+
+
+
     "panelCellList": {
         "message": "세포 리스트"
     },
@@ -129,6 +154,10 @@
         "message": "큐브",
         "description": "Column header text when displaying cube numbers."
     },
+    "columnHistoryEntry": {
+        "message": "방문 기록",
+        "description": "방문 기록이 보이는 열 헤더"
+    },
     "columnImage": {
         "message": "이미지"
     },
@@ -172,8 +201,14 @@
     
     
 
+    "labelAdd": {
+        "message": "추가"
+    },
     "labelAnnotatedImage": {
         "message": "주석이 추가된 이미지"
+    },
+    "labelBottom": {
+        "message": "아래"
     },
     "labelCell": {
         "message": "세포",
@@ -191,8 +226,25 @@
         "message": "큐브",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
     },
+    "labelEraser": {
+        "message": "지우기"
+    },
+    "labelIconEntries": {
+        "message": "당신은 해당 큐브에 로그를 입력하였습니다",
+        "description": "해당 큐브의 로그 입력을 가리키는 아이콘 위에 마우스 커서를 옮기면 보이는 텍스트"
+    },
+    "labelIconWatch": {
+        "message": "당신은 해당 큐브를 Watch하도록 두었습니다",
+        "description": "플레이어가 해당 큐브를 Watch 상태로 두었음을 가리키는 아이콘 위에 마우스 커서를 옮기면 보이는 텍스트"
+    },
     "labelImage": {
         "message": "이미지"
+    },
+    "labelIssue": {
+        "message": "문제점 표시"
+    },
+    "labelLabel": {
+        "message": "라벨"
     },
     "labelLastUser": {
         "message": "마지막 작업한 플레이어",
@@ -201,6 +253,12 @@
     "labelLastUpdated": {
         "message": "마지막 작업 시간",
         "description": "Date/time of the last action saved to a specific task in UTC."
+    },
+    "labelLeft": {
+        "message": "왼쪽"
+    },
+    "labelMarker": {
+        "message": "입력 도구"
     },
     "labelNo": {
         "message": "아니오"
@@ -221,6 +279,12 @@
         "message": "수확 되었습니까?",
         "description": "Question if user reaped a change within EyeWire for the given task action (entry in log)."
     },
+    "labelRemove": {
+        "message": "삭제"
+    },
+    "labelRight": {
+         "message": "오른쪽"
+    },
     "labelStatus": {
         "message": "상태",
         "description": "Noun to indicate current state for a given task."
@@ -232,6 +296,9 @@
     "labelTask": {
         "message": "큐브",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
+    },
+    "labelTop": {
+        "message": "위"
     },
     "labelVotes": {
         "message": "투표",
@@ -273,6 +340,29 @@
     "actionCellTooltip": {
         "message": "이 세포의 모든 큐브 보려면 클릭하세요.",
         "description": "Text to display when hovering over a link to view tasks for a specific cell."
+    },
+    "actionClear": {
+        "message": "지우기"
+    },
+    "actionClearHistory": {
+        "message": "기록 창의 모든 로그 삭제",
+        "description": "기록 창에 보이는 입력된 모든 로그를 삭제함"
+    },
+    "actionClearHistoryTooltip": {
+        "message": "기록 창에 보이는 모든 로그 기록을 지움",
+        "description": "기록 창의 모든 로그 삭제 버튼 위에 마우스 커서를 옮기면 보이는 텍스트"
+    },
+    "actionClose": {
+        "message": "닫기",
+        "description": "에러 메세지의 닫기 버튼에 보이는 텍스트"
+    },
+    "actionCloseTooltip": {
+        "message": "이 창을 닫음",
+        "description": "'닫기' 버튼 위에 마우스 커서를 옮기면 보이는 텍스트"
+    },
+    "actionEditEntryTooltip": {
+        "message": "입력한 로그를 수정하려면 여기를 클릭하세요.",
+        "description": "방문 기록에서 로그 수정하기 아이콘 위에 마우스 커서를 옮기면 보이는 텍스트"
     },
     "actionHideWindowTooltip": {
         "message": "창을 숨깁니다.",
@@ -333,6 +423,9 @@
     "actionRemoveTooltip": {
         "message": "제출된 로그에서 이미지를 삭제합니다.",
         "description": "Text to display when hovering over the 'Remove' link in the 'New Entry' window."
+    },
+    "actionSave": {
+        "message": "저장"
     },
     "actionSetToGood": {
         "message": "\"양호\"로 표기",
@@ -397,6 +490,10 @@
         "message": "일반 플레이",
         "description": "Option text to indicate viewing submissions from normal EyeWire play."
     },
+    "historyTypeReaped": {
+        "message": "수확됨(어드민)",
+        "description": "(어드민이) 수확고 제출한 것을 보여주기 위한 선택사항"
+    },
     "historyTypesTrailblazer": {
         "message": "개척",
         "description": "Option text to indicate viewing trailblazed submissions from normal EyeWire play."
@@ -405,7 +502,36 @@
         "message": "사이드 작업",
         "description": "Option text to indicate viewing reaped/scythed submissions."
     },
-    
+
+
+
+    "issueAIMerger": {
+        "message": "AI 합쳐짐"
+    },
+    "issueBlackSpill": {
+        "message": "블랙 스필"
+    },
+    "issueDuplicate": {
+        "message": "사본"
+    },
+    "issueFusedMerger": {
+        "message": "Fused Merger"
+    },
+    "issueInterHalfDuplicate": {
+        "message": "Inter-Half 사본"
+    },
+    "issueNone": {
+        "message": "없음"
+    },
+    "issueStashed": {
+        "message": "숨겨짐"
+    },
+    "issueTestExtension": {
+        "message": "연장 테스트"
+    },
+    "issueWrongSeed": {
+        "message": "Wrong Seed Merger"
+    },
     
         
     
@@ -452,6 +578,30 @@
         "message": "Watch"
     },
     
+
+
+    "settingsCellList": {
+        "message": "세포 리스트"
+    },
+    "settingsOpenTasks": {
+        "message": "남은 큐브"
+    },
+    "settingsNeedAdmin": {
+        "message": "어드민 필요"
+    },
+    "settingsNeedScythe": {
+        "message": "사이드 필요"
+    },
+    "settingsWatch": {
+        "message": "Watch"
+    },
+    "settingsHistory": {
+        "message": "플레이 기록"
+    },
+    "settingsTitle": {
+        "message": "스카우트 로그 환경 설정",
+        "description": "환경 설정 메뉴 헤더의 타이틀"
+    },
     
 
 
@@ -471,9 +621,15 @@
 
     
     
+    "error_cube": {
+        "message": "해당 큐브를 정할 수 없습니다! 큐브가 숨겨졌는지 확인하세요. 그렇지 않다면 큐브를 다시 선택하거나, 큐브에 다시 들어가야 합니다."
+    },
     "error_notasks": {
         "message": "위에 해당하는 큐브는 없습니다.",
         "description": "Message to indicate no tasks are available for the cell and/or specific task status."
+    },
+    "error_request": {
+        "message": "<p>죄송합니다, 요청 처리 중에 에러가 발생하였습니다.</p>"
     },
     "error_submission": {
         "message": "죄송합니다, 제출 중 에러가 발생하였습니다. 다시 해주시기 바랍니다.",
