@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "__MSG_extName__",
 	"description": "__MSG_extDescription__",
-	"version": "1.0.0",
+	"version": "0.3.0",
 	"minimum_chrome_version": "43",
 	"default_locale": "en",
         "author": "Extension developed by Gary Heil; Korean language translation done by Kyung Lim; some icons used from http://www.famfamfam.com/lab/icons/silk/",
