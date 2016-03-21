@@ -2373,9 +2373,9 @@ function ScoutsLogPlatformContent() {
         }
 
         // Capture 2D image
-        if (jQuery("#twoD canvas").length == 1 && window.tomni.gameMode) {
+        if (jQuery("#twoD").length == 1 && window.tomni.gameMode) {
             // Get 2D canvas object
-            var c = jQuery("#twoD canvas")[0];
+            var c = jQuery("#twoD")[0];
             
             // Force a render
             window.tomni.twoD.render();
@@ -2399,16 +2399,17 @@ function ScoutsLogPlatformContent() {
         cv.width = cvA.width;
 
         var cx = cv.getContext("2d");
+        cx.imageSmoothingEnabled = false;
 
         cx.beginPath();
         cx.rect(0, 0, cvA.width, cvA.height);
         cx.fillStyle = "#232323";
         cx.fill();
 
-        var cvB = jQuery("#twoD canvas")[0];
+        var cvB = jQuery("#twoD")[0];
 
         if (cvB && window.tomni.gameMode) {
-            var imC = jQuery("#twoD")[0];
+            var imC = jQuery("#twoD").parent()[0];
             var sX = Math.floor((cvA.width - imC.clientWidth) / 2);
             //var sX = Math.floor(cvA.width / 4);
 
@@ -2416,7 +2417,74 @@ function ScoutsLogPlatformContent() {
 
             cx.drawImage(cvA, sX, 0, sW, cvA.height, 0, 0, sW, cvA.height);
 
-            cx.drawImage(cvB, sW, 0);
+            function parse_transform(a)
+            {
+                var m=a.match(/([0-9\.]+)/g);
+
+                var tra={x:m[4], y:m[5]},
+                    rot=0,
+                    sca={x:1, y:1},
+                    ske={x:0, y:0},
+                    det=m[0] * m[3] - m[1] * m[2];
+                
+                if (m[0] || m[1]) {
+                    var r = Math.sqrt(m[0]*m[0] + m[1]*m[1]);
+                    rot = m[1] > 0 ? Math.acos(m[0] / r) : -Math.acos(m[0] / r);
+                    sca = {x: r, y: det / r};
+                    ske.x = Math.atan((m[0]*m[2] + m[1]*m[3]) / (r*r));
+                } else if (c || d) {
+                    var s = Math.sqrt(m[2]*m[2] + m[3]*m[3]);
+                    rot = Math.pi * 0.5 - (m[3] > 0 ? Math.acos(-m[2] / s) : -Math.acos(m[2] / s));
+                    sca = {x: det / s, y: s};
+                    ske.y = Math.atan((m[0]*m[2] + m[1]*m[3]) / (s*s));
+                } else {
+                    sca = {x:0, y:0};
+                }
+
+                return {
+                    scale: sca,
+                    translate: tra,
+                    rotation: rot,
+                    skew: ske
+                };
+            }
+
+            var tB = parse_transform( jQuery(cvB).css("transform") );
+            var tL = parseFloat(jQuery(cvB).css("left"));
+            var tT = parseFloat(jQuery(cvB).css("bottom")) * -1;
+
+            var v1 = {x: 0, y: 0};
+            var v2 = {x: cvA.width / 2, y: cvA.height};
+
+            var c1 = {
+                x: (((cvA.width / 2) - (cvB.width * tB.scale.x)) / 2) + tL,
+                y: ((cvA.height - (cvB.height * tB.scale.y)) / 2) + tT
+            };
+
+            var c2 = {
+                x: c1.x + (cvB.width * tB.scale.x),
+                y: c1.y + (cvB.height * tB.scale.y)
+            };
+
+            var i1 = {
+                x: Math.max( v1.x, c1.x ),
+                y: Math.max( v1.y, c1.y )
+            };
+
+            var i2 = {
+                x: Math.min( v2.x, c2.x ),
+                y: Math.min( v2.y, c2.y )
+            };
+
+            var clip = {
+                x: (c1.x < i1.x) ? ((Math.abs(i1.x - c1.x) / tB.scale.x) < 0 ? 0 : (Math.abs(i1.x - c1.x) / tB.scale.x) > cvB.width ? cvB.width-1 : (Math.abs(i1.x - c1.x) / tB.scale.x)) : 0,
+                y: (c1.y < i1.y) ? ((Math.abs(i1.y - c1.y) / tB.scale.y) < 0 ? 0 : (Math.abs(i1.y - c1.y) / tB.scale.y) > cvB.height ? cvB.height-1 : (Math.abs(i1.y - c1.y) / tB.scale.y)) : 0,
+                w: Math.abs( (i2.x - i1.x) / tB.scale.x ),
+                h: Math.abs( (i2.y - i1.y) / tB.scale.y )
+            }
+
+            cx.drawImage(cvB, clip.x, clip.y, clip.w, clip.h, sW + i1.x, i1.y, i2.x - i1.x, i2.y - i1.y);
+
 
             cx.beginPath();
             cx.setLineDash([3, 3]);
