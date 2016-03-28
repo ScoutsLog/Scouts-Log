@@ -1900,21 +1900,8 @@ function nice_number(n) {
             cx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             cx.fill();
 
-            var dir;
-            switch (window.tomni.task.dir) {
-                case 'x':
-                    dir = 'zy';
-
-                    break;
-                case 'y':
-                    dir = 'xz';
-
-                    break;
-                case 'z':
-                    dir = 'xy';
-
-                    break;
-            }
+            // Add details panel text
+            var dir = window.tomni.twoD.axis;
 
             cx.font = 'normal 10pt sans-serif';
             cx.fillStyle = '#bbb';      
