@@ -2506,21 +2506,7 @@ function ScoutsLogPlatformContent() {
             cx.fill();
 
             // Add details panel text
-            var dir;
-            switch (window.tomni.task.dir) {
-                case "x":
-                    dir = "zy";
-
-                    break;
-                case "y":
-                    dir = "xz";
-
-                    break;
-                case "z":
-                    dir = "xy";
-
-                    break;
-            }
+            var dir = window.tomni.twoD.axis;
 
             cx.font = "normal 10pt sans-serif";
             cx.fillStyle = '#bbb';      
