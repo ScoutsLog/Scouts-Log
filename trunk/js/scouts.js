@@ -1639,11 +1639,11 @@ function nice_number(n) {
      * UI: Create Window Display Toggle Button
      */
     S.setGameTools = function() {
-        var button = '<div title="' + S.getLocalizedString("actionShowWindowTooltip") + '" id="scoutsLogPanelButton" class="menuButton"><img src="' + S.images.logo + '" height="20" width="20" alt="' + S.getLocalizedString("actionShowWindowTooltip") + '" /></div>';
+        var button = '<div title="' + S.getLocalizedString("actionShowWindowTooltip") + '" id="scoutsLogButton" class="menuButton"></div>';
 
-        jQuery("#gameTools").append(button);
+        jQuery("#gameTools").prepend(button);
 
-        jQuery('#scoutsLogPanelButton').click(function() {
+        jQuery('#scoutsLogButton').click(function() {
             if (S.windowState != '') {
                 if (jQuery('#slPanel').is(':visible')) {
                     jQuery('#slPanel').hide();
