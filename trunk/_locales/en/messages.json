@@ -20,11 +20,17 @@
         "description": "Authorization prompt title"
     },
     "windowAuthText": {
-        "message": "<p>In order to use the Scouts's Log extension, you must authorize the application to use your EyeWire account.</p><p>Please click the link below to authorize the application:</p><p style=\"text-align:center;\"><a class=\"sl-task\" href=\"http://scoutslog.org/?do=extension-auth&lang=en\" target=\"_blank\">scoutslog.org</a></p><p>Once the authorization process is completed, please <a class=\"sl-cell\" href=\"javascript:document.location.reload();\">re-load</a> this page.</p>",
+        "message": "<p>In order to use the Scouts's Log extension, you must authorize the application to use your EyeWire account. <span class=\"sl-admin\">Please ensure cookies and pop-ups are allowed for <em>scoutslog.org</em>.</span><p style=\"text-align:center;\"><a class=\"bigButton blueButton\" href=\"http://scoutslog.org/?do=extension-auth&lang=en\" target=\"_blank\">AUTHORIZE</a></p><p>Once the authorization process is completed, please <a class=\"sl-cell\" href=\"javascript:document.location.reload();\">re-load</a> this page.</p>",
         "description": "Text to be displayed when the user needs to authorization their account."
     },
     "windowCellSummary": {
         "message": "Cell Summary"
+    },
+    "windowEditEntryTitle": {
+        "message": "Edit Log Entry"
+    },
+    "windowErrorTitle": {
+        "message": "Error"
     },
     "windowHistoryTitle": {
         "message": "Cube Submission History"
@@ -41,7 +47,23 @@
     "windowUpdateText": {
         "message": "<p>Your extension is out of date!</p><p>Don't panic, Google Chrome should update automatically.</p><p>If you continue to see this message, please re-install the extension.</p><p style=\"text-align:center;\"><a class=\"sl-cell\" href=\"javascript:void(0);\">Close</a></p>"
     },
-    
+    "windowWindowHistoryTitle": {
+        "message": "Window History"
+    },
+
+
+    "windowHistoryNextTooltip": {
+        "message": "Navigate to next window",
+        "description": "Text to display when hovering over the 'Next' window history navigation button"
+    },
+    "windowHistoryPreviousTooltip": {
+        "message": "Navigate to previous window",
+        "description": "Text to display when hovering over the 'Back' window history navigation button"
+    },
+    "windowHistoryWindowTooltip": {
+        "message": "Display window history",
+        "description": "Text to display when hovering over the button to display window history entries"
+    },
     
     
     
@@ -129,6 +151,10 @@
         "message": "Cube",
         "description": "Column header text when displaying cube numbers."
     },
+    "columnHistoryEntry": {
+        "message": "History Entry",
+        "description": "Column header text when displaying window history entries"
+    },
     "columnImage": {
         "message": "Image"
     },
@@ -172,8 +198,14 @@
     
     
 
+    "labelAdd": {
+        "message": "Add"
+    },
     "labelAnnotatedImage": {
         "message": "Annotated Image"
+    },
+    "labelBottom": {
+        "message": "Bottom"
     },
     "labelCell": {
         "message": "Cell",
@@ -191,8 +223,25 @@
         "message": "Cube",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
     },
+    "labelEraser": {
+        "message": "Eraser"
+    },
+    "labelIconEntries": {
+        "message": "You have made a log entry for this cube",
+        "description": "Text to display when hovering over the icon indicator for log entries on the cube."
+    },
+    "labelIconWatch": {
+        "message": "You placed this cube on watch",
+        "description": "Text to display when hovering over the icon indicator for the user being the oen to set the cube to watch status."
+    },
     "labelImage": {
         "message": "Image"
+    },
+    "labelIssue": {
+        "message": "Set Issue Flag"
+    },
+    "labelLabel": {
+        "message": "Label"
     },
     "labelLastUser": {
         "message": "Last User",
@@ -201,6 +250,12 @@
     "labelLastUpdated": {
         "message": "Last Updated (UTC)",
         "description": "Date/time of the last action saved to a specific task in UTC."
+    },
+    "labelLeft": {
+        "message": "Left"
+    },
+    "labelMarker": {
+        "message": "Marker"
     },
     "labelNo": {
         "message": "No"
@@ -221,6 +276,12 @@
         "message": "Reaped?",
         "description": "Question if user reaped a change within EyeWire for the given task action (entry in log)."
     },
+    "labelRemove": {
+        "message": "Remove"
+    },
+    "labelRight": {
+         "message": "Right"
+    },
     "labelStatus": {
         "message": "Status",
         "description": "Noun to indicate current state for a given task."
@@ -232,6 +293,9 @@
     "labelTask": {
         "message": "Task",
         "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
+    },
+    "labelTop": {
+        "message": "Top"
     },
     "labelVotes": {
         "message": "Votes",
@@ -273,6 +337,32 @@
     "actionCellTooltip": {
         "message": "Click to view tasks for this cell",
         "description": "Text to display when hovering over a link to view tasks for a specific cell."
+    },
+    "actionClear": {
+        "message": "Clear"
+    },
+    "actionClearTooltip": {
+        "message": "Click to erase all annotations"
+    },
+    "actionClearHistory": {
+        "message": "Clear History",
+        "description": "Action word to indicate deleting all window history entries"
+    },
+    "actionClearHistoryTooltip": {
+        "message": "Delete all window history entries",
+        "description": "Text to display when hovering over the button to delete history entries."
+    },
+    "actionClose": {
+        "message": "Close",
+        "description": "Button text to display on the close button for error messages"
+    },
+    "actionCloseTooltip": {
+        "message": "Close this window",
+        "description": "Text to display when hovering over the 'close' button"
+    },
+    "actionEditEntryTooltip": {
+        "message": "Click here to edit your log entry",
+        "description": "Text displayed when hovering over the edit log entry icon"
     },
     "actionHideWindowTooltip": {
         "message": "Hide this window",
@@ -333,6 +423,12 @@
     "actionRemoveTooltip": {
         "message": "Remove the image from this log entry submission.",
         "description": "Text to display when hovering over the 'Remove' link in the 'New Entry' window."
+    },
+    "actionSave": {
+        "message": "Save"
+    },
+    "actionSaveTooltip": {
+        "message": "Click to save your annotations"
     },
     "actionSetToGood": {
         "message": "Set to Good",
@@ -397,16 +493,48 @@
         "message": "Normal",
         "description": "Option text to indicate viewing submissions from normal EyeWire play."
     },
+    "historyTypeReaped": {
+        "message": "Reaped (Admin)",
+        "description": "Option text to indicate viewing reaped (admin) submissions."
+    },
     "historyTypesTrailblazer": {
         "message": "Normal Trailblazer",
         "description": "Option text to indicate viewing trailblazed submissions from normal EyeWire play."
     },
     "historyTypesScythed": {
         "message": "Scythed",
-        "description": "Option text to indicate viewing reaped/scythed submissions."
+        "description": "Option text to indicate viewing scythed submissions."
     },
+
     
-    
+
+    "issueAIMerger": {
+        "message": "AI Merger"
+    },
+    "issueBlackSpill": {
+        "message": "Black Spill"
+    },
+    "issueDuplicate": {
+        "message": "Duplicate"
+    },
+    "issueFusedMerger": {
+        "message": "Fused Merger"
+    },
+    "issueInterHalfDuplicate": {
+        "message": "Inter-Half Duplicate"
+    },
+    "issueNone": {
+        "message": "None"
+    },
+    "issueStashed": {
+        "message": "Stashed"
+    },
+    "issueTestExtension": {
+        "message": "Test Extension"
+    },
+    "issueWrongSeed": {
+        "message": "Wrong Seed Merger"
+    },
         
     
     "statusAll": {
@@ -451,6 +579,29 @@
     "statusWatch": {
         "message": "Watch"
     },
+
+
+    "settingsCellList": {
+        "message": "Display Cell List"
+    },
+    "settingsOpenTasks": {
+        "message": "Display Open Tasks"
+    },
+    "settingsNeedAdmin": {
+        "message": "Display Need Admin"
+    },
+    "settingsNeedScythe": {
+        "message": "Display Need Scythe"
+    },
+    "settingsWatch": {
+        "message": "Display Watch"
+    },
+    "settingsHistory": {
+        "message": "Display History"
+    },
+    "settingsTitle": {
+        "message": "Scouts' Log Settings"
+    },
     
     
 
@@ -471,15 +622,20 @@
 
     
     
+    "error_cube": {
+        "message": "Unable to determine current cube!  Please check if cube is stashed otherwise re-select OR re-enter the cube."
+    },
     "error_notasks": {
         "message": "No tasks found for this cell/status",
         "description": "Message to indicate no tasks are available for the cell and/or specific task status."
+    },
+    "error_request": {
+        "message": "<p>Sorry, there was an error while processing this request.</p><p>Please check your Internet connection and try the request again.</p><p>If you continue to see this message please contact support.</p>"
     },
     "error_submission": {
         "message": "Sorry, there was an error while submitting. Please try again.",
         "description": "Phrase to indicate a transmission error while saving a task action."
     }
-
 
 
 }

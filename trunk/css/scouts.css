@@ -1,71 +1,12 @@
 
-#slButtonTop {
-    background-color: rgba(204,0,0,1) !important;
-}
-
-#slPageHeader {
-    position: absolute;
-    top: 45px;
-    left: 0;
-    right: 0;
-    height: 44px;
-    color: #fff;
-    border-bottom: 1px solid #454545;
-    filter: none;
-    background-color: #2b3035;
-    background-image: linear-gradient(#393f46, #2b3035 60%, #22262a);
-    background-repeat: no-repeat;
-}
-
-#slPageHeader ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-#slPageHeader ul > li {
-    position: relative;
-    display: block;
-    float: left;
-}
-
-#slPageHeader ul > li > a {
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    line-height: 20px;
-    color: #fff;
-    text-decoration: none;
-    border-right: 1px solid rgba(0, 0, 0, 0.2);
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-}
-
-#slPageHeader ul > li > a.popout > img {
-    float: left;
-    vertical-align: middle;
-    margin-top: -6px;
-}
-
-#slPageHeader .slLogo {
-    margin-left: -15px;
-    float: left;
-    padding: 10px 15px;
-    font-size: 18px;
-    line-height: 20px;
-    border-left: none;
-}
-
-/* ------------------------------------------------------------------------- */
-
 #scoutsLogAuthPanel {
     position: absolute;
     top: 10px;
     left: 50%;
-    width: 480px;
-    margin-left: -240px;
+    width: 40%;
+    margin-left: -20%;
     padding: 8px;
-    border: 1px solid #232323;
+    border: 1px solid #0cf;
     border-radius: 2px;
     background-color: rgba(27,27,27,0.91);
     font-weight: 400;
@@ -73,14 +14,20 @@
     z-index: 1600;
 }
 
+#scoutsLogAuthPanel img {
+    max-width: 50% !important;
+    height: auto;
+    display: inline-block;
+}
+
 
 /* ------------------------------------------------------------------------- */
 
 #scoutsLogFloatingControls {
     position: absolute;
-    height: 48px;
-    padding: 8px;
-    border: 1px solid #131313;
+    height: 40px;
+    padding: 8px 0 8px 8px;
+    border: 1px solid #565656;
     border-radius: 2px;
     background-color: rgba(27,27,27,0.91);
     font-weight: 400;
@@ -92,36 +39,37 @@
 
 #scoutsLogFloatingControls img {
     display: inline-block;
+    margin-top: -4px;
+    margin-right: 8px;
 }
 
 #scoutsLogFloatingControls a {
     display: inline-block;
-    height: 32px;
+    height: 24px;
     width: inital;
     border-color: initial;
     border-radius: 2px;
-    padding: 12px 8px 0 8px;
+    padding: 6px 4px 2px 4px;
     margin-right: 8px;
     margin-top: 2px;
 }
 
-#scoutsLogFloatingControls img + a {
-    margin-left: 8px;
-}
-
 #scoutsLogFloatingControls.sl-vertical {
     height: initial;
-    width: 48px;
+    width: 40px;
+    padding: 8px;
 }
 
 #scoutsLogFloatingControls.sl-vertical img {
     display: inline-block;
+    margin-right: 0;
 }
 
 #scoutsLogFloatingControls.sl-vertical a {
-    width: 32px;
+    width: 30px;
     margin-right: 2px;
     margin-top: 8px;
+    padding: 6px 4px;
 }
 
 #scoutsLogFloatingControls.sl-vertical img + a {
@@ -147,37 +95,6 @@
 
 /* ------------------------------------------------------------------------- */
 
-
-
-
-#slMainHeader {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    height: 45px;
-    padding: 0 10px;
-    border-bottom: 1px solid #3a3939;
-    background-color: #1e1e1e;
-    color: #eee;
-}
-
-#slMainHeader #nav ul li img {
-    margin: 8px 0 0 0;
-    padding: 0 10px;
-}
-
-#slMainHeader #nav ul li h2 {
-    margin: 8px 0 0 0;
-    padding: 0 10px;
-    font-size: 1.25em;
-    font-weight: normal;
-}
-
-#slMainContent {
-    margin-top: 46px;
-    padding: 10px;
-}
 
 div#sl-main-table,
 div#sl-action-table {
@@ -215,6 +132,15 @@ div#sl-action-table {
     cursor: pointer;
 }
 
+.sl-table img {
+    vertical-align: middle;
+}
+
+.sl-table img.sl-table-icon {
+    float: right;
+    margin-left: 5px;
+}
+
 .sl-table tbody tr:nth-child(even) {
     background-color: rgb(33,33,33);
 }
@@ -223,9 +149,18 @@ div#sl-action-table {
     background-color: rgb(43,43,43);
 }
 
+/* ------------------------------------------------------------------------- */
 
 
-
+#slPanelShadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1099;
+}
 
 #slPanel {
     position: absolute;
@@ -234,8 +169,9 @@ div#sl-action-table {
     right: 10%;
     bottom: 10%;
     background: rgba(27,27,27,1);
-    border: 1px solid #ddd;
-    border-radius: 6px; color: #eee;
+    border: 1px solid #0cf;
+    border-radius: 6px;
+    color: #eee;
     z-index: 1100;
     font-size: 10pt;
     font-weight: normal;
@@ -248,19 +184,41 @@ div#sl-action-table {
     z-index: 100;
 }
 
-#slPanel a.sl-minimize-window {
+#slPanel .slPanelHeader {
     position: absolute;
-    top: 10px;
-    right: 39px;
-    z-index: 100;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 10px;
+    height: 30px;
+    overflow: hidden;
+}
+
+#slPanel a.sl-window-previous,
+#slPanel a.sl-window-next,
+#slPanel a.sl-window-history {
+    float: left;
+    margin-right: 10px;
 }
 
 
-#slPanel h2 small {
+#slPanel h2,
+#slPanelError h2,
+.sl-confirmation h2 {
+    margin: 0;
+}
+
+#slPanel h2 {
+    float: left;
+}
+
+#slPanel h2 small,
+#slPanelError h2 small {
     color: #999;
 }
 
-#slPanel h2 small::before {
+#slPanel h2 small::before,
+#slPanelError h2 small::before {
     content: " | ";
 }
 
@@ -269,20 +227,68 @@ div#sl-action-table {
     position: absolute;
     left: 0;
     right: 0;
-    top: 0;
+    top: 50px;
     padding: 10px;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-#slPanel .sl-table {
-    background: none;
+    overflow: auto;
+    border-top: 1px solid #333;
 }
 
 #slPanel button {
     font-size: 12pt;
     padding: 2px 6px;
 }
+
+#slPanel .sl-table {
+    background: none;
+}
+
+#slPanelError {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 480px;
+    height: 240px;
+    margin-left: -240px;
+    margin-top: -120px;
+    padding: 10px;
+    background: rgba(27,27,27,1);
+    border: 1px solid #f33;
+    border-radius: 6px;
+    color: #eee;
+    z-index: 1600;
+    font-size: 10pt;
+    font-weight: normal;
+}
+
+
+.slOptions .dropdown,
+.sl-table td .dropdown {
+    position: absolute;
+    width: 250px;
+}
+
+.slOptions .dropdown:nth-child(2) {
+    margin-left: 260px;
+}
+
+.slOptions .dropdown .menu {
+    background: rgb(27,27,27);
+}
+
+.slOptions + #sl-main-table {
+    margin-top: 48px;
+}
+
+
+
+
+/* ------------------------------------------------------------------------- */
+
+
+.hidden {
+    display: none !important;
+}
+
 
 .sl-capture {
     color: #d076d7 !important;
@@ -353,5 +359,5 @@ div#sl-action-table {
 }
 
 #scoutsLogButton {
-    background-image: url(../images/scouts-log.svg);
+    background-image: url("../images/scouts-log.svg");
 }

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<title>Annotate Image</title>
+<title>{%LS_actionAnnotate}</title>
 <meta charset="UTF-8">
 <style type="text/css">
 
@@ -161,7 +161,7 @@ body {
 <div id="wrapper2">
 
 <div id="header">
-<h1><img src="[ICON]" style="vertical-align:middle;" /> Annotate Image</h1>
+<h1><img src="{%IMG_icon32.png}" style="vertical-align:middle;" /> {%LS_actionAnnotate}</h1>
 </div>
 
 <div id="content">
@@ -173,9 +173,9 @@ body {
 <div id="annotations-tools" class="tools">
 
 <div class="tools-box" id="tools-items">
-<a href="#annotations-sketch" class="tools-button tools-item active" data-tool="marker">Marker</a>
-<a href="#annotations-sketch" class="tools-button tools-item" data-tool="label">Label</a>
-<a href="#annotations-sketch" class="tools-button tools-item" data-tool="eraser">Eraser</a>
+<a href="#annotations-sketch" class="tools-button tools-item active" data-tool="marker">{%LS_labelMarker}</a>
+<a href="#annotations-sketch" class="tools-button tools-item" data-tool="label">{%LS_labelLabel}</a>
+<a href="#annotations-sketch" class="tools-button tools-item" data-tool="eraser">{%LS_labelEraser}</a>
 </div>
 
 <div class="tools-box" id="tools-colors"></div>
@@ -183,24 +183,24 @@ body {
 <div class="tools-box" id="tools-eraser-sizes" style="display:none;"></div>
 <div class="tools-box" id="tools-labels" style="display:none;">
 <select id="tools-label-arrow" data-target="#annotations-sketch">
-<option value="100">Top</option>
-<option value="200">Right</option>
-<option value="300" selected="selected">Bottom</option>
-<option value="400">Left</option>
+<option value="100">{%LS_labelTop}</option>
+<option value="200">{%LS_labelRight}</option>
+<option value="300" selected="selected">{%LS_labelBottom}</option>
+<option value="400">{%LS_labelLeft}</option>
 </select>
 
 <select id="tools-label" data-target="#annotations-sketch" style="margin:6px 8px 8px 8px;">
-<option value="15">Add</option>
-<option value="10">Merger</option>
-<option value="5" selected="selected">Missing Branch</option>
-<option value="3">Missing Nub</option>
-<option value="20">Remove</option>
-<option value="25">Watch</option>
+<option value="15">{%LS_labelAdd}</option>
+<option value="10">{%LS_statusMerger}</option>
+<option value="5" selected="selected">{%LS_statusMissingBranch}</option>
+<option value="3">{%LS_statusMissingNub}</option>
+<option value="20">{%LS_labelRemove}</option>
+<option value="25">{%LS_statusWatch}</option>
 </select>
 </div>
 <div class="tools-box" id="tools-actions">
-<a href="#annotations-sketch" class="tools-button tools-save">Save</a>
-<a href="#annotations-sketch" class="tools-button tools-clear">Clear</a>
+<a href="#annotations-sketch" class="tools-button tools-save" title="{%LS_actionSaveTooltip}">{%LS_actionSave}</a>
+<a href="#annotations-sketch" class="tools-button tools-clear" title="{%LS_actionClearTooltip}">{%LS_actionClear}</a>
 </div>
 
 </div>
@@ -834,13 +834,19 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
         var im = cv.toDataURL();
 
-        var S = window.opener.scoutsLog;
-      
-        S.saveAnnotation({
-            image: im,
-            sketch: JSON.stringify( jQuery('#annotations-sketch').sketch().actions )
-        });
-      
+        // Save annotation (via window event)
+        var d = {detail: {
+            destination: "saveAnnotation",
+            data: {
+                image: im,
+                sketch: JSON.stringify( jQuery('#annotations-sketch').sketch().actions )
+            }
+        }};
+
+        var ev = new CustomEvent('RoutedMessageCS', d);
+        window.opener.document.dispatchEvent(ev);
+
+        // Close annotation window
         window.close();
     });
     
