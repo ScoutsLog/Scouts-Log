@@ -1,0 +1,1140 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>주석이 추가된 이미지</title>
+<meta charset="UTF-8">
+<style type="text/css">
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: #232323;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    color: #fff;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+#wrapper1 {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#wrapper2 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+#header {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:44px;
+    padding:0 10px;
+    border-bottom: 1px solid #3a3939;
+    background-color: #1e1e1e;
+    overflow:hidden;
+}
+
+#header h1 {
+    margin-top:6px;
+    color:#ddd;
+    font-weight:normal;
+}
+
+#content {
+    position:absolute;
+    top:45px;
+    left:0;
+    right:0;
+    bottom:63px;
+}
+
+#capture {
+    position:absolute;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    overflow:hidden;
+}
+
+#capture img {
+    position:absolute;
+    top:50%;
+    left:50%;
+}
+
+#annotations-sketch {
+    position:fixed;
+    top:45px;
+    left:0;
+}
+
+#annotations-tools {
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:60px;
+    padding:2px 5px 0;
+    border-top: 1px solid #3a3939;
+    background-color: #1e1e1e;
+    text-align:center;
+}
+
+.tools-box {
+    display: inline-block;
+    margin: 4px 10px 8px 10px;
+    padding:4px;
+    background-color:#343434;
+    border:1px solid transparent;
+    border-radius:4px;
+}
+
+.tools-button {
+    display: inline-block;
+    height: 24px;
+    margin: 0 2px;
+    padding: 8px 8px 0 8px;
+    border: 1px solid #666;
+    border-radius:4px;
+    background-color: #111;
+    color: #999;
+    text-decoration: none;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.tools-button.active {
+    background-color:#191919;
+    border:3px double #0cf;
+    color:#eee;
+}
+
+.tools-color {
+    width: 16px;
+    border-color:#999;
+}
+
+.tools-color.active {
+    border:3px double #111;
+}
+
+.tools-save {
+    background-color: #090;
+    color:#fff;
+    border-color:#111;
+}
+
+.tools-clear {
+    background-color: #f90;
+    color:#fff;
+    border-color:#111;
+}
+
+
+</style>
+</head>
+<body>
+
+<div id="wrapper1">
+<div id="wrapper2">
+
+<div id="header">
+<h1><img src="[ICON]" style="vertical-align:middle;" /> 주석이 추가된 이미지</h1>
+</div>
+
+<div id="content">
+<div id="capture"><img src="[IMAGE]" /></div>
+</div>
+
+<canvas id="annotations-sketch"></canvas>
+
+<div id="annotations-tools" class="tools">
+
+<div class="tools-box" id="tools-items">
+<a href="#annotations-sketch" class="tools-button tools-item active" data-tool="marker">입력 도구</a>
+<a href="#annotations-sketch" class="tools-button tools-item" data-tool="label">라벨</a>
+<a href="#annotations-sketch" class="tools-button tools-item" data-tool="eraser">지우기</a>
+</div>
+
+<div class="tools-box" id="tools-colors"></div>
+<div class="tools-box" id="tools-brush-sizes"></div>
+<div class="tools-box" id="tools-eraser-sizes" style="display:none;"></div>
+<div class="tools-box" id="tools-labels" style="display:none;">
+<select id="tools-label-arrow" data-target="#annotations-sketch">
+<option value="100">위</option>
+<option value="200">오른쪽</option>
+<option value="300" selected="selected">아래</option>
+<option value="400">왼쪽</option>
+</select>
+
+<select id="tools-label" data-target="#annotations-sketch" style="margin:6px 8px 8px 8px;">
+<option value="15">추가</option>
+<option value="10">합쳐짐</option>
+<option value="5" selected="selected">빠진 가지</option>
+<option value="3">빠진 마디</option>
+<option value="20">삭제</option>
+<option value="25">Watch</option>
+</select>
+</div>
+<div class="tools-box" id="tools-actions">
+<a href="#annotations-sketch" class="tools-button tools-save" title="주석을 저장합니다.">저장</a>
+<a href="#annotations-sketch" class="tools-button tools-clear" title="모든 주석을 지우려면 클릭하세요.">지우기</a>
+</div>
+
+</div>
+
+<canvas id="cursor" style="display:none;"></canvas>
+
+
+</div>
+</div>
+
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script>
+/*
+Copyright (C) 2011 by Michael Bleigh and Intridea, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+var __slice = Array.prototype.slice;
+(function($) {
+  var Sketch;
+  $.fn.sketch = function() {
+    var args, key, sketch;
+    key = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    if (this.length > 1) {
+      $.error('Sketch.js can only be called on one element at a time.');
+    }
+    sketch = this.data('sketch');
+    if (typeof key === 'string' && sketch) {
+      if (sketch[key]) {
+        if (typeof sketch[key] === 'function') {
+          return sketch[key].apply(sketch, args);
+        } else if (args.length === 0) {
+          return sketch[key];
+        } else if (args.length === 1) {
+          return sketch[key] = args[0];
+        }
+      } else {
+        return $.error('Sketch.js did not recognize the given command.');
+      }
+    } else if (sketch) {
+      return sketch;
+    } else {
+      this.data('sketch', new Sketch(this.get(0), key));
+      return this;
+    }
+  };
+  Sketch = (function() {
+    function Sketch(el, opts) {
+      this.el = el;
+      this.canvas = $(el);
+      this.context = el.getContext('2d');
+      this.options = $.extend({
+        toolLinks: true,
+        defaultTool: 'marker',
+        defaultColor: '#000000',
+        defaultSize: 5
+      }, opts);
+      this.painting = false;
+      this.color = this.options.defaultColor;
+      this.size = this.options.defaultSize;
+      this.tool = this.options.defaultTool;
+      this.actions = [];
+      this.action = [];
+      this.canvas.bind('click mousedown mouseup mousemove mouseleave mouseout touchstart touchmove touchend touchcancel', this.onEvent);
+      if (this.options.toolLinks) {
+        $('body').delegate("a[href=\"#" + (this.canvas.attr('id')) + "\"]", 'click', function(e) {
+          var $canvas, $this, key, sketch, _i, _len, _ref;
+          $this = $(this);
+          $canvas = $($this.attr('href'));
+          sketch = $canvas.data('sketch');
+          _ref = ['color', 'size', 'tool'];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            key = _ref[_i];
+            if ($this.attr("data-" + key)) {
+              sketch.set(key, $(this).attr("data-" + key));
+            }
+          }
+          if ($(this).attr('data-download')) {
+            sketch.download($(this).attr('data-download'));
+          }
+          return false;
+        });
+        $('body').delegate("select[data-target=\"#" + (this.canvas.attr('id')) + "\"]", 'change', function(e) {
+          var $canvas, $this, key, sketch, s;
+          $this = $(this);
+          $canvas = $($this.attr('data-target'));
+          sketch = $canvas.data('sketch');
+          key = 'size';
+          s = parseInt($("#tools-label-arrow").val(), 10) + parseInt($("#tools-label").val(), 10);
+          sketch.set(key, s);
+        });
+      }
+    }
+    Sketch.prototype.clear = function() {
+        this.actions = [];
+        this.redraw();       
+    };
+    Sketch.prototype.download = function(format) {
+      var mime;
+      format || (format = "png");
+      if (format === "jpg") {
+        format = "jpeg";
+      }
+      mime = "image/" + format;
+      return window.open(this.el.toDataURL(mime));
+    };
+    Sketch.prototype.set = function(key, value) {
+      this[key] = value;
+      return this.canvas.trigger("sketch.change" + key, value);
+    };
+    Sketch.prototype.startPainting = function() {
+      this.painting = true;
+      return this.action = {
+        tool: this.tool,
+        color: this.color,
+        size: parseFloat(this.size),
+        events: []
+      };
+    };
+    Sketch.prototype.stopPainting = function() {
+      if (this.action) {
+        this.actions.push(this.action);
+      }
+      this.painting = false;
+      this.action = null;
+      return this.redraw();
+    };
+    Sketch.prototype.onEvent = function(e) {
+      if (e.originalEvent && e.originalEvent.targetTouches) {
+        e.pageX = e.originalEvent.targetTouches[0].pageX;
+        e.pageY = e.originalEvent.targetTouches[0].pageY;
+      }
+      $.sketch.tools[$(this).data('sketch').tool].onEvent.call($(this).data('sketch'), e);
+      e.preventDefault();
+      return false;
+    };
+    Sketch.prototype.redraw = function() {
+      var sketch;
+      this.el.width = this.canvas.width();
+      this.context = this.el.getContext('2d');
+      sketch = this;
+      $.each(this.actions, function() {
+        if (this.tool) {
+          return $.sketch.tools[this.tool].draw.call(sketch, this);
+        }
+      });
+      if (this.painting && this.action) {
+        return $.sketch.tools[this.action.tool].draw.call(sketch, this.action);
+      }
+    };
+    Sketch.prototype.getContrastColor = function(color) {
+      var c = [];
+      var cL = [];
+      var cc;
+
+      if (c.length == 4) {
+        c.push(parseInt(color.slice(1,2) + color.slice(1,2), 16));
+        c.push(parseInt(color.slice(2,3) + color.slice(2,3), 16));
+        c.push(parseInt(color.slice(3,4) + color.slice(3,4), 16));
+      } else {
+        c.push(parseInt(color.slice(1,3), 16));
+        c.push(parseInt(color.slice(3,5), 16));
+        c.push(parseInt(color.slice(5,7), 16));
+      }
+      for (var n in c) {
+        var v = c[n] / 255.0;
+        if (v <= 0.03928) {
+          v = v / 12.92;
+        } else {
+          v = ((v+0.055)/1.055) ^ 2.4;
+        }
+        cL.push(v);
+      }
+      var L = (0.2126*cL[0]) + (0.7152*cL[1]) + (0.0722*cL[2]);
+      if (L > 0.179) {
+        cc = "#000";
+      } else {
+        cc = "#fff";
+      }
+      return cc;
+    };
+    return Sketch;
+  })();
+  $.sketch = {
+    tools: {}
+  };
+  $.sketch.tools.marker = {
+    onEvent: function(e) {
+      switch (e.type) {
+        case 'mousedown':
+        case 'touchstart':
+          this.startPainting();
+          break;
+        case 'mouseup':
+        case 'mouseout':
+        case 'mouseleave':
+        case 'touchend':
+        case 'touchcancel':
+          this.stopPainting();
+      }
+      if (this.painting) {
+        this.action.events.push({
+          //x: e.pageX - this.canvas.offset().left + 4,
+          //y: e.pageY - this.canvas.offset().top + 4,
+          x: e.pageX - this.canvas[0].getBoundingClientRect().left,
+          y: e.pageY - this.canvas[0].getBoundingClientRect().top,
+          event: e.type
+        });
+        return this.redraw();
+      }
+    },
+    draw: function(action) {
+      var event, previous, _i, _len, _ref;
+      this.context.lineJoin = "round";
+      this.context.lineCap = "round";
+      this.context.beginPath();
+      this.context.moveTo(action.events[0].x + (action.size/2), action.events[0].y + (action.size/2));
+      _ref = action.events;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        this.context.lineTo(event.x + (action.size/2), event.y + (action.size/2));
+        previous = event;
+      }
+      this.context.strokeStyle = action.color;
+      this.context.lineWidth = action.size;
+      return this.context.stroke();
+    }
+  };
+
+  $.sketch.tools.label = {
+    onEvent: function(e) {
+      return $.sketch.tools.marker.onEvent.call(this, e);
+    },
+    draw: function(action) {
+      var x = action.events[0].x;
+      var y = action.events[0].y;
+      
+      var a, size;
+      
+      if (action.size > 400) {
+          a = 4;
+          size = action.size - 400;
+      } else if (action.size > 300) {
+          a = 3;
+          size = action.size - 300;
+      } else if (action.size > 200) {
+          a = 2;
+          size = action.size - 200;
+      } else {
+          a = 1;
+          size = action.size - 100;
+      }
+      
+      var w;
+      var h;
+      
+      if (a == 1 || a == 3) {
+          w = 108;
+          h = 64;         
+      } else {
+          w = 124;
+          h = 48;  
+      }
+      
+      
+      this.context.beginPath();
+      
+      switch (a) {
+          case 1:        // Top
+              this.context.rect(x, y+16, w, h-16);
+              
+              break;
+          case 2:        // Right
+              this.context.rect(x, y, w-16, h);
+          
+              break;
+          case 3:        // Bottom
+              this.context.rect(x, y, w, h-16);
+          
+              break;
+          case 4:        // Left
+              this.context.rect(x+16, y, w-16, h);
+          
+              break;
+      }
+      
+      this.context.fillStyle = action.color;
+      this.context.fill();
+      this.context.closePath();
+
+      this.context.beginPath();
+      
+      switch (a) {
+          case 1:        // Top
+              this.context.moveTo(x+47, y+16);
+              this.context.lineTo(x+54, y);
+              this.context.lineTo(x+55, y);
+              this.context.lineTo(x+62, y+16);
+              this.context.lineTo(x+47, y+16);
+              
+              break;
+          case 2:        // Right
+              this.context.moveTo(x+108, y+16);
+              this.context.lineTo(x+123, y+23);
+              this.context.lineTo(x+123, y+24);
+              this.context.lineTo(x+108, y+31);
+              this.context.lineTo(x+108, y+16);
+              
+              break;
+          case 3:        // Bottom
+              this.context.moveTo(x+47, y+48);
+              this.context.lineTo(x+54, y+63);
+              this.context.lineTo(x+55, y+63);
+              this.context.lineTo(x+62, y+48);
+              this.context.lineTo(x+47, y+48);
+              
+              break;
+          case 4:        // Left
+              this.context.moveTo(x+16, y+16);
+              this.context.lineTo(x, y+23);
+              this.context.lineTo(x, y+24);
+              this.context.lineTo(x+16, y+31);
+              this.context.lineTo(x+16, y+16);
+              
+              break;
+      }
+      
+      this.context.closePath();
+      this.context.fillStyle = action.color;
+      this.context.fill();
+
+      var cc = jQuery('#annotations-sketch').sketch().getContrastColor(action.color);
+
+      this.context.beginPath();
+      
+      switch (a) {
+          case 1:        // Top
+              this.context.rect(x+2, y+18, w-4, h-20);
+              
+              break;
+          case 2:        // Right
+              this.context.rect(x+2, y+2, w-20, h-4);
+              
+              break;
+          case 3:        // Bottom
+              this.context.rect(x+2, y+2, w-4, h-20);
+              
+              break;
+          case 4:        // Left
+              this.context.rect(x+18, y+2, w-20, h-4);
+              
+              break;
+      }
+      
+      this.context.strokeStyle = cc;
+      this.context.lineWidth = 1;
+      this.context.stroke();
+
+      var t1;
+      var t2;
+
+      switch (size) {
+        case 3:
+          t2 = "Missing Nub";
+          t1 = "빠진 마디";
+          break;
+        case 5:
+          t2 = "Missing Branch";
+          t1 = "빠진 가지";
+          break;
+        case 10:
+          t2 = "Merger";
+          t1 = "합쳐짐";
+          break;
+        case 15:
+          t2 = "Add";
+          t1 = "추가";
+          break;
+        case 20:
+          t2 = "Remove";
+          t1 = "삭제";
+          break;
+        case 25:
+          t1 = "Watch";
+          t2 = "";
+          break;
+      };
+
+      this.context.font = 'normal 10pt Arial, Helvetica, sans-serif';
+      this.context.fillStyle = cc;
+      
+      switch (a) {
+          case 1:        // Top
+              this.context.fillText(t1, x+10, y+36);
+              this.context.fillText(t2, x+10, y+54);
+              
+              break;
+          case 2:        // Right
+              this.context.fillText(t1, x+10, y+20);
+              this.context.fillText(t2, x+10, y+38);
+              
+              break;
+          case 3:        // Bottom
+              this.context.fillText(t1, x+10, y+20);
+              this.context.fillText(t2, x+10, y+38);
+              
+              break;
+          case 4:        // Left
+              this.context.fillText(t1, x+26, y+20);
+              this.context.fillText(t2, x+26, y+38);
+              
+              break;
+      }
+      
+
+      return true;
+    }
+  };
+
+  return $.sketch.tools.eraser = {
+    onEvent: function(e) {
+      return $.sketch.tools.marker.onEvent.call(this, e);
+    },
+    draw: function(action) {
+     var oldcomposite;
+     oldcomposite = this.context.globalCompositeOperation;
+     this.context.globalCompositeOperation = "destination-out";
+     action.color = "rgba(0,0,0,1)";
+     $.sketch.tools.marker.draw.call(this, action);
+     return this.context.globalCompositeOperation = oldcomposite;       
+    }
+  };
+})(jQuery);
+
+
+/**
+ *
+ *  Base64 encode / decode
+ *  http://www.webtoolkit.info/
+ *
+ **/
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(r){var t,e,h,a,o,n,c,d="",i=0;for(r=Base64._utf8_encode(r);i<r.length;)t=r.charCodeAt(i++),e=r.charCodeAt(i++),h=r.charCodeAt(i++),a=t>>2,o=(3&t)<<4|e>>4,n=(15&e)<<2|h>>6,c=63&h,isNaN(e)?n=c=64:isNaN(h)&&(c=64),d=d+this._keyStr.charAt(a)+this._keyStr.charAt(o)+this._keyStr.charAt(n)+this._keyStr.charAt(c);return d},decode:function(r){var t,e,h,a,o,n,c,d="",i=0;for(r=r.replace(/[^A-Za-z0-9\+\/\=]/g,"");i<r.length;)a=this._keyStr.indexOf(r.charAt(i++)),o=this._keyStr.indexOf(r.charAt(i++)),n=this._keyStr.indexOf(r.charAt(i++)),c=this._keyStr.indexOf(r.charAt(i++)),t=a<<2|o>>4,e=(15&o)<<4|n>>2,h=(3&n)<<6|c,d+=String.fromCharCode(t),64!=n&&(d+=String.fromCharCode(e)),64!=c&&(d+=String.fromCharCode(h));return d=Base64._utf8_decode(d)},decodeRaw:function(r){var t,e,h,a,o,n,c,d=[],i=0;for(r=r.replace(/[^A-Za-z0-9\+\/\=]/g,"");i<r.length;)a=this._keyStr.indexOf(r.charAt(i++)),o=this._keyStr.indexOf(r.charAt(i++)),n=this._keyStr.indexOf(r.charAt(i++)),c=this._keyStr.indexOf(r.charAt(i++)),t=a<<2|o>>4,e=(15&o)<<4|n>>2,h=(3&n)<<6|c,d.push(t),64!=n&&d.push(e),64!=c&&d.push(h);return d},_utf8_encode:function(r){r=r.replace(/\r\n/g,"\n");for(var t="",e=0;e<r.length;e++){var h=r.charCodeAt(e);128>h?t+=String.fromCharCode(h):h>127&&2048>h?(t+=String.fromCharCode(h>>6|192),t+=String.fromCharCode(63&h|128)):(t+=String.fromCharCode(h>>12|224),t+=String.fromCharCode(h>>6&63|128),t+=String.fromCharCode(63&h|128))}return t},_utf8_decode:function(r){for(var t="",e=0,h=c1=c2=0;e<r.length;)h=r.charCodeAt(e),128>h?(t+=String.fromCharCode(h),e++):h>191&&224>h?(c2=r.charCodeAt(e+1),t+=String.fromCharCode((31&h)<<6|63&c2),e+=2):(c2=r.charCodeAt(e+1),c3=r.charCodeAt(e+2),t+=String.fromCharCode((15&h)<<12|(63&c2)<<6|63&c3),e+=3);return t}};
+</script>
+<script>
+  var defaultColor = "#ff0";
+  var defaultBrushSize = 5;
+  var defaultLabelSize = 305;
+  var defaultEraserSize = 15;
+
+  var brushColors = ['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'];
+  var brushSizes = [3, 5, 10, 15];
+  var eraserSizes = [10, 15, 25, 50];
+
+  var currentColor = defaultColor;
+  var currentSize = defaultBrushSize;
+
+
+  function init() {
+    /*
+     * Process Image Dimensions and Initialize UI
+     */
+    var dataRaw = jQuery("#capture img").attr("src").slice(22, 86); // 54
+    var data = Base64.decodeRaw(dataRaw);
+    var wR = data.slice(16, 20);
+    var hR = data.slice(20); 
+
+    var w = (wR[0] * 0x1000000) + (wR[1] * 0x10000) + (wR[2] * 0x100) + wR[3];
+    var h = (hR[0] * 0x1000000) + (hR[1] * 0x10000) + (hR[2] * 0x100) + hR[3];
+
+    jQuery("#content")
+    .css("width", w + "px")
+    .css("height", h + "px");
+
+    jQuery("#capture img")
+    .css("margin-left", "-" + Math.floor(w / 2) + "px")
+    .css("margin-top", "-" + Math.floor(h / 2) + "px");
+
+    jQuery("#annotations-sketch")
+    .css("width", w + "px")
+    .css("height", h + "px")
+    .attr("width", w)
+    .attr("height", h);
+
+
+    /*
+     * Initialize Sketch.js canvas
+     */
+    jQuery.each(brushColors, function() {
+      if (this == defaultColor) {
+        jQuery('#tools-colors').append('<a href="#annotations-sketch" class="tools-button tools-color active" data-color="' + this + '" style="background:' + this + '"></a> ');
+      } else {
+        jQuery('#tools-colors').append('<a href="#annotations-sketch" class="tools-button tools-color" data-color="' + this + '" style="background:' + this + '"></a> ');
+      }
+    });
+
+    jQuery.each(brushSizes, function() {
+      if (this == defaultBrushSize) {
+        jQuery('#tools-brush-sizes').append('<a href="#annotations-sketch" class="tools-button tools-size active" data-size="' + this + '">' + this + '</a> ');
+      } else {
+        jQuery('#tools-brush-sizes').append('<a href="#annotations-sketch" class="tools-button tools-size" data-size="' + this + '">' + this + '</a> ');
+      }
+    });
+    
+    jQuery.each(eraserSizes, function() {
+        if (this == defaultEraserSize) {
+          jQuery('#tools-eraser-sizes').append('<a href="#annotations-sketch" class="tools-button tools-size active" data-size="' + this + '">' + this + '</a> ');
+        } else {
+          jQuery('#tools-eraser-sizes').append('<a href="#annotations-sketch" class="tools-button tools-size" data-size="' + this + '">' + this + '</a> ');
+        }
+      });
+
+    jQuery('#annotations-sketch').sketch({defaultColor: defaultColor, defaultSize: defaultBrushSize});
+
+    var cursor = generate_cursor();
+
+    jQuery("#annotations-sketch").css("cursor", "url(" + cursor + "),auto");
+
+
+
+    /*
+     * Add event handlers for tools
+     */
+
+    jQuery("#tools-items .tools-item").click(function() {
+        jQuery("#annotations-tools .tools-item").removeClass("active");
+        jQuery(this).addClass("active");
+
+        switch (jQuery(this).attr("data-tool")) {
+            case "marker":
+                jQuery("#tools-labels").hide();
+                jQuery("#tools-eraser-sizes").hide();
+                jQuery("#tools-colors").show();
+                jQuery("#tools-brush-sizes").show();
+                
+                if (brushSizes.indexOf(currentSize) == -1) {
+                    currentSize = defaultBrushSize;
+                }
+                
+                jQuery('#tools-brush-sizes .tools-size[data-size="' + currentSize + '"]').click();
+                
+                break;
+            case "label":
+                jQuery("#tools-brush-sizes").hide();
+                jQuery("#tools-eraser-sizes").hide();
+                jQuery("#tools-colors").show();
+                jQuery("#tools-labels").show();
+                
+                if (currentSize < 100) {
+                    currentSize = defaultLabelSize;
+                }
+                
+                jQuery('#tools-label').change();
+                
+                break;
+            case "eraser":
+                jQuery("#tools-labels").hide();
+                jQuery("#tools-colors").hide();
+                jQuery("#tools-brush-sizes").hide();
+                jQuery("#tools-eraser-sizes").show();
+                
+                if (eraserSizes.indexOf(currentSize) == -1) {
+                    currentSize = eraserSizes[0];
+                }
+                
+                jQuery('#tools-eraser-sizes .tools-size[data-size="' + currentSize + '"]').click();
+                
+                break;
+        }
+
+        setTimeout(function() {
+            var cursor = generate_cursor();
+
+            jQuery("#annotations-sketch").css("cursor", "url(" + cursor + "),auto");
+        }, 500);
+    });
+
+    jQuery("#tools-colors .tools-color").click(function() {
+        jQuery("#annotations-tools .tools-color").removeClass("active");
+        jQuery(this).addClass("active");
+
+        currentColor = jQuery(this).attr("data-color");
+
+        var cursor = generate_cursor();
+
+        jQuery("#annotations-sketch").css("cursor", "url(" + cursor + "),auto");
+    });
+
+    jQuery("#tools-brush-sizes .tools-size, #tools-eraser-sizes .tools-size").click(function() {
+        jQuery("#annotations-tools .tools-size").removeClass("active");
+        jQuery(this).addClass("active");
+
+        currentSize = parseInt(jQuery(this).attr("data-size"), 10);
+
+        var cursor = generate_cursor();
+
+        jQuery("#annotations-sketch").css("cursor", "url(" + cursor + "),auto");
+    });
+
+    jQuery("#tools-labels select").change(function() {
+        currentSize = parseInt(jQuery("#tools-label-arrow").val(), 10) + parseInt(jQuery("#tools-label").val(), 10);
+
+        var cursor = generate_cursor();
+
+        jQuery("#annotations-sketch").css("cursor", "url(" + cursor + "),auto");
+
+    });
+    
+    jQuery("#tools-actions .tools-save").click(function() {
+        var cvA = document.getElementById("annotations-sketch");
+        var cxA = cvA.getContext('2d');
+
+        var cv = document.createElement('canvas');
+        cv.height = cvA.height;
+        cv.width = cvA.width;
+
+        var cx = cv.getContext('2d');
+
+        cx.beginPath();
+        cx.rect(0, 0, cvA.width, cvA.height);
+        cx.fillStyle = '#232323';
+        cx.fill();
+
+        var cimg = jQuery('#capture img')[0];
+
+        cx.drawImage(cimg, 0, 0);
+        cx.drawImage(cvA, 0, 0, cvA.width, cvA.height, 0, 0, cvA.width, cvA.height);
+
+        var im = cv.toDataURL();
+
+        var S = window.opener.scoutsLog;
+      
+        S.saveAnnotation({
+            image: im,
+            sketch: JSON.stringify( jQuery('#annotations-sketch').sketch().actions )
+        });
+      
+        window.close();
+    });
+    
+    jQuery("#tools-actions .tools-clear").click(function() {
+        jQuery("#annotations-sketch").sketch().clear();
+    });
+  }
+
+
+  function generate_cursor() {
+      var tool = jQuery('#annotations-sketch').sketch().tool;
+
+      switch (tool) {
+          case "marker":
+              generate_cursor_brush();
+
+              break;
+          case "label":
+              generate_cursor_label();
+
+              break;
+          case "eraser":
+              generate_cursor_eraser();
+
+              break;
+      }
+
+      var cav = jQuery("#cursor")[0];
+      var img = cav.toDataURL();
+    
+      return img;
+  }
+
+  function generate_cursor_brush() {
+    var w = currentSize;
+    var h = currentSize;
+
+    var cav = jQuery("#cursor")[0];
+
+    jQuery("#cursor")
+      .css("width", w + "px")
+      .css("height", h + "px")
+      .attr("width", w)
+      .attr("height", h);
+
+    var ctx = cav.getContext('2d');
+    var dat = ctx.createImageData(w, h);
+
+    var r = currentSize / 2;
+    var cX = w / 2;
+    var cY = h / 2;
+    
+    var cc = jQuery('#annotations-sketch').sketch().getContrastColor(currentColor);
+
+    ctx.beginPath();
+    ctx.arc(cX, cY, r, 0, 2 * Math.PI, false);
+    ctx.fillStyle = currentColor;
+    ctx.fill();
+    ctx.strokeStyle = cc;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  function generate_cursor_label() {
+      var x = 0;
+      var y = 0;
+      
+      var a;
+      var s;
+      
+      if (currentSize > 400) {
+          a = 4;
+          s = currentSize - 400;
+      } else if (currentSize > 300) {
+          a = 3;
+          s = currentSize - 300;
+      } else if (currentSize > 200) {
+          a = 2;
+          s = currentSize - 200;
+      } else {
+          a = 1;
+          s = currentSize - 100;
+      }
+      
+
+      var w;
+      var h;
+      
+      if (a == 1 || a == 3) {
+          w = 108;
+          h = 64;         
+      } else {
+          w = 124;
+          h = 48;  
+      }
+
+      var cav = jQuery("#cursor")[0];
+
+      jQuery("#cursor")
+          .css("width", w + "px")
+          .css("height", h + "px")
+          .attr("width", w)
+          .attr("height", h);
+
+
+      var ctx = cav.getContext('2d');
+      var dat = ctx.createImageData(w, h);
+
+      ctx.beginPath();
+      
+      switch (a) {
+          case 1:        // Top
+              ctx.rect(x, y+16, w, h-16);
+              
+              break;
+          case 2:        // Right
+              ctx.rect(x, y, w-16, h);
+          
+              break;
+          case 3:        // Bottom
+              ctx.rect(x, y, w, h-16);
+          
+              break;
+          case 4:        // Left
+              ctx.rect(x+16, y, w-16, h);
+          
+              break;
+      }
+      
+      ctx.fillStyle = currentColor;
+      ctx.fill();
+      ctx.closePath();
+
+      ctx.beginPath();
+      
+      switch (a) {
+          case 1:        // Top
+              ctx.moveTo(x+47, y+16);
+              ctx.lineTo(x+54, y);
+              ctx.lineTo(x+55, y);
+              ctx.lineTo(x+62, y+16);
+              ctx.lineTo(x+47, y+16);
+              
+              break;
+          case 2:        // Right
+              ctx.moveTo(x+108, y+16);
+              ctx.lineTo(x+123, y+23);
+              ctx.lineTo(x+123, y+24);
+              ctx.lineTo(x+108, y+31);
+              ctx.lineTo(x+108, y+16);
+              
+              break;
+          case 3:        // Bottom
+              ctx.moveTo(x+47, y+48);
+              ctx.lineTo(x+54, y+63);
+              ctx.lineTo(x+55, y+63);
+              ctx.lineTo(x+62, y+48);
+              ctx.lineTo(x+47, y+48);
+              
+              break;
+          case 4:        // Left
+              ctx.moveTo(x+16, y+16);
+              ctx.lineTo(x, y+23);
+              ctx.lineTo(x, y+24);
+              ctx.lineTo(x+16, y+31);
+              ctx.lineTo(x+16, y+16);
+              
+              break;
+      }
+      
+      ctx.closePath();
+      ctx.fillStyle = currentColor;
+      ctx.fill();
+
+      var cc = jQuery('#annotations-sketch').sketch().getContrastColor(currentColor);
+
+      ctx.beginPath();
+      
+      switch (a) {
+          case 1:        // Top
+              ctx.rect(x+2, y+18, w-4, h-20);
+              
+              break;
+          case 2:        // Right
+              ctx.rect(x+2, y+2, w-20, h-4);
+              
+              break;
+          case 3:        // Bottom
+              ctx.rect(x+2, y+2, w-4, h-20);
+              
+              break;
+          case 4:        // Left
+              ctx.rect(x+18, y+2, w-20, h-4);
+              
+              break;
+      }
+      
+      ctx.strokeStyle = cc;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      var t1;
+      var t2;
+
+      switch (s) {
+        case 3:
+          t2 = "Missing Nub";
+          t1 = "빠진 마디";
+          break;
+        case 5:
+          t2 = "Missing Branch";
+          t1 = "빠진 가지";
+          break;
+        case 10:
+          t2 = "Merger";
+          t1 = "합쳐짐";
+          break;
+        case 15:
+          t2 = "Add";
+          t1 = "추가";
+          break;
+        case 20:
+          t2 = "Remove";
+          t1 = "삭제";
+          break;
+        case 25:
+          t1 = "Watch";
+          t2 = "";
+          break;
+      };
+
+      ctx.font = 'normal 10pt Arial, Helvetica, sans-serif';
+      ctx.fillStyle = cc;
+      
+      switch (a) {
+          case 1:        // Top
+              ctx.fillText(t1, x+10, y+36);
+              ctx.fillText(t2, x+10, y+54);
+              
+              break;
+          case 2:        // Right
+              ctx.fillText(t1, x+10, y+20);
+              ctx.fillText(t2, x+10, y+38);
+              
+              break;
+          case 3:        // Bottom
+              ctx.fillText(t1, x+10, y+20);
+              ctx.fillText(t2, x+10, y+38);
+              
+              break;
+          case 4:        // Left
+              ctx.fillText(t1, x+26, y+20);
+              ctx.fillText(t2, x+26, y+38);
+              
+              break;
+      }
+  }
+
+  function generate_cursor_eraser() {
+        var w = currentSize;
+        var h = currentSize;
+
+        var cav = jQuery("#cursor")[0];
+
+        jQuery("#cursor")
+          .css("width", w + "px")
+          .css("height", h + "px")
+          .attr("width", w)
+          .attr("height", h);
+
+        var ctx = cav.getContext('2d');
+        var dat = ctx.createImageData(w, h);
+
+        var r = currentSize / 2;
+        var cX = w / 2;
+        var cY = h / 2;
+
+        ctx.beginPath();
+        ctx.arc(cX, cY, r, 0, 2 * Math.PI, false);
+        ctx.fillStyle = "black";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+  }
+
+  
+  function load_annotation(sketchData) {
+      jQuery('#annotations-sketch').sketch().actions = JSON.parse(sketchData);
+      jQuery('#annotations-sketch').sketch().redraw();
+  }
+
+  init();
+</script>
+
+</body>
+</html>
