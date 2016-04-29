@@ -1,0 +1,77 @@
+<div id="sl-summary-table">
+<table class="sl-table">
+<colgroup>
+<col style="width:25%" />
+<col style="width:75%" />
+</colgroup>
+<tbody>
+<tr><td><strong>{%LS_labelCell}</strong></td><td>&nbsp;</td></tr>
+<tr><td><strong>{%LS_labelStatus}</strong></td><td>&nbsp;</td></tr>
+<tr><td><strong>{%LS_labelWeight}</strong></td><td>&nbsp;</td></tr>
+<tr><td><strong>{%LS_labelVotes}</strong></td><td>&nbsp;</td></tr>
+<tr><td><strong>{%LS_labelLastUser}</strong></td><td>&nbsp;</td></tr>
+<tr><td><strong>{%LS_labelLastUpdated}</strong></td><td>&nbsp;</td></tr></tbody>
+</table>
+</div><br />
+
+<form onsubmit="return false;">
+<input type="hidden" id="sl-action-task" name="task" value="{task}" />
+<input type="hidden" id="sl-action-cell" name="cell" value="{cell}" />
+<input type="hidden" id="sl-action-entry" name="id" value="{entry}" />
+
+<div id="sl-action-table">
+<table class="sl-table">
+<colgroup>
+<col style="width:25%" />
+<col style="width:75%" />
+</colgroup>
+<tbody>
+<tr>
+<td><label for="sl-action-status">{%LS_labelStatus}:</label></td>
+<td><select id="sl-action-status" name="status">
+<option value="missing-nub">{%LS_statusMissingNub}</option>
+<option value="missing-branch">{%LS_statusMissingBranch}</option>
+<option value="merger">{%LS_statusMerger}</option>
+<option value="watch">{%LS_statusWatch}</option>
+<option value="need-scythe">{%LS_statusNeedScythe}</option>
+<option value="need-admin">{%LS_statusNeedAdmin}</option>
+<option value="scythe-complete">{%LS_statusScytheComplete}</option>
+<option value="good">{%LS_statusGood}</option>
+<option value="note">{%LS_statusNote}</option>
+</select></td>
+</tr>
+<tr>
+<td><label for="sl-action-issue">{%LS_labelIssue}:</label></td>
+<td><select id="sl-action-issue" name="issue">
+<option value="">{%LS_issueNone}</option>
+<option value="ai-merger">{%LS_issueAIMerger}</option>
+<option value="black-spill">{%LS_issueBlackSpill}</option>
+<option value="duplicate">{%LS_issueDuplicate}</option>
+<option value="fused-merger">{%LS_issueFusedMerger}</option>
+<option value="inter-duplicate">{%LS_issueInterHalfDuplicate}</option>
+<option value="stashed">{%LS_issueStashed}</option>
+<option value="test">{%LS_issueTestExtension}</option>
+<option value="wrong-seed">{%LS_issueWrongSeed}</option>
+</select></td>
+</tr>
+<tr>
+<td><strong>{%LS_labelReaped}</strong></td>
+<td><input type="radio" name="reaped" value="1" /> {%LS_labelYes}&nbsp;&nbsp;&nbsp;<input type="radio" name="reaped" value="0" checked />{%LS_labelNo}</td>
+</tr>
+<tr>
+<td><strong>{%LS_labelImage}:</strong></td>
+<td><div id="sl-action-image-status"></div></td>
+</tr>
+<tr>
+<td><strong>{%LS_labelNotes}:</strong></td>
+<td><textarea name="notes" id="sl-action-notes" rows="4" cols="75"></textarea></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div id="sl-action-buttons" style="text-align:center;">
+<button type="button" class="sl-submit greenButton" title="{%LS_actionSubmitTooltip}">{%LS_actionSubmit}</button> 
+<button type="button" class="sl-cancel redButton" title="{%LS_actionCancelTooltip}">{%LS_actionCancel}</button> 
+</div>
+</form>
