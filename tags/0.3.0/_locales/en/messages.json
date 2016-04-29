@@ -1,0 +1,641 @@
+{
+    "extName": {
+        "message": "EyeWire Scouts' Log",
+        "description": "Name of the extension"
+    },
+    "extDescription": {
+        "message": "This extension allows scouts, scythes, and admins to track cell/cube issues within EyeWire.",
+        "description": "Description for extension manifest"
+    },
+    "title": {
+        "message": "Scouts' Log",
+        "description": "Short title to be used in various windows or locations."
+    },
+
+    
+    
+    
+    "windowAuthTitle": {
+        "message": "Scouts' Log Authorization",
+        "description": "Authorization prompt title"
+    },
+    "windowAuthText": {
+        "message": "<p>In order to use the Scouts's Log extension, you must authorize the application to use your EyeWire account. <span class=\"sl-admin\">Please ensure cookies and pop-ups are allowed for <em>scoutslog.org</em>.</span><p style=\"text-align:center;\"><a class=\"bigButton blueButton\" href=\"http://scoutslog.org/?do=extension-auth&lang=en\" target=\"_blank\">AUTHORIZE</a></p><p>Once the authorization process is completed, please <a class=\"sl-cell\" href=\"javascript:document.location.reload();\">re-load</a> this page.</p>",
+        "description": "Text to be displayed when the user needs to authorization their account."
+    },
+    "windowCellSummary": {
+        "message": "Cell Summary"
+    },
+    "windowEditEntryTitle": {
+        "message": "Edit Log Entry"
+    },
+    "windowErrorTitle": {
+        "message": "Error"
+    },
+    "windowHistoryTitle": {
+        "message": "Cube Submission History"
+    },
+    "windowImagePreviewTitle": {
+        "message": "Image Preview"
+    },
+    "windowNewEntryTitle": {
+        "message": "New Log Entry"
+    },
+    "windowUpdateTitle": {
+        "message": "Scouts' Log Update"
+    },
+    "windowUpdateText": {
+        "message": "<p>Your extension is out of date!</p><p>Don't panic, Google Chrome should update automatically.</p><p>If you continue to see this message, please re-install the extension.</p><p style=\"text-align:center;\"><a class=\"sl-cell\" href=\"javascript:void(0);\">Close</a></p>"
+    },
+    "windowWindowHistoryTitle": {
+        "message": "Window History"
+    },
+
+
+    "windowHistoryNextTooltip": {
+        "message": "Navigate to next window",
+        "description": "Text to display when hovering over the 'Next' window history navigation button"
+    },
+    "windowHistoryPreviousTooltip": {
+        "message": "Navigate to previous window",
+        "description": "Text to display when hovering over the 'Back' window history navigation button"
+    },
+    "windowHistoryWindowTooltip": {
+        "message": "Display window history",
+        "description": "Text to display when hovering over the button to display window history entries"
+    },
+    
+    
+    
+    "panelCellList": {
+        "message": "Cell List"
+    },
+    "panelCellListShort": {
+        "message": "C"
+    },
+    "panelCellListTooltip": {
+        "message": "Display list of uncompleted cells and a summary of open tasks"
+    },
+    "panelOpen": {
+        "message": "Open Tasks"
+    },
+    "panelOpenShort": {
+        "message": "O"
+    },
+    "panelOpenTooltip": {
+        "message": "Display list of open tasks"
+    },
+    "panelNeedAdmin": {
+        "message": "Need Admin"
+    },
+    "panelNeedAdminShort": {
+        "message": "A"
+    },
+    "panelNeedAdminTooltip": {
+        "message": "Display tasks requiring admin attention"
+    },
+    "panelNeedScythe": {
+        "message": "Need Scythe"
+    },
+    "panelNeedScytheShort": {
+        "message": "S"
+    },
+    "panelNeedScytheTooltip": {
+        "message": "Display tasks requiring scythe attention"
+    },
+    "panelWatch": {
+        "message": "Watch"
+    },
+    "panelWatchShort": {
+        "message": "W"
+    },
+    "panelWatchTooltip": {
+        "message": "Display tasks set to watch"
+    },
+    "panelHistory": {
+        "message": "History"
+    },
+    "panelHistoryShort": {
+        "message": "H"
+    },
+    "panelHistoryTooltip": {
+        "message": "View details regarding your cubes submitted or scythed"
+    },
+    "panelTaskDetails": {
+        "message": "Cube Details"
+    },
+    "panelTaskDetailsShort": {
+        "message": "D"
+    },
+    "panelTaskDetailsTooltip": {
+        "message": "View summary and log entries for the selected/current cube"
+    },
+    "panelTaskEntry": {
+        "message": "New Entry"
+    },
+    "panelTaskEntryShort": {
+        "message": "N"
+    },
+    "panelTaskEntryTooltip": {
+        "message": "Create a new log entry for the selected/current cube"
+    },
+    
+    
+    
+    
+    "columnCell": {
+        "message": "Cell",
+        "description": "Column header text when displaying cell names."
+    },
+    "columnCube": {
+        "message": "Cube",
+        "description": "Column header text when displaying cube numbers."
+    },
+    "columnHistoryEntry": {
+        "message": "History Entry",
+        "description": "Column header text when displaying window history entries"
+    },
+    "columnImage": {
+        "message": "Image"
+    },
+    "columnLastUpdated": {
+        "message": "Last Updated (UTC)",
+        "description": "Column header text when displaying the date/time for the most recent action of a task."
+    },
+    "columnLastUser": {
+        "message": "Last User",
+        "description": "Column header text when displaying the most recent username of the most recent action of a task."
+    },
+    "columnNotes": {
+        "message": "Notes",
+        "description": "Column header text when displaying user comments for a given task action."
+    },
+    "columnOpenTasks": {
+        "message": "Open Tasks",
+        "description": "Column header text when displaying the count of open tasks for a cell and/or status."
+    },
+    "columnScore": {
+        "message": "Score",
+        "description": "Column header text when displaying the raw score and consensus percent for a submission in the history window."
+    },
+    "columnStatus": {
+        "message": "Status",
+        "description": "Column header text when displaying the current status of a task/cube."
+    },
+    "columnTimestamp": {
+        "message": "Timestamp (UTC)",
+        "description": "Column header text when displaying the date/time for a submission in the history window."
+    },
+    "columnType": {
+        "message": "Type",
+        "description": "Column header text when displaying the submission type in the history window."
+    },
+    "columnUser": {
+        "message": "User",
+        "description": "Column header text when displaying the username for a task action."
+    },
+    
+    
+    
+
+    "labelAdd": {
+        "message": "Add"
+    },
+    "labelAnnotatedImage": {
+        "message": "Annotated Image"
+    },
+    "labelBottom": {
+        "message": "Bottom"
+    },
+    "labelCell": {
+        "message": "Cell",
+        "description": "Noun to reference a specific neuron within EyeWire."
+    },
+    "labelCellID": {
+        "message": "Cell ID",
+        "description": "Noun to reference the ID number for a specific neuron within EyeWire."
+    },
+    "labelConsensus": {
+        "message": "Consensus",
+        "description": "Percentage value indicating agreement, or lack of agreement, with the EyeWire consensus at the time of submission."
+    },
+    "labelCube": {
+        "message": "Cube",
+        "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
+    },
+    "labelEraser": {
+        "message": "Eraser"
+    },
+    "labelIconEntries": {
+        "message": "You have made a log entry for this cube",
+        "description": "Text to display when hovering over the icon indicator for log entries on the cube."
+    },
+    "labelIconWatch": {
+        "message": "You placed this cube on watch",
+        "description": "Text to display when hovering over the icon indicator for the user being the oen to set the cube to watch status."
+    },
+    "labelImage": {
+        "message": "Image"
+    },
+    "labelIssue": {
+        "message": "Set Issue Flag"
+    },
+    "labelLabel": {
+        "message": "Label"
+    },
+    "labelLastUser": {
+        "message": "Last User",
+        "description": "Username of the last person to save an action to the task."
+    },
+    "labelLastUpdated": {
+        "message": "Last Updated (UTC)",
+        "description": "Date/time of the last action saved to a specific task in UTC."
+    },
+    "labelLeft": {
+        "message": "Left"
+    },
+    "labelMarker": {
+        "message": "Marker"
+    },
+    "labelNo": {
+        "message": "No"
+    },
+    "labelNotApplicable": {
+        "message": "n/a",
+        "description": "Abbreviation to use when there is no data/information for a specific item."
+    },
+    "labelNotes": {
+        "message": "Notes",
+        "description": "Noun to indicate user comments/notes for a task action."
+    },
+    "labelPoints": {
+        "message": "pts",
+        "description": "Abbreviation to use when refering to the EyeWire cube submission score value."
+    },
+    "labelReaped": {
+        "message": "Reaped?",
+        "description": "Question if user reaped a change within EyeWire for the given task action (entry in log)."
+    },
+    "labelRemove": {
+        "message": "Remove"
+    },
+    "labelRight": {
+         "message": "Right"
+    },
+    "labelStatus": {
+        "message": "Status",
+        "description": "Noun to indicate current state for a given task."
+    },
+    "labelSubmissionType": {
+        "message": "Submission Type",
+        "description": "The type of EyeWire submission for a cube (normal, trailblaze, or scythed)"
+    },
+    "labelTask": {
+        "message": "Task",
+        "description": "Noun to reference a specific cube within EyeWire. Cube and task are synonyms."
+    },
+    "labelTop": {
+        "message": "Top"
+    },
+    "labelVotes": {
+        "message": "Votes",
+        "description": "Number of completion votes for a given task"
+    },
+    "labelWeight": {
+        "message": "Weight",
+        "description": "Noun refering to the numeric value of a task's confidence."
+    },
+    "labelYes": {
+        "message": "Yes"
+    },
+    
+    
+    
+    
+    "actionAnnotate": {
+        "message": "Annotate Image"
+    },
+    "actionAnnotateTooltip": {
+        "message": "Add details to the captured image(s)."
+    },
+    "actionCancel": {
+        "message": "Cancel",
+        "description": "Action word to indicate not submitting this log entry."
+    },
+    "actionCancelTooltip": {
+        "message": "Do not submit this log entry and close the window.",
+        "description": "Text to display when hovering over the 'Cancel' button."
+    },
+    "actionCapture": {
+        "message": "Capture Image",
+        "description": "Action word to indicate capturing the image from the 3D view."
+    },
+    "actionCaptureTooltip": {
+         "message": "Click to capture the image from the 3D view",
+         "description": "Text to display when hovering over the 'Capture Image' link in the 'New Entry' window."
+    },
+    "actionCellTooltip": {
+        "message": "Click to view tasks for this cell",
+        "description": "Text to display when hovering over a link to view tasks for a specific cell."
+    },
+    "actionClear": {
+        "message": "Clear"
+    },
+    "actionClearTooltip": {
+        "message": "Click to erase all annotations"
+    },
+    "actionClearHistory": {
+        "message": "Clear History",
+        "description": "Action word to indicate deleting all window history entries"
+    },
+    "actionClearHistoryTooltip": {
+        "message": "Delete all window history entries",
+        "description": "Text to display when hovering over the button to delete history entries."
+    },
+    "actionClose": {
+        "message": "Close",
+        "description": "Button text to display on the close button for error messages"
+    },
+    "actionCloseTooltip": {
+        "message": "Close this window",
+        "description": "Text to display when hovering over the 'close' button"
+    },
+    "actionEditEntryTooltip": {
+        "message": "Click here to edit your log entry",
+        "description": "Text displayed when hovering over the edit log entry icon"
+    },
+    "actionHideWindowTooltip": {
+        "message": "Hide this window",
+        "description": "Text to display when hovering over the 'X' icon of the Scouts' Log window."
+    },
+    "actionJumpTask": {
+        "message": "Jump",
+        "description": "Action word to indicate switching focus to a specific cube/task."
+    },
+    "actionJumpTaskTooltip": {
+        "message": "Click to view this cube in EyeWire",
+        "description": "Text to display when hovering over a 'jump to cube' link."
+    },
+    "actionMore": {
+        "message": "more",
+        "description": "Action word to indicate displaying additional entries."
+    },
+    "actionMoreTooltip": {
+        "message": "Display additional entries",
+        "description": "Text to display when hovering over the 'more' link in the history window."
+    },
+    "actionNewEntry": {
+        "message": "New Entry",
+        "description": "Action phrase to indicate creating a new task action (entry in log)."
+    },
+    "actionNewEntryTooltip": {
+        "message": "Click to create a new log entry for this task.",
+        "description": "Text to display when hovering over the 'New Entry' button."
+    },
+    "actionPreview": {
+        "message": "Preview Image",
+        "description": "Action word to indicate viewing the image captured."
+    },
+    "actionPreviewTooltip": {
+        "message": "Click to view captured image",
+        "description": "Text to display when hovering over the 'Preview Image' link in the 'New Entry' window."
+    },
+    "actionRecapture": {
+        "message": "Re-Capture Image",
+        "description": "Action word to indicate capturing the image from the 3D view again."
+    },
+    "actionRecaptureTooltip": {
+        "message": "Click to re-capture the image from the 3D view",
+        "description": "Text to display when hovering over the 'Re-Capture Image' link in the 'New Entry' window."
+    },
+    "actionRefresh": {
+        "message": "Refresh",
+        "description": "Action word to indicate updating the display based on selected options."
+    },
+    "actionRefreshTooltip": {
+        "message": "Update the display based on selected options.",
+        "description": "Text to display when hovering over the 'Refresh' button."
+    },
+    "actionRemove": {
+        "message": "Remove",
+        "description": "Action word to indicate removing the image from the new log entry submission."
+    },
+    "actionRemoveTooltip": {
+        "message": "Remove the image from this log entry submission.",
+        "description": "Text to display when hovering over the 'Remove' link in the 'New Entry' window."
+    },
+    "actionSave": {
+        "message": "Save"
+    },
+    "actionSaveTooltip": {
+        "message": "Click to save your annotations"
+    },
+    "actionSetToGood": {
+        "message": "Set to Good",
+        "description": "Action phrase to indicate there are no further issues for a given task."
+    },
+    "actionSetToGoodTooltip": {
+        "message": "Mark this cube GOOD to indicate no further issues",
+        "description": "Text to display when hovering over the 'Set to Good' button."
+    },
+    "actionShowWindowTooltip": {
+        "message": "Show Scouts' Log Window (Alt + L)",
+        "description": "Text to display when hovering over the 'Show Scouts' Log Window' icon 'game tools' button area."
+    },
+    "actionSubmit": {
+        "message": "Submit",
+        "description": "Action word to indicate saving the new log entry."
+    },
+    "actionSubmitTooltip": {
+        "message": "Submit this log entry.",
+        "description": "Text to display when hovering over the 'Submit' button."
+    },
+    "actionTask": {
+        "message": "Task Details"
+    },
+    "actionTaskTooltip": {
+        "message": "Click to view actions for this task",
+        "description": "Text to display when hovering over a numbered task link (e.g. #123456)"
+    },
+    "actionViewImage": {
+        "message": "View Image",
+        "description": "Action phrase to indicate viewing the saved image for a given task action."
+    },
+    "actionViewImageTooltip": {
+        "message": "Click to view image related to this action",
+        "description": "Text to display when hovering over the 'view image' link."
+    },    
+    
+    
+
+    
+    "historyConsensusAll": {
+        "message": "All Values",
+        "description": "Option text to indicate viewing all consensus values"
+    },
+    "historyConsensus5090": {
+    	"message": "50% to 90%",
+    	"description": "Option text to indicate viewing consesus values 50% to 90%"
+    },
+    "historyConsensus50": {
+        "message": "50% or less",
+        "description": "Option text to indicate viewing consensus values equal to 50% or less"
+    },
+    "historyConsensusNone": {
+        "message": "No Agreement",
+        "description": "Option text to indicate viewing consensus values equal to zero."
+    },
+    "historyTypesAll": {
+        "message": "All Types",
+        "description": "Option text to indicate viewing all submission types."
+    },
+    "historyTypesNormal": {
+        "message": "Normal",
+        "description": "Option text to indicate viewing submissions from normal EyeWire play."
+    },
+    "historyTypeReaped": {
+        "message": "Reaped (Admin)",
+        "description": "Option text to indicate viewing reaped (admin) submissions."
+    },
+    "historyTypesTrailblazer": {
+        "message": "Normal Trailblazer",
+        "description": "Option text to indicate viewing trailblazed submissions from normal EyeWire play."
+    },
+    "historyTypesScythed": {
+        "message": "Scythed",
+        "description": "Option text to indicate viewing scythed submissions."
+    },
+
+    
+
+    "issueAIMerger": {
+        "message": "AI Merger"
+    },
+    "issueBlackSpill": {
+        "message": "Black Spill"
+    },
+    "issueDuplicate": {
+        "message": "Duplicate"
+    },
+    "issueFusedMerger": {
+        "message": "Fused Merger"
+    },
+    "issueInterHalfDuplicate": {
+        "message": "Inter-Half Duplicate"
+    },
+    "issueNone": {
+        "message": "None"
+    },
+    "issueStashed": {
+        "message": "Stashed"
+    },
+    "issueTestExtension": {
+        "message": "Test Extension"
+    },
+    "issueWrongSeed": {
+        "message": "Wrong Seed Merger"
+    },
+        
+    
+    "statusAll": {
+        "message": "All"
+    },
+    "statusBranchChecking": {
+        "message": "Branch Checking"
+    },
+    "statusGood": {
+        "message": "Good"
+    },
+    "statusMerger": {
+        "message": "Merger"
+    },
+    "statusMissingBranch": {
+        "message": "Missing Branch"
+    },
+    "statusMissingNub": {
+        "message": "Missing Nub"
+    },
+    "statusNeedAdmin": {
+        "message": "Need Admin"
+    },
+    "statusNeedScythe": {
+        "message": "Need Scythe"
+    },
+    "statusNote": {
+        "message": "Note"
+    },
+    "statusOpen": {
+        "message": "Open"
+    },
+    "statusScytheComplete": {
+        "message": "Scythe Complete"
+    },
+    "statusStillGrowing": {
+        "message": "Still Growing"
+    },
+    "statusSubtreeComplete": {
+        "message": "Subtree Complete"
+    },
+    "statusWatch": {
+        "message": "Watch"
+    },
+
+
+    "settingsCellList": {
+        "message": "Display Cell List"
+    },
+    "settingsOpenTasks": {
+        "message": "Display Open Tasks"
+    },
+    "settingsNeedAdmin": {
+        "message": "Display Need Admin"
+    },
+    "settingsNeedScythe": {
+        "message": "Display Need Scythe"
+    },
+    "settingsWatch": {
+        "message": "Display Watch"
+    },
+    "settingsHistory": {
+        "message": "Display History"
+    },
+    "settingsTitle": {
+        "message": "Scouts' Log Settings"
+    },
+    
+    
+
+
+    "messageLoading": {
+        "message": "Loading...",
+        "description": "Text to display when loading data for one of the views within the extension."
+    },
+    "messageProcessing": {
+        "message": "Processing...",
+        "description": "Text to display when an image is being captured from the 3D canvas."
+    },
+    "messageSaving": {
+        "message": "Saving...",
+        "description": "Text to display when submitting a new log entry."
+    },
+
+
+    
+    
+    "error_cube": {
+        "message": "Unable to determine current cube!  Please check if cube is stashed otherwise re-select OR re-enter the cube."
+    },
+    "error_notasks": {
+        "message": "No tasks found for this cell/status",
+        "description": "Message to indicate no tasks are available for the cell and/or specific task status."
+    },
+    "error_request": {
+        "message": "<p>Sorry, there was an error while processing this request.</p><p>Please check your Internet connection and try the request again.</p><p>If you continue to see this message please contact support.</p>"
+    },
+    "error_submission": {
+        "message": "Sorry, there was an error while submitting. Please try again.",
+        "description": "Phrase to indicate a transmission error while saving a task action."
+    }
+
+
+}
