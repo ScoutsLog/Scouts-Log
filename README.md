@@ -1,13 +1,13 @@
 EyeWire Scouts' Log
 ====================
-This extension allows scouts, scythes, and admins to track cell/cube issues
-within EyeWire.  The features used in this extension work in conjunction
-with the <a href="http://scoutslog.org/">scoutslog.org</a> web site.
+This application allows scouts, scythes, and admins to track cell/cube issues
+within EyeWire.  The application works directly within the EyeWire web site in
+conjunction with the <a href="http://scoutslog.org/">scoutslog.org</a> web site.
 
 
 Requirements
 --------------------
-In order to use this extension, the following requirements must be met:
+In order to use this application, the following requirements must be met:
 
 * User must have an active EyeWire (eyewire.org) account
 * User must be assigned one, or more, of the following roles:
