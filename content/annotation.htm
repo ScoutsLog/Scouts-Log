@@ -832,19 +832,12 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
         cx.drawImage(cimg, 0, 0);
         cx.drawImage(cvA, 0, 0, cvA.width, cvA.height, 0, 0, cvA.width, cvA.height);
 
+        // Save annotation data
         var im = cv.toDataURL();
-
-        // Save annotation (via window event)
-        var d = {detail: {
-            destination: "saveAnnotation",
-            data: {
-                image: im,
-                sketch: JSON.stringify( jQuery('#annotations-sketch').sketch().actions )
-            }
-        }};
-
-        var ev = new CustomEvent('RoutedMessageCS', d);
-        window.opener.document.dispatchEvent(ev);
+        var sk = JSON.stringify(jQuery("#annotations-sketch").sketch().actions);
+        
+        jQuery(window.opener.document.getElementById("sl-action-image-annotated")).val(im);
+        jQuery(window.opener.document.getElementById("sl-action-image-sketch")).val(sk);
 
         // Close annotation window
         window.close();
