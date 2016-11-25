@@ -5,7 +5,7 @@ function ScoutsLogPlatformContent() {
 
     var slLocale = "en";
     var slLocalizedStrings = {};
-    var slVersion = "7db5e3b2-08c0-46dc-9f83-2430fcf97604";
+    var slVersion = "357d2b61-6f9b-4c9e-9229-2a6808a66470";
 
     var slImages = {};
 
@@ -888,6 +888,7 @@ function ScoutsLogPlatformContent() {
                 jQuery("#scoutsLogFloatingControls a.sl-need-scythe").html( S.getLocalizedString("panelNeedScythe") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-watch").html( S.getLocalizedString("panelWatch") + ' <span id="sl-watch-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-history").html( S.getLocalizedString("panelHistory") );
+                jQuery("#scoutsLogFloatingControls a.sl-promotions").html( S.getLocalizedString("panelPromotions") );
                 jQuery("#scoutsLogFloatingControls #sl-task-details").html( S.getLocalizedString("panelTaskDetails") );
                 jQuery("#scoutsLogFloatingControls #sl-task-entry").html( S.getLocalizedString("panelTaskEntry") );
             } else {
@@ -899,6 +900,7 @@ function ScoutsLogPlatformContent() {
                 jQuery("#scoutsLogFloatingControls a.sl-need-scythe").html( S.getLocalizedString("panelNeedScytheShort") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-watch").html( S.getLocalizedString("panelWatchShort") + ' <span id="sl-watch-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-history").html( S.getLocalizedString("panelHistoryShort") );
+                jQuery("#scoutsLogFloatingControls a.sl-promotions").html( S.getLocalizedString("panelPromotionsShort") );
                 jQuery("#scoutsLogFloatingControls #sl-task-details").html( S.getLocalizedString("panelTaskDetailsShort") );
                 jQuery("#scoutsLogFloatingControls #sl-task-entry").html( S.getLocalizedString("panelTaskEntryShort") );
             }
@@ -919,6 +921,7 @@ function ScoutsLogPlatformContent() {
         jQuery("#scoutsLogFloatingControls a.sl-need-scythe").click(S.showScythe);
         jQuery("#scoutsLogFloatingControls a.sl-watch").click(S.showWatch);
         jQuery("#scoutsLogFloatingControls a.sl-history").click(S.showHistory);
+        jQuery("#scoutsLogFloatingControls a.sl-promotions").click(S.showPromotions);
 
         // Task details button event handler
         jQuery("#sl-task-details").click(function() {
@@ -1282,6 +1285,30 @@ function ScoutsLogPlatformContent() {
 
 
     /**
+     * Button: Display 'Promotions' Screen
+     */
+    S.showPromotions = function() {
+        if (slWindowState !== "promotions") {
+            S.getPromotions();
+        } else {
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").fadeOut();
+                jQuery("#slPanelShadow").fadeOut();
+            } else {
+                // Display window
+                jQuery("#slPanel").fadeIn();
+                jQuery("#slPanelShadow").fadeIn();
+
+                // Check if window is stale
+                if (S.isStaleWindow() === true) {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
+                }
+            }
+        }
+    };
+
+
+    /**
      * UI: Set Settings Panel Items
      *
      * This function loads settings for application within the EyeWire settings panel
@@ -1450,6 +1477,15 @@ function ScoutsLogPlatformContent() {
                 slWindowState = "";
 
                 S.getHistory();
+            });
+        });
+
+        // Set user profile links
+        jQuery(o).find(".sl-jump-user").each(function() {
+            var user = jQuery(this).attr("data-user");
+
+            jQuery(this).click(function() {
+                Profile.show({username: user});
             });
         });
     };
@@ -1632,6 +1668,26 @@ function ScoutsLogPlatformContent() {
 
         // Return results
         return {task: t, cell: c};
+    };
+
+
+    S.parseUserText = function(text) {
+        var output = "";
+
+        // Remove HTML tags and fix ampersands
+        output = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        // Parse/replace cube mentions
+        output = output.replace(/#([0-9]+)/g, '<a class="sl-jump-task" data-task="$1" title="' + S.getLocalizedString("actionJumpTaskTooltip") + '">#$1</a>');
+
+        // Parse/replace user mentions
+        output = output.replace(/@([^@\x00-\x20]+)/g, '<a class="sl-jump-user" data-user="$1" title="' + S.getLocalizedString("actionJumpUserTooltip") + '">@$1</a>');
+
+        // Convert line breaks
+        output = output.replace(/(\n|\r\n)/g, '<br />');
+
+        // Return text
+        return output;
     };
 
 
@@ -2278,12 +2334,15 @@ function ScoutsLogPlatformContent() {
             if (s.issue !== "" && s.issue !== null) {
                 st += " / " + S.getLocalizedStatusIssue(s.issue);
             }
+
+            // Parse notes text
+            var notes = S.parseUserText(s.notes);
             
             var row = '<tr>';
             row += '<td>' + edit + '</td>';
             row += '<td class="sl-' + s.status + '">' + st + '</td>';
             row += '<td>' + user + '</td>';
-            row += '<td>' + s.notes + '</td>';
+            row += '<td>' + notes + '</td>';
             row += '<td>' + img + '</td>';
             row += '<td>' + s.timestamp + '</td>';
             row += '</tr>';
@@ -3487,6 +3546,42 @@ function ScoutsLogPlatformContent() {
 
 
 /**
+ * UI: Get Promotions Screen
+ * ----------------------------------------------------------------------------
+ */
+    S.getPromotions = function() {
+        // Set window state
+        slWindowState = "promotions";
+
+        // Update window history
+        if (slWindowHistoryNavigating === false) {
+            S.pushWindowHistory({ state: slWindowState, data: {} });
+        }
+
+        slWindowHistoryNavigating = false;
+
+        // Send content request
+        S.getContent("promotions.htm", S.getPromotions_Content);
+    };
+
+    S.getPromotions_Content = function(data) {
+        // Check window state
+        if (slWindowState !== "promotions") {
+            return;
+        }
+
+        // Set panel title
+        jQuery("#slPanel h2 small").text( S.getLocalizedString("panelPromotions") );
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").fadeIn();
+        jQuery("#slPanelShadow").fadeIn();
+    };
+
+
+
+/**
  * Get Cube Details Summary
  *
  * Function retrieves the number of log entries for the cube if it is still open
@@ -3734,14 +3829,16 @@ function ScoutsLogPlatformContent() {
     };
 }
 
-// Create ScoutsLog object
+// Create ScoutsLog object and perform initialization
+if (typeof window.scoutsLog == "undefined") {
     window.scoutsLog = new ScoutsLogPlatformContent();
 
 
-// Inject initialization into page
+	// Inject initialization into page
     var s = document.createElement("script");
     var sc = document.createTextNode("jQuery(document).ready(function() { window.scoutsLog.init(); });");
 
     s.appendChild(sc);
     
     (document.documentElement).appendChild(s);
+}
