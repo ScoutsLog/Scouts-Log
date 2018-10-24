@@ -20,7 +20,7 @@
         "description": "Authorization prompt title"
     },
     "windowAuthText": {
-        "message": "<p>In order to use the Scouts's Log extension, you must authorize the application to use your EyeWire account. <span class=\"sl-admin\">Please ensure cookies and pop-ups are allowed for <em>scoutslog.org</em>.</span><p style=\"text-align:center;\"><a class=\"bigButton blueButton\" href=\"http://scoutslog.org/?do=extension-auth&lang=en\" target=\"_blank\">AUTHORIZE</a></p><p>Once the authorization process is completed, please <a class=\"sl-cell\" href=\"javascript:document.location.reload();\">re-load</a> this page.</p>",
+        "message": "<p>In order to use the Scouts's Log extension, you must authorize the application to use your EyeWire account. <span class=\"sl-admin\">Please ensure cookies and pop-ups are allowed for <em>scoutslog.org</em>.</span><p style=\"text-align:center;\"><a class=\"bigButton blueButton\" href=\"https://scoutslog.org/?do=extension-auth&lang=en\" target=\"_blank\">AUTHORIZE</a></p><p>Once the authorization process is completed, please <a class=\"sl-cell\" href=\"javascript:document.location.reload();\">re-load</a> this page.</p>",
         "description": "Text to be displayed when the user needs to authorization their account."
     },
     "windowCellSummary": {
@@ -28,6 +28,9 @@
     },
     "windowEditEntryTitle": {
         "message": "Edit Log Entry"
+    },
+    "windowEditRatingTitle": {
+        "message": "Edit Cell Difficulty Rating"
     },
     "windowErrorTitle": {
         "message": "Error"
@@ -41,14 +44,20 @@
     "windowNewEntryTitle": {
         "message": "New Log Entry"
     },
+    "windowNewRatingTitle": {
+        "message": "New Cell Difficulty Rating"
+    },
     "windowUpdateTitle": {
         "message": "Scouts' Log Update"
     },
     "windowUpdateText": {
-        "message": "<p>Your extension is out of date!</p><p>Don't panic, Google Chrome should update automatically.</p><p>If you continue to see this message, please re-install the extension.</p><p style=\"text-align:center;\"><a class=\"sl-cell\" href=\"javascript:void(0);\">Close</a></p>"
+        "message": "<p>Your Scouts' Log is using an old copy and needs to be updated!</p><p>Please clear your browser cache/temporary internet files and re-load this page; the latest version should be downloaded automatically.</p><p style=\"text-align:center;\"><a class=\"sl-cell sl-close\" href=\"javascript:void(0);\">Close</a></p>"
     },
     "windowWindowHistoryTitle": {
         "message": "Window History"
+    },
+    "windowRatingTitle": {
+        "message": "Cell Difficulty Rating"
     },
 
 
@@ -75,6 +84,15 @@
     },
     "panelCellListTooltip": {
         "message": "Display list of uncompleted cells and a summary of open tasks"
+    },
+    "panelMystic": {
+        "message": "Mystic"
+    },
+    "panelMysticShort": {
+        "message": "M"
+    },
+    "panelMysticTooltip": {
+        "message": "Display status of current Mystic cells"
     },
     "panelOpen": {
         "message": "Open Tasks"
@@ -103,6 +121,15 @@
     "panelNeedScytheTooltip": {
         "message": "Display tasks requiring scythe attention"
     },
+    "panelPromotions": {
+        "message": "Promotions"
+    },
+    "panelPromotionsShort": {
+        "message": "P"
+    },
+    "panelPromotionsTooltip": {
+        "message": "Click here for information on player promotions"
+    },
     "panelWatch": {
         "message": "Watch"
     },
@@ -120,6 +147,15 @@
     },
     "panelHistoryTooltip": {
         "message": "View details regarding your cubes submitted or scythed"
+    },
+    "panelRating": {
+        "message": "Rating"
+    },
+    "panelRatingShort": {
+        "message": "R"
+    },
+    "panelRatingTooltip": {
+        "message": "Rate the difficulty and/or reap grow upcoming cells"
     },
     "panelTaskDetails": {
         "message": "Cube Details"
@@ -158,6 +194,9 @@
     "columnImage": {
         "message": "Image"
     },
+    "columnInstructions": {
+        "message": "Instructions"
+    },
     "columnLastUpdated": {
         "message": "Last Updated (UTC)",
         "description": "Column header text when displaying the date/time for the most recent action of a task."
@@ -173,6 +212,12 @@
     "columnOpenTasks": {
         "message": "Open Tasks",
         "description": "Column header text when displaying the count of open tasks for a cell and/or status."
+    },
+    "columnRating": {
+        "message": "Rating Level"
+    },
+    "columnResults": {
+        "message": "Rating Results"
     },
     "columnScore": {
         "message": "Score",
@@ -204,6 +249,9 @@
     "labelAnnotatedImage": {
         "message": "Annotated Image"
     },
+    "labelAssignedUser": {
+        "message": "Assigned User"
+    },
     "labelBottom": {
         "message": "Bottom"
     },
@@ -214,6 +262,9 @@
     "labelCellID": {
         "message": "Cell ID",
         "description": "Noun to reference the ID number for a specific neuron within EyeWire."
+    },
+    "labelClaimed": {
+        "message": "Claimed by"
     },
     "labelConsensus": {
         "message": "Consensus",
@@ -236,6 +287,9 @@
     },
     "labelImage": {
         "message": "Image"
+    },
+    "labelInstructions": {
+        "message": "Instructions"
     },
     "labelIssue": {
         "message": "Set Issue Flag"
@@ -272,12 +326,30 @@
         "message": "pts",
         "description": "Abbreviation to use when refering to the EyeWire cube submission score value."
     },
+    "labelPlayerA": {
+        "message": "Player A"
+    },
+    "labelPlayerB": {
+        "message": "Player B"
+    },
+    "labelRatingTotal": {
+        "message": "Total"
+    },
     "labelReaped": {
         "message": "Reaped?",
         "description": "Question if user reaped a change within EyeWire for the given task action (entry in log)."
     },
     "labelRemove": {
         "message": "Remove"
+    },
+    "labelRating": {
+        "message": "Difficulty Rating"
+    },
+    "labelRatingLevel": {
+         "message": "Level"
+    },
+    "labelResults": {
+         "message": "Rating Results"
     },
     "labelRight": {
          "message": "Right"
@@ -376,6 +448,9 @@
         "message": "Click to view this cube in EyeWire",
         "description": "Text to display when hovering over a 'jump to cube' link."
     },
+    "actionJumpUserTooltip": {
+        "message": "Click to view this player's EyeWire profile"
+    },
     "actionMore": {
         "message": "more",
         "description": "Action word to indicate displaying additional entries."
@@ -383,6 +458,9 @@
     "actionMoreTooltip": {
         "message": "Display additional entries",
         "description": "Text to display when hovering over the 'more' link in the history window."
+    },
+    "actionMysticInfo": {
+        "message": "mystic info"
     },
     "actionNewEntry": {
         "message": "New Entry",
@@ -399,6 +477,18 @@
     "actionPreviewTooltip": {
         "message": "Click to view captured image",
         "description": "Text to display when hovering over the 'Preview Image' link in the 'New Entry' window."
+    },
+    "actionRateCell": {
+        "message": "Rate Cell"
+    },
+    "actionRateEdit": {
+        "message": "Edit"
+    },
+    "actionRatingEdit": {
+        "message": "Edit Cell Rating"
+    },
+    "actionRatingNew": {
+        "message": "Add New Cell Rating"
     },
     "actionRecapture": {
         "message": "Re-Capture Image",
@@ -558,6 +648,12 @@
     "statusNeedAdmin": {
         "message": "Need Admin"
     },
+    "statusNeedPlayerA": {
+        "message": "Need Player A"
+    },
+    "statusNeedPlayerB": {
+        "message": "Need Player B"
+    },
     "statusNeedScythe": {
         "message": "Need Scythe"
     },
@@ -566,6 +662,12 @@
     },
     "statusOpen": {
         "message": "Open"
+    },
+    "statusPlayerA": {
+        "message": "Player A"
+    },
+    "statusPlayerB": {
+        "message": "Player B"
     },
     "statusScytheComplete": {
         "message": "Scythe Complete"
@@ -600,7 +702,7 @@
         "message": "Display History"
     },
     "settingsTitle": {
-        "message": "Scouts' Log Settings"
+        "message": "Scouts' Log"
     },
     
     

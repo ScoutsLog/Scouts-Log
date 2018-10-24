@@ -211,7 +211,7 @@ body {
 </div>
 </div>
 
-<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script>
 /*
 Copyright (C) 2011 by Michael Bleigh and Intridea, Inc.
@@ -832,10 +832,10 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
         cx.drawImage(cimg, 0, 0);
         cx.drawImage(cvA, 0, 0, cvA.width, cvA.height, 0, 0, cvA.width, cvA.height);
 
-        // Save annotation data
         var im = cv.toDataURL();
-        var sk = JSON.stringify(jQuery("#annotations-sketch").sketch().actions);
-        
+        var sk = JSON.stringify(jQuery('#annotations-sketch').sketch().actions);
+
+        // Save annotation data
         jQuery(window.opener.document.getElementById("sl-action-image-annotated")).val(im);
         jQuery(window.opener.document.getElementById("sl-action-image-sketch")).val(sk);
 

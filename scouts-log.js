@@ -5,7 +5,7 @@ function ScoutsLogPlatformContent() {
 
     var slLocale = "en";
     var slLocalizedStrings = {};
-    var slVersion = "357d2b61-6f9b-4c9e-9229-2a6808a66470";
+    var slVersion = "d85abad9-37e5-4ee7-bb23-f1e2244fcd0d";
 
     var slImages = {};
 
@@ -28,7 +28,9 @@ function ScoutsLogPlatformContent() {
     var slPanelPosition = {};
 
     var slStatsInterval = 20000;
+    var slStatsTimer = 0;
     var slTaskInterval = 15000;
+
 
     var slHistoryType = "";
     var slHistoryCell = 0;
@@ -36,10 +38,10 @@ function ScoutsLogPlatformContent() {
     var slHistoryPosition = 0;
     var slHistoryDisplay = 4;
 
-    var slScoutsLogURIbase = "http://scoutslog.org/app/";
-    var slScoutsLogAPIbase = "http://scoutslog.org/1.1/";
+    var slScoutsLogURIbase = "https://scoutslog.objects-us-west-1.dream.io/app/";
+    var slScoutsLogAPIbase = "https://scoutslog.org/1.1/";
 
-    var slEyeWireURIbase = "http://eyewire.org/1.0/";
+    var slEyeWireURIbase = "https://eyewire.org/1.0/";
 
 
 
@@ -222,17 +224,16 @@ function ScoutsLogPlatformContent() {
      * Sends a GET request and retrieves the response as text.
      * The callback is then fired with the response text.
      */
-    S.getRequest = function(url, callback) {
+    S.getResource = function(url, callback) {
         // Send GET request
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
-        xhr.withCredentials = true;
         xhr.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 callback(this.responseText);
             }
             if (this.readyState == 4 && this.status != 200) {
-                S.platformError({source: "getRequest()", url: url, status: this.status});
+                S.platformError({source: "getResource()", url: url, status: this.status});
             }
         };
 
@@ -413,7 +414,9 @@ function ScoutsLogPlatformContent() {
     S.init_locale = function(lang) {
         var url = slScoutsLogURIbase + "_locales/" + lang + "/messages.json";
 
-        S.getJSON(url, function(data) {
+        S.getResource(url, function(data) {
+            data = JSON.parse(data);
+
             // Save localization messages
             for (var k in data) {
                 slLocalizedStrings[k] = data[k].message;
@@ -497,6 +500,53 @@ function ScoutsLogPlatformContent() {
     };
 
 
+    /**
+     * Shutdown Scouts' Log Application
+     * 
+     * This method is used to turn off the application
+     */
+    this.shutdown = function() {
+        // Stop stats refresh
+        clearInterval(slStatsTimer);
+
+        // Remove CSS and JS elements
+        jQuery("html head link").each(function() {
+            try {
+                var h = jQuery(this).attr("href");
+
+                if (h.indexOf("scoutslog.org") > -1) {
+                    jQuery(this).remove();
+                }
+            } catch (nohref) { }
+        });
+
+        jQuery("html head script").each(function() {
+            try {
+                var h = jQuery(this).attr("src");
+
+                if (h.indexOf("scoutslog.org") > -1) {
+                    jQuery(this).remove();
+                }
+            } catch (nosrc) { }
+        });
+
+        // Remove event listeners
+        window.removeEventListener(InspectorPanel.Events.ModelFetched, S.modelFetchedHandler);
+        window.removeEventListener("resize", S.windowResizeHandler);
+        window.removeEventListener("keyup", S.windowKeyupHandler);
+        document.removeEventListener("cube-submission-data", S.cubeSubmissionHandler);
+
+        // Remove HTML elements
+        jQuery("#scoutsLogFloatingControls").remove();
+        jQuery("#slPanel").remove();
+        jQuery("#slPanelShadow").remove();
+        jQuery("#scoutsLogButton").remove();
+        jQuery("#settingsMenu .sl-setting-group").remove();
+
+        // Clear Scouts' Log object
+        setTimeout(function() { window.scoutsLog = null; }, 10);
+    };
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -516,137 +566,20 @@ function ScoutsLogPlatformContent() {
      */
     S.init_ui = function() {
         // Hook game control modes
-        jQuery(window).on(InspectorPanel.Events.ModelFetched, function(d) {
-            var ea = jQuery("#gameControls #editActions").length;
-            var ci = jQuery("#gameControls #cubeInspector").length;
-            var ra = jQuery("#gameControls #realActions").length;
-            var td = false;
-            
-            if (ea > 0 || ci > 0) {
-                jQuery("#sl-task-details").fadeIn();
-                jQuery("#sl-task-entry").fadeIn();
-
-                td = true;
-            } else if (ra > 0) {
-                jQuery("#sl-task-details").fadeIn();
-                jQuery("#sl-task-entry").fadeOut();
-
-                td = true;
-            }
-
-            if (td === true) {
-                S.getCubeDetailsSummary();
-            }
-        });
+        jQuery(window).on(InspectorPanel.Events.ModelFetched, S.modelFetchedHandler);
         
         // Hook window resize event for main window 
-        jQuery(window).resize(function() {                    
-            if (jQuery("#slPanel").is(":visible")) {
-                var h = jQuery("#slPanel").height() - 71;
-
-                jQuery("#slPanel div.slPanelContent").height(h);
-            }
-
-            var t = parseInt(jQuery("#scoutsLogFloatingControls").css("top"), 10);
-            var l = parseInt(jQuery("#scoutsLogFloatingControls").css("left"), 10);
-
-            if (t > (jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height())) {
-                t = jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height();
-            }
-
-            if (l > (jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width())) {
-                l = jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width();
-            }
-
-            if (t < -58) {
-                t = -58;
-            }
-
-            if (l < 0) {
-                l = 0;
-            }
-
-            slPanelPosition = {top: t, left: l};
-
-            jQuery("#scoutsLogFloatingControls").css("top", t).css("left", l);
-
-            S.setPreference("position", slPanelPosition);
-        });
+        jQuery(window).resize(S.windowResizeHandler);
         
         // Hook document keypress
-        jQuery(window).keyup(function(k) {
-            if (k.keyCode === Keycodes.codes.esc) {
-                if (jQuery("#slPanel").is(":visible")) {
-                    jQuery("#slPanel").fadeOut();
-                    jQuery("#slPanelShadow").fadeOut();
-                }
-                
-                if (jQuery("#sl-task-details").is(":visible")) {
-                    jQuery("#sl-task-details").fadeOut();
-                    jQuery("#sl-task-entry").fadeOut();
-                    jQuery("#sl-cube-badge").fadeOut();
-                }
-                
-                S.flagEditActions = false;
-                S.flagRealActions = false;
-            } else if (k.keyCode === Keycodes.codes.l && (k.metaKey || k.altKey)) {
-                // Toggle scouts" log panel display
+        jQuery(window).keyup(S.windowKeyupHandler);
 
-                if (slWindowState !== "") {
-                    if (jQuery("#slPanel").is(":visible")) {
-                        jQuery("#slPanel").fadeOut();
-                        jQuery("#slPanelShadow").fadeOut();
-                        jQuery("#scoutsLogFloatingControls").fadeOut();
-                    } else {
-                        if (slWindowState == "history" && slHistoryPosition == slHistoryDisplay) {
-                            slWindowState = "";
+        // Hook cube submission data event
+        jQuery(document).on("cube-submission-data", S.cubeSubmissionHandler);
 
-                            S.getHistory();
-                        }
+        // Hook cell change event
+        jQuery(window).on("cell-info-ready", S.cellInfoHandler);
 
-                        // Display window
-                        jQuery("#slPanel").fadeIn();
-                        jQuery("#slPanelShadow").fadeIn();
-                        jQuery("#scoutsLogFloatingControls").fadeIn();
-
-                        // Check if window is stale
-                        if (S.isStaleWindow() === true) {
-                            S.navigateWindowHistory(slWindowHistoryPosition);
-                        }
-                    }
-                } else {
-                    if (jQuery("#scoutsLogFloatingControls").is(":visible")) {
-                        jQuery("#scoutsLogFloatingControls").fadeOut();
-                    } else {
-                        jQuery("#scoutsLogFloatingControls").fadeIn();
-                    }
-                }
-            }
-        });
-
-
-        // Create listener for cube submission data
-        jQuery(document).on("cube-submission-data", function(e, data) {
-            // Get current cube/task
-            var target = S.getTargetCube();
-
-            // Update data object
-            if (typeof target.task !== "undefined" && typeof target.cell !== "undefined") {
-                data.cell = target.cell;
-                data.task = target.task;
-
-                var dt = new Date();
-                data.timestamp = dt.toLocaleString();
-
-                // Send submission data to server
-                S.postRequest(
-                    slScoutsLogAPIbase + "task/" + encodeURIComponent(target.task) + "/submit",
-                    "data=" + encodeURIComponent(JSON.stringify(data))
-                );
-            }
-        });
-        
-        
         // Load resources
         S.loadImages();
 
@@ -655,6 +588,165 @@ function ScoutsLogPlatformContent() {
         S.setFloatingPanel();
         S.setGameTools();
         S.setSettingsPanel();
+    };
+
+    S.modelFetchedHandler = function(d) {
+        var ea = jQuery("#gameControls #editActions").length;
+        var ci = jQuery("#gameControls #cubeInspector").length;
+        var ra = jQuery("#gameControls #realActions").length;
+        var rv = jQuery("#gameControls #reviewModeToggle").length;
+        var td = false;
+        var ins = false;
+        var rev = false;
+        
+        var tsk = window.tomni.getTarget();
+        
+        if (tsk) {
+            var t = false;
+
+            // Pass 1: attempt to get data from current target object
+            if (Array.isArray(tsk)) {
+                try {
+                    t = tsk[0].id;
+                } catch (notask) { }
+            } else {
+                try {
+                    t = tsk.id;
+                } catch (notask2) { }
+            }
+        	
+            if (t) {
+            	ins = window.tomni.task.inspect || false;
+            	rev = window.tomni.task.review || false;
+            }
+        }
+            
+        if (ea > 0 || ci > 0 || rv > 0 || ins || rev) {
+            jQuery("#sl-task-details").fadeIn();
+            jQuery("#sl-task-entry").fadeIn();
+
+            td = true;
+        } else if (ra > 0) {
+            jQuery("#sl-task-details").fadeIn();
+            jQuery("#sl-task-entry").fadeOut();
+
+            td = true;
+        }
+
+        if (td === true) {
+            S.getCubeDetailsSummary();
+        }
+    };
+
+    S.windowResizeHandler = function() {                    
+        if (jQuery("#slPanel").is(":visible")) {
+            var h = jQuery("#slPanel").height() - 71;
+
+            jQuery("#slPanel div.slPanelContent").height(h);
+        }
+
+        var t = parseInt(jQuery("#scoutsLogFloatingControls").css("top"), 10);
+        var l = parseInt(jQuery("#scoutsLogFloatingControls").css("left"), 10);
+
+        if (t > (jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height())) {
+            t = jQuery(".gameBoard").height() - jQuery("#scoutsLogFloatingControls").height();
+        }
+
+        if (l > (jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width())) {
+            l = jQuery(".gameBoard").width() - jQuery("#scoutsLogFloatingControls").width();
+        }
+
+        if (t < -58) {
+            t = -58;
+        }
+
+        if (l < 0) {
+            l = 0;
+        }
+
+        slPanelPosition = {top: t, left: l};
+
+        jQuery("#scoutsLogFloatingControls").css("top", t).css("left", l);
+
+        S.setPreference("position", slPanelPosition);
+    };
+
+    S.windowKeyupHandler = function(k) {
+        if (k.keyCode === Keycodes.codes.esc) {
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").fadeOut();
+                jQuery("#slPanelShadow").fadeOut();
+            }
+                
+            if (jQuery("#sl-task-details").is(":visible")) {
+                jQuery("#sl-task-details").fadeOut();
+                jQuery("#sl-task-entry").fadeOut();
+                jQuery("#sl-cube-badge").fadeOut();
+            }
+                
+            S.flagEditActions = false;
+            S.flagRealActions = false;
+        } else if (k.keyCode === Keycodes.codes.l && (k.metaKey || k.altKey)) {
+            // Toggle scouts' log panel display
+
+            if (slWindowState !== "") {
+                if (jQuery("#slPanel").is(":visible")) {
+                    jQuery("#slPanel").fadeOut();
+                    jQuery("#slPanelShadow").fadeOut();
+                    jQuery("#scoutsLogFloatingControls").fadeOut();
+                } else {
+                    if (slWindowState == "history" && slHistoryPosition == slHistoryDisplay) {
+                        slWindowState = "";
+
+                        S.getHistory();
+                    }
+
+                    // Display window
+                    jQuery("#slPanel").fadeIn();
+                    jQuery("#slPanelShadow").fadeIn();
+                    jQuery("#scoutsLogFloatingControls").fadeIn();
+
+                    // Check if window is stale
+                    if (S.isStaleWindow() === true) {
+                        S.navigateWindowHistory(slWindowHistoryPosition);
+                    }
+                }
+            } else {
+                if (jQuery("#scoutsLogFloatingControls").is(":visible")) {
+                    jQuery("#scoutsLogFloatingControls").fadeOut();
+                } else {
+                    jQuery("#scoutsLogFloatingControls").fadeIn();
+                }
+            }
+        }
+    };
+
+    S.cubeSubmissionHandler = function(e, data) {
+        // Get current cube/task
+        var target = S.getTargetCube();
+
+        // Update data object
+        if (typeof target.task !== "undefined" && typeof target.cell !== "undefined") {
+            data.cell = target.cell;
+            data.task = target.task;
+
+            var dt = new Date();
+            data.timestamp = dt.toLocaleString();
+
+            // Send submission data to server
+            S.postRequest(
+                slScoutsLogAPIbase + "task/" + encodeURIComponent(target.task) + "/submit",
+                "data=" + encodeURIComponent(JSON.stringify(data))
+            );
+        }
+    };
+
+    S.cellInfoHandler = function() {
+        // Get current cell
+        var c = window.tomni.getCurrentCell();
+
+        // Update cell actions
+        S.setMysticActions(c.info.id);
     };
 
 
@@ -669,6 +761,7 @@ function ScoutsLogPlatformContent() {
             close: slScoutsLogURIbase + "images/close.png",
             delete: slScoutsLogURIbase + "images/delete.png",
             error: slScoutsLogURIbase + "images/error.png",
+            exclamation: slScoutsLogURIbase + "images/exclamation.png",
             history: slScoutsLogURIbase + "images/history.png",
             historyDisabled: slScoutsLogURIbase + "images/history-disabled.png",
             lock: slScoutsLogURIbase + "images/lock.png",
@@ -875,6 +968,11 @@ function ScoutsLogPlatformContent() {
             }
         });
 
+        // Check for mystic role / display
+        if (slUserRoles.indexOf("mystic") == -1 && slUserRoles.indexOf("admin") == -1) {
+            jQuery("#scoutsLogFloatingControls a.sl-mystic").remove();
+        }
+
         // Event Handler:  Icon Double Click
         jQuery("#scoutsLogFloatingControls img").dblclick(function() {
             // Toggle floating panel display
@@ -883,6 +981,11 @@ function ScoutsLogPlatformContent() {
                 jQuery("#scoutsLogFloatingControls").removeClass("sl-vertical");
         
                 jQuery("#scoutsLogFloatingControls a.sl-cell-list").html( S.getLocalizedString("panelCellList") );
+
+                if (slUserRoles.indexOf("mystic") > -1 || slUserRoles.indexOf("admin") > -1) {
+                    jQuery("#scoutsLogFloatingControls a.sl-mystic").html( S.getLocalizedString("panelMystic") + ' <span id="sl-mystic-badge" class="sl-badge">0</span>');
+                }
+
                 jQuery("#scoutsLogFloatingControls a.sl-open").html( S.getLocalizedString("panelOpen") + ' <span id="sl-open-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-need-admin").html( S.getLocalizedString("panelNeedAdmin") + ' <span id="sl-need-admin-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-need-scythe").html( S.getLocalizedString("panelNeedScythe") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span>');
@@ -895,6 +998,11 @@ function ScoutsLogPlatformContent() {
                 jQuery("#scoutsLogFloatingControls").addClass("sl-vertical");
 
                 jQuery("#scoutsLogFloatingControls a.sl-cell-list").html( S.getLocalizedString("panelCellListShort") );
+
+                if (slUserRoles.indexOf("mystic") > -1 || slUserRoles.indexOf("admin") > -1) {
+                    jQuery("#scoutsLogFloatingControls a.sl-mystic").html( S.getLocalizedString("panelMysticShort") + ' <span id="sl-mystic-badge" class="sl-badge">0</span>' );
+                }
+
                 jQuery("#scoutsLogFloatingControls a.sl-open").html( S.getLocalizedString("panelOpenShort") + ' <span id="sl-open-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-need-admin").html( S.getLocalizedString("panelNeedAdminShort") + ' <span id="sl-need-admin-badge" class="sl-badge">0</span>');
                 jQuery("#scoutsLogFloatingControls a.sl-need-scythe").html( S.getLocalizedString("panelNeedScytheShort") + ' <span id="sl-need-scythe-badge" class="sl-badge">0</span>');
@@ -916,12 +1024,13 @@ function ScoutsLogPlatformContent() {
         
         // Add individual button event handlers
         jQuery("#scoutsLogFloatingControls a.sl-cell-list").click(S.showCells);
+        jQuery("#scoutsLogFloatingControls a.sl-mystic").click(S.showMystic);
         jQuery("#scoutsLogFloatingControls a.sl-open").click(S.showOpen);
         jQuery("#scoutsLogFloatingControls a.sl-need-admin").click(S.showAdmin);
         jQuery("#scoutsLogFloatingControls a.sl-need-scythe").click(S.showScythe);
         jQuery("#scoutsLogFloatingControls a.sl-watch").click(S.showWatch);
         jQuery("#scoutsLogFloatingControls a.sl-history").click(S.showHistory);
-        jQuery("#scoutsLogFloatingControls a.sl-promotions").click(S.showPromotions);
+        //jQuery("#scoutsLogFloatingControls a.sl-promotions").click(S.showPromotions);
 
         // Task details button event handler
         jQuery("#sl-task-details").click(function() {
@@ -957,7 +1066,7 @@ function ScoutsLogPlatformContent() {
         });
 
         // Set stats refresh function
-        setInterval(function() {
+        slStatsTimer = setInterval(function() {
             if (slWindowState !== "error") {
                 S.doPanelStats();
             }
@@ -1026,8 +1135,33 @@ function ScoutsLogPlatformContent() {
      * Update Floating Panel Stats Values
      */
     S.doPanelStats = function() {
+        // Prepare current data object
+        var data = {
+            cell: 0,
+            task: 0,
+            mode: (window.tomni.gameMode) ? 1 : 0 
+        };
+
+        // Get current cell
+        var cell = window.tomni.getCurrentCell();
+
+        if (typeof cell !== "undefined") {
+            data.cell = cell.info.id;
+        }
+
+        // Get current cube/task
+        var cube = S.getTargetCube();
+
+        if (typeof cube.task !== "undefined" && typeof cube.cell !== "undefined") {
+            data.task = cube.task;
+        }
+
+        // Prepare URL
+        var url = slScoutsLogAPIbase + "stats";
+        url += "?data=" + encodeURIComponent( JSON.stringify(data) );
+
         S.getJSON(
-            slScoutsLogAPIbase + "stats/header",
+            url,
             S.doPanelStatsCallback
         );
     };
@@ -1080,7 +1214,7 @@ function ScoutsLogPlatformContent() {
         }
 
         if (o > 0) {
-	        c = parseInt(jQuery("#sl-open-badge").text(), 10);
+            c = parseInt(jQuery("#sl-open-badge").text(), 10);
 
             if (c != o) {
                 jQuery("#sl-open-badge").fadeIn().text(o);
@@ -1089,7 +1223,37 @@ function ScoutsLogPlatformContent() {
         } else {
             jQuery("#sl-open-badge").fadeOut().text(0);
         }
-	
+
+        if (slUserRoles.indexOf("mystic") > -1 || slUserRoles.indexOf("admin") > -1) {
+            var m = D.mystic;
+
+            if (m.header > 0) {
+                c = parseInt(jQuery("#sl-mystic-badge").text(), 10);
+
+                if (c != m.header) {
+                    jQuery("#sl-mystic-badge").fadeIn().text(m.header);
+                    jQuery("#sl-mystic-badge").fadeOut(300).fadeIn(600).fadeOut(300).fadeIn(600).fadeOut(300).fadeIn(600);
+                }
+            } else {
+                jQuery("#sl-mystic-badge").fadeOut().text(0);
+            }
+
+            if (typeof m.cell !== "undefined") {
+                // Get current cell
+                var cell = window.tomni.getCurrentCell();
+
+                if (typeof cell !== "undefined") {
+                    if (m.cell.id == cell.info.id) {
+                        S.setMysticActions(cell.info.id);
+                    }
+                }
+
+                // See if cell is visible within the SL panel
+                if (slWindowState == "mystic-entries-" + m.cell.id) {
+                    S.getMysticCellEntries_Data(m.cell);
+                }
+            }
+        }
     };
 
 
@@ -1137,6 +1301,30 @@ function ScoutsLogPlatformContent() {
     S.showCells = function() {
         if (slWindowState !== "cell") {
             S.getCellList();
+        } else {
+            if (jQuery("#slPanel").is(":visible")) {
+                jQuery("#slPanel").fadeOut();
+                jQuery("#slPanelShadow").fadeOut();
+            } else {
+                // Display window
+                jQuery("#slPanel").fadeIn();
+                jQuery("#slPanelShadow").fadeIn();
+
+                // Check if window is stale
+                if (S.isStaleWindow() === true) {
+                    S.navigateWindowHistory(slWindowHistoryPosition);
+                }
+            }
+        }
+    };
+
+
+    /**
+     * Button: Display Mystic Cells
+     */
+    S.showMystic = function() {
+        if (slWindowState !== "mystic") {
+            S.getMysticSummary("need-player-a");
         } else {
             if (jQuery("#slPanel").is(":visible")) {
                 jQuery("#slPanel").fadeOut();
@@ -1446,6 +1634,53 @@ function ScoutsLogPlatformContent() {
                 }
             });
         });
+
+        jQuery(o).find(".sl-jump-cell").each(function() {
+            var cell = jQuery(this).attr("data-cell");
+
+            var p = jQuery(this);
+
+            p.attr( "title", S.getLocalizedString("actionJumpTaskTooltip") );
+            
+            p.click(function() {
+                var v = jQuery("#slPanel").is(":visible");
+
+                if (v) {
+                    jQuery("#slPanel").fadeOut();
+                    jQuery("#slPanelShadow").fadeOut();
+                }
+
+                if (window.tomni.gameMode) {
+                    var o = new Attention.Confirmation({
+                        situation: "information calm",
+                        title: _("Jump to Cell #{0}?", cell),
+                        message: _("You will lose your progress on this cube."),
+                        ok: {
+                            label: _("Change Cell"),
+                            klass: "flat"
+                        },
+                        cancel: {
+                            label: _("Stay Here"),
+                            klass: "flat"
+                        }
+                    });
+                    o.on("ok", function() {
+                        window.tomni.leave();
+                        SFX.play("change_cell");
+                        window.tomni.setCell({id:cell});
+                    }).on("cancel", function() {
+                        if (v) {
+                            jQuery("#slPanel").fadeIn();
+                            jQuery("#slPanelShadow").fadeIn();
+                        }
+                    }).show();
+                } else {
+                    SFX.play("change_cell");
+                    window.tomni.setCell({id:cell});
+                }
+            });
+
+        });
         
         jQuery(o).find("a.sl-task").each(function() {
             var t = jQuery(this).attr("data-task");
@@ -1464,6 +1699,16 @@ function ScoutsLogPlatformContent() {
             
             jQuery(this).click(function() {    
                 S.getCellEntries(c, "");
+            });
+        });
+
+        jQuery(o).find("a.sl-mystic-cell").each(function() {
+            var c = jQuery(this).attr("data-cell");
+            
+            jQuery(this).attr( "title", S.getLocalizedString("actionMysticCellTooltip") );
+            
+            jQuery(this).click(function() {    
+                S.getMysticCellEntries(c);
             });
         });
 
@@ -1534,6 +1779,14 @@ function ScoutsLogPlatformContent() {
                 result = S.getLocalizedString("statusNeedAdmin");
                 
                 break;
+            case "need-player-a":
+                result = S.getLocalizedString("statusNeedPlayerA");
+
+                break;
+            case "need-player-b":
+                result = S.getLocalizedString("statusNeedPlayerB");
+
+                break;
             case "need-scythe":
                 result = S.getLocalizedString("statusNeedScythe");
                 
@@ -1544,6 +1797,14 @@ function ScoutsLogPlatformContent() {
                 break;
             case "open":
                 result = S.getLocalizedString("statusOpen");
+
+                break;
+            case "player-a":
+                result = S.getLocalizedString("statusPlayerA");
+
+                break;
+            case "player-b":
+                result = S.getLocalizedString("statusPlayerB");
 
                 break;
             case "scythe-complete":
@@ -1736,7 +1997,7 @@ function ScoutsLogPlatformContent() {
 
         // Send data request
         S.getJSON(
-            slScoutsLogAPIbase + "stats",
+            slScoutsLogAPIbase + "cell/list",
             S.getCellList_Data
         );
     };
@@ -1752,9 +2013,9 @@ function ScoutsLogPlatformContent() {
 
         var c, s, cn, row;
 
-        if (data.cell_summary) {
-            for (c in data.cell_summary) {
-                s = data.cell_summary[c];
+        if (data) {
+            for (c in data) {
+                s = data[c];
 
                 if (slLocale == "en") {
                     cn = s.cellName;
@@ -1769,6 +2030,739 @@ function ScoutsLogPlatformContent() {
 
                 jQuery("#sl-main-table table tbody").append(row);
             }
+        }
+
+        S.setLinks("#slPanel");
+    };
+
+
+/**
+ * UI: Mystic Summary
+ * ----------------------------------------------------------------------------
+ */
+    S.getMysticSummary = function(s) {
+        // Get window subtitle
+        var status = S.getLocalizedStatus(s);
+        
+        if (status !== "") {
+            // Update window state
+            slWindowState = "mystic-" + s;
+
+            // Update window history
+            if (slWindowHistoryNavigating === false) {
+                S.pushWindowHistory({ state: slWindowState, data: {title: S.getLocalizedString("panelMystic") + ": " + status} });
+            }
+
+            slWindowHistoryNavigating = false;
+
+            // Get mystic status counts
+            S.getJSON(slScoutsLogAPIbase + "mystic/summary/all", function(d1) {
+                var data = {};
+                data.data = d1;
+
+                // Send content request
+                S.getContent("mystic.htm", function(d2) {
+                    data.content = d2;
+
+                    // Load tab content with summary data
+                    S.getMysticSummary_Content(data);
+                });
+            });
+        }
+    };
+
+    S.getMysticSummary_Content = function(mdata) {
+        // Get screen data
+        var summary = mdata.data.summary;
+        var data = mdata.content;
+
+        // Check window state
+        var sp = slWindowState.split("-"),
+            url,
+            st;
+
+        if (sp[0] !== "mystic") {
+            return;
+        }
+
+        sp.shift();
+
+        st = sp.join("-");
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").fadeIn();
+        jQuery("#slPanelShadow").fadeIn();
+
+        // Set active button
+        jQuery(".slOptions ul.tabs li").removeClass("active");
+        jQuery(".slOptions ul.tabs li a[data-status=" + st + "]").parent().addClass("active");
+
+        // Set button handler
+        jQuery(".slOptions ul.tabs li a").click(function() {
+            var at = jQuery(this).attr("data-action");
+            var st2 = jQuery(this).attr("data-status");
+
+            switch (at) {
+                case "mystic-summary":
+                    S.getMysticSummary(st2);
+
+                    break;
+                case "mystic-tasks":
+                    S.getMysticStatusSummary("open", "");
+
+                    break;
+            }
+        });
+
+        // Update badge values
+        var npa = summary["need-player-a"];
+        var npb = summary["need-player-b"];
+        var na = summary["need-admin"];
+        var pa = summary["player-a"];
+        var pb = summary["player-b"];
+        var ot = summary["open-tasks"];
+        var c;
+
+        if (npa > 0) {
+            c = parseInt(jQuery("#sl-mystic-need-player-a-badge").text(), 10);
+
+            if (c != npa) {
+                jQuery("#sl-mystic-need-player-a-badge").fadeIn().text(npa);
+            }
+        } else {
+            jQuery("#sl-mystic-need-player-a-badge").fadeOut().text(0);
+        }
+
+        if (npb > 0) {
+            c = parseInt(jQuery("#sl-mystic-need-player-b-badge").text(), 10);
+
+            if (c != npb) {
+                jQuery("#sl-mystic-need-player-b-badge").fadeIn().text(npb);
+            }
+        } else {
+            jQuery("#sl-mystic-need-player-b-badge").fadeOut().text(0);
+        }
+
+        if (na > 0) {
+            c = parseInt(jQuery("#sl-mystic-need-admin-badge").fadeIn().text(), 10);
+
+            if (c != na) {
+                jQuery("#sl-mystic-need-admin-badge").fadeIn().text(na);
+            }
+        } else {
+            jQuery("#sl-mystic-need-admin-badge").fadeOut().text(0);
+        }
+
+        if (pa > 0) {
+            c = parseInt(jQuery("#sl-mystic-player-a-badge").text(), 10);
+
+            if (c != pa) {
+                jQuery("#sl-mystic-player-a-badge").fadeIn().text(pa);
+            }
+        } else {
+            jQuery("#sl-mystic-player-a-badge").fadeOut().text(0);
+        }
+
+        if (pb > 0) {
+            c = parseInt(jQuery("#sl-mystic-player-b-badge").text(), 10);
+
+            if (c != pb) {
+                jQuery("#sl-mystic-player-b-badge").fadeIn().text(pb);
+            }
+        } else {
+            jQuery("#sl-mystic-player-b-badge").fadeOut().text(0);
+        }
+
+        if (ot > 0) {
+            c = parseInt(jQuery("#sl-mystic-open-tasks-badge").text(), 10);
+
+            if (c != ot) {
+                jQuery("#sl-mystic-open-tasks-badge").fadeIn().text(ot);
+            }
+        } else {
+            jQuery("#sl-mystic-open-tasks-badge").fadeOut().text(0);
+        }
+
+            
+        // Set window title
+        var status = S.getLocalizedStatus(st);
+        jQuery("#slPanel h2 small").html(S.getLocalizedString("panelMystic") + ": " + status);
+
+        // Generate data URL
+        url = slScoutsLogAPIbase + "mystic/summary/";
+        url += encodeURIComponent(st);
+
+        // Send data request through plugin
+        S.getJSON(
+            url,
+            S.getMysticSummary_Data
+        );
+    };
+
+    S.getMysticSummary_Data = function(data) {
+        // Check window state
+        var sp = slWindowState.split("-"),
+            c, cn, i,
+            st, row, ent;
+
+        if (sp[0] !== "mystic") {
+            return;
+        }
+
+        jQuery("#sl-main-table table tbody").empty();
+
+        for (i in data.cells) {
+            c = data.cells[i];
+
+            // Determine cell name
+            if (slLocale == "en") {
+                cn = c.cellName;
+            } else {
+                cn = c["cellName" + slLocale.toUpperCase()];
+            }
+
+            // Get status text
+            st = S.getLocalizedStatus(c.status);
+            
+            // Check for need admin indicator
+            ent = "";
+            
+            if (c.needAdmin == 1) {
+            	ent = ' <img src="' + slImages.exclamation + '" height="16" width="16" border="0" alt="' + S.getLocalizedStatus('need-admin') + '" />';
+            }
+            
+            row = '<tr>';
+            row += '<td><a class="sl-mystic-cell" data-cell="' + c.cell + '">' + cn + ' (' + c.cell + ')</a> | <a class="sl-jump-cell" data-cell="' + c.cell + '">' + S.getLocalizedString("actionJumpTask") + '</a></td>';
+            row += '<td class="sl-' + c.status + '">' + st + ent + '</td>';
+            row += '<td>' + c.userA + '</td>';
+            row += '<td>' + c.userB + '</td>';
+            row += '<td>' + c.lastUpdated + '</td>';
+            row += '</tr>';
+
+            jQuery("#sl-main-table table tbody").append(row);
+        }
+
+        S.setLinks("#slPanel");
+    };
+
+
+/**
+ * UI: Set Mystic Cell Actions
+ * ----------------------------------------------------------------------------
+ */
+    S.setMysticActions = function(c) {
+        if (c) {
+            // Reset UI
+            jQuery("#mysticControls .mysticButton").remove();
+            jQuery("#overviewCell .mystic-bar").remove();
+            jQuery("#overviewCell").css("min-height", "175px");
+
+            // Detect current cell data
+            var cd = window.tomni.getCurrentCell();
+
+            // Check if this is a mystic cell
+            if (cd.info.id != c || cd.info.dataset_id != 11) {
+                return;
+            }
+
+            var u = slScoutsLogAPIbase + "mystic/cell/" + encodeURIComponent(c);
+
+            S.getJSON(u, function(d) {
+                // Get status text
+                var status = S.getLocalizedStatus(d.status);
+
+                switch (d.status) {
+                    case "need-player-a":
+                        if (jQuery("#cellMysticClaimA").length == 0) {
+                            jQuery("#mysticControls").append('<button id="cellMysticClaimA" class="flat blueButton mysticButton control onscreen" data-mystic-status="player-a">Claim (A)</button>');
+                        }
+
+                        break;
+                    case "need-player-b":
+                        if (jQuery("#cellMysticClaimB").length == 0) {
+                            jQuery("#mysticControls").append('<button id="cellMysticClaimB" class="flat blueButton mysticButton control onscreen" data-mystic-status="player-b">Claim (B)</button>');
+                        }
+
+                        break;
+                    case "need-admin":
+                        if (slUserRoles.indexOf("admin") > -1) {
+                            if (jQuery("#cellMysticComplete").length == 0) {
+                                jQuery("#mysticControls").append('<button id="cellMysticComplete" class="flat blueButton mysticButton control onscreen" data-mystic-status="complete">Complete</button>');
+                            }
+                        }
+
+                        break;
+                    case "player-a":
+                        if (slUser == d.userA || slUserRoles.indexOf("admin") > -1) {
+                            if (jQuery("#cellMysticDoneA").length == 0) {
+                                jQuery("#mysticControls").append('<button id="cellMysticDoneA" class="flat blueButton mysticButton control onscreen" data-mystic-status="need-player-b">Done / Player B</button>');
+                                jQuery("#mysticControls").append('<button id="cellMysticReleaseA" class="flat blueButton mysticButton control onscreen" data-mystic-status="need-player-a">Release</button>');
+                            }
+                        }
+
+                        status = d.userA + ' (A)';
+
+                        break;
+                    case "player-b":
+                        if (slUser == d.userB || slUserRoles.indexOf("admin") > -1) {
+                            if (jQuery("#cellMysticDoneB").length == 0) {
+                                jQuery("#mysticControls").append('<button id="cellMysticDoneB" class="flat blueButton mysticButton control onscreen" data-mystic-status="need-admin">Done / Need Admin</button>');
+                                jQuery("#mysticControls").append('<button id="cellMysticReleaseB" class="flat blueButton mysticButton control onscreen" data-mystic-status="need-player-b">Release</button>');
+                            }
+                        }
+
+                        status = d.userB + ' (B)';
+
+                        break;
+                }
+
+                if (jQuery("#overviewCell .mystic-bar").length == 0) {
+                    jQuery('<div class="mystic-bar"><span name="status">' + status + '</span><button class="minimalButton smallButton mysticButton">' + S.getLocalizedString("actionMysticInfo") + '</button></div>').insertAfter("#overviewCell div.cellProgressBar");
+
+                    jQuery("#mysticControls .mysticButton").click(S.updateMysticStatus);
+
+                    jQuery("#overviewCell .mystic-bar .mysticButton").click(S.showMysticActions);
+
+                    jQuery("#overviewCell").css("min-height", "200px");
+
+                    jQuery("#overviewCell .mystic-bar").mouseover(function() { jQuery("#overviewCell").addClass("expanded"); });
+                }
+            });
+        }
+    };
+
+    S.showMysticActions = function() {
+        // Detect current cell data
+        var cd = window.tomni.getCurrentCell();
+
+        // Check if this is a mystic cell
+        if (cd.info.dataset_id == 11) {
+            S.getMysticCellEntries(cd.info.id);
+        }
+    }
+
+    S.updateMysticStatus = function() {
+        // Detect current cell data
+        var cd = window.tomni.getCurrentCell();
+
+        // Check if this is a mystic cell
+        if (cd.info.dataset_id == 11) {
+            // Get new status value
+            var status = jQuery(this).attr("data-mystic-status");
+
+            // Update window status
+            slWindowState = "mystic-update-" + cd.info.id + "-" + status;
+
+            // Display mystic status change dialog
+            S.getContent("mystic-status.htm", S.updateMysticStatus_Content);
+        }
+    };
+
+    S.updateMysticStatusPanel = function() {
+        // Check window state
+        var wsp = slWindowState.split("-");
+
+        if (wsp[0] !== "mystic" && wsp[1] !== "entries") {
+            return;
+        }
+
+        var cell = wsp[2];
+
+        // Get new status value
+        var status = jQuery(this).attr("data-mystic-status");
+
+        // Update window status
+        slWindowState = "mystic-update-" + cell + "-" + status;
+
+        // Display mystic status change dialog
+        S.getContent("mystic-status.htm", S.updateMysticStatus_Content);
+    };
+
+    S.updateMysticStatus_Content = function(data) {
+        // Check window state
+        var wsp = slWindowState.split("-");
+
+        if (wsp[0] !== "mystic" && wsp[1] !== "update") {
+            return;
+        }
+
+        var c = wsp[2];
+
+        wsp.shift();
+        wsp.shift();
+        wsp.shift();
+
+        var status = wsp.join("-");
+
+        // Get localized status text
+        var statusText = S.getLocalizedStatus(status);
+
+        // Perform content specific string replacements
+        data = data.replace(/\{cell\}/gi, c);
+        data = data.replace(/\{status}/gi, status);
+        data = data.replace(/\{statusText}/gi, statusText);
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").fadeIn();
+        jQuery("#slPanelShadow").fadeIn();
+
+        // Build data URL
+        var url = slScoutsLogAPIbase + "mystic/cell/" + encodeURIComponent(c);
+
+        // Send data request through plugin
+        S.getJSON(
+            url,
+            S.updateMysticStatus_Data
+        );
+    };
+
+    S.updateMysticStatus_Data = function(data) {
+        // Check window state
+        var wsp = slWindowState.split("-");
+
+        if (wsp[0] !== "mystic" && wsp[1] !== "update") {
+            return;
+        }
+
+        var c = wsp[2];
+
+        if (data.id != c) {
+            return;
+        }
+
+        var cn;
+
+        // Set window title
+        if (slLocale == "en") {
+            cn = data.cellName;
+        } else {
+            cn = data["cellName" + slLocale.toUpperCase()];
+        }
+
+        jQuery("#slPanel h2 small").text(cn + " (" + data.id + ")");
+
+        // Get localized status text
+        var status = S.getLocalizedStatus(data.status);
+
+        // Display cell summary
+        jQuery("#sl-summary-table table tbody").empty();
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelCell") + ':</strong></td><td><a class="sl-cell">' + data.cellName + ' (' + data.id + ')</a></td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelStatus") + ':</strong></td><td class="sl-' + data.status + '">' + status + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelPlayerA") + ':</strong></td><td>' + data.userA + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelPlayerB") + ':</strong></td><td>' + data.userB + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelLastUser") + ':</strong></td><td>' + data.lastUser + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelLastUpdated") + ':</strong></td><td>' + data.lastUpdated + '</td></tr>');
+
+
+        // Prevent keystrokes for notes from bubbling
+        jQuery("#sl-action-notes").keydown(function(e) {
+            e.stopPropagation();
+        });
+
+        // Set button handlers
+        jQuery("#slPanel .sl-submit").click(S.updateMysticStatus_Submit);
+        jQuery("#slPanel .sl-cancel").click(S.updateMysticStatus_Cancel);
+    };
+
+    S.updateMysticStatus_Cancel = function() {
+        slWindowState = "";
+
+        jQuery("#slPanel").fadeOut();
+        jQuery("#slPanelShadow").fadeOut();        
+    };
+    
+    S.updateMysticStatus_Submit = function() {
+    	var st = jQuery("#sl-action-status").val();
+    	
+    	if (slUserRoles.indexOf("admin") == -1 && (st == "need-player-b" || st == "need-admin")) {
+    		var msg;
+    		
+    		if (st == "need-player-b") {
+    			msg = "Are you ready to send this cell on to the next player?";
+    		} else {
+    			msg = "Are you ready to send this cell on to the Admins?";
+    		}
+    		
+            var o = new Attention.Confirmation({
+                situation: "information calm",
+                title: _("Are You Done?"),
+                message: _(msg),
+                ok: {
+                    label: _("Yes, I'm done"),
+                    klass: "flat"
+                },
+                cancel: {
+                    label: _("No"),
+                    klass: "flat"
+                }
+            });
+            
+            o.on("ok", S.updateMysticStatus_Submit2).on("cancel", S.updateMysticStatus_Cancel).show();
+    	} else {
+    		S.updateMysticStatus_Submit2();
+    	}
+    };
+
+    S.updateMysticStatus_Submit2 = function() {
+        // Set submission flag
+        slWindowSubmitting = true;
+
+        // Set interface
+        S.disableForm("#slPanel form");
+        jQuery("#sl-action-buttons").append("<p>" + S.getLocalizedString("messageSaving") + "</p>");
+
+        // Get form data
+        var c = jQuery("#sl-action-cell").val();
+        var s = jQuery("#sl-action-status").val();
+        var n = jQuery("#sl-action-notes").val();
+
+        // Prepare data object
+        var data = {
+            cell: c,
+            status: s,
+            notes: n
+        };
+
+        // Initiate request through plugin
+        S.postRequest(
+            slScoutsLogAPIbase + "mystic/cell/" + encodeURIComponent(c) + "/update",
+            "data=" + encodeURIComponent(JSON.stringify(data)),
+            S.updateMysticStatus_Callback
+        );
+    };
+
+    S.updateMysticStatus_Callback = function(data) {
+        // Clear submission flag
+        slWindowSubmitting = false;
+
+        if (data.result === true) {
+            // Success, hide screen
+            slWindowState = "";
+
+            jQuery("#slPanel").fadeOut();
+            jQuery("#slPanelShadow").fadeOut();
+
+            // Refresh cell actions display
+            S.setMysticActions(data.cell);
+
+            // See if we need to turn of Msty
+            if (data.status == "need-player-a" || data.status == "need-player-b" || data.status == "need-admin") {
+                S.getJSON(slEyeWireURIbase + "cell/" + data.cell + "/toggle_msty?value=off", function() {});
+            }
+        } else {
+            // Error
+
+            jQuery("#sl-action-buttons button").prop("disabled", false);
+            jQuery("#sl-action-buttons p").html( S.getLocalizedString("error_submission") );
+        }
+    };
+
+
+/**
+ * UI: Get Mystic Cell Action Entries
+ * ----------------------------------------------------------------------------
+ */
+    S.getMysticCellEntries = function(c) {
+        if (c) {
+            // Update window state
+            slWindowState = "mystic-entries-" + c;
+
+            // Send content request
+            S.getContent("mystic-actions.htm", S.getMysticCellEntries_Content);
+        }
+    };
+
+    S.getMysticCellEntries_Content = function(data) {
+        // Check window state
+        var wsp = slWindowState.split("-");
+
+        if (wsp[0] !== "mystic" && wsp[1] !== "actions") {
+            return;
+        }
+
+        var c = wsp[2];
+
+        // Perform content specific string replacements
+        data = data.replace(/\{cell\}/gi, c);
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").fadeIn();
+        jQuery("#slPanelShadow").fadeIn();
+
+        // Build data URL
+        var url = slScoutsLogAPIbase + "mystic/cell/" + encodeURIComponent(c);
+        var url2 = slScoutsLogAPIbase + "mystic/tasks/open";
+
+        // Send data request through plugin
+        S.getJSON(
+            url,
+            S.getMysticCellEntries_Data
+        );
+        
+        // Get open tasks for cell
+        S.getJSON(
+            url2,
+            S.getMysticCellEntries_Data2
+        );
+    };
+
+    S.getMysticCellEntries_Data = function(data) {
+        // Check window state
+        var sp = slWindowState.split("-");
+
+        if (sp[0] !== "mystic" && sp[1] !== "entries") {
+            return;
+        }
+
+        var cell = sp[2];
+
+        if (data.id != cell) {
+            return;
+        }
+
+        var cn;
+
+        // Set window title
+        if (slLocale == "en") {
+            cn = data.cellName;
+        } else {
+            cn = data["cellName" + slLocale.toUpperCase()];
+        }
+
+        jQuery("#slPanel h2 small").text(cn + " (" + data.id + ")");
+
+        // Update window history
+        if (slWindowHistoryNavigating === false) {
+            S.pushWindowHistory({ state: slWindowState, data: {title: cn + " (" + data.id + ")"} });
+        }
+
+        slWindowHistoryNavigating = false;
+
+        // Get localized status text
+        var status = S.getLocalizedStatus(data.status);
+
+        // Display cell summary
+        jQuery("#sl-summary-table table tbody").empty();
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelCell") + ':</strong></td><td><a class="sl-cell">' + data.cellName + ' (' + data.id + ')</a></td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelStatus") + ':</strong></td><td class="sl-' + data.status + '">' + status + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelPlayerA") + ':</strong></td><td>' + data.userA + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelPlayerB") + ':</strong></td><td>' + data.userB + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelLastUser") + ':</strong></td><td>' + data.lastUser + '</td></tr>');
+        jQuery("#sl-summary-table table tbody").append('<tr><td><strong>' + S.getLocalizedString("labelLastUpdated") + ':</strong></td><td>' + data.lastUpdated + '</td></tr>');
+
+        // Display cell actions
+        jQuery("#sl-main-table table tbody").empty();
+
+        for (var c in data.actions) {
+            var s = data.actions[c];
+
+            // Check for status issue indicator
+            var st = S.getLocalizedStatus(s.status);
+
+            // Parse notes text
+            var notes = S.parseUserText(s.notes);
+            
+            var row = '<tr>';
+            row += '<td class="sl-' + s.status + '">' + st + '</td>';
+            row += '<td>' + s.user + '</td>';
+            row += '<td>' + notes + '</td>';
+            row += '<td>' + s.timestamp + '</td>';
+            row += '</tr>';
+
+            jQuery("#sl-main-table table tbody").append(row);
+        }
+
+        // Display action buttons
+        jQuery("#sl-main-buttons").empty();
+
+        switch (data.status) {
+            case "need-player-a":
+                jQuery("#sl-main-buttons").append('<button class="flat blueButton mysticButton control onscreen" data-mystic-status="player-a">Claim (A)</button>');
+
+                break;
+            case "need-player-b":
+                jQuery("#sl-main-buttons").append('<button class="flat blueButton mysticButton control onscreen" data-mystic-status="player-b">Claim (B)</button>');
+
+                break;
+            case "need-admin":
+                if (slUserRoles.indexOf("admin") > -1) {
+                    jQuery("#sl-main-buttons").append('<button class="flat blueButton mysticButton control onscreen" data-mystic-status="complete">Complete</button>');
+                }
+
+                break;
+            case "player-a":
+                if (slUser == data.user || slUserRoles.indexOf("admin") > -1) {
+                    jQuery("#sl-main-buttons").append('<button class="flat blueButton mysticButton control onscreen" data-mystic-status="need-player-b">Done / Player B</button>&nbsp;&nbsp;&nbsp;');
+                    jQuery("#sl-main-buttons").append('<button class="flat redButton mysticButton control onscreen" data-mystic-status="need-player-a">Release</button>');
+                }
+
+                break;
+            case "player-b":
+                if (slUser == data.user || slUserRoles.indexOf("admin") > -1) {
+                    jQuery("#sl-main-buttons").append('<button class="flat blueButton mysticButton control onscreen" data-mystic-status="need-admin">Done / Need Admin</button>&nbsp;&nbsp;&nbsp;');
+                    jQuery("#sl-main-buttons").append('<button class="flat redButton mysticButton control onscreen" data-mystic-status="need-player-b">Release</button>');
+                }
+
+                break;
+        }
+
+        jQuery("#sl-main-buttons .mysticButton").click(S.updateMysticStatusPanel);
+
+        // Set links for panel
+        S.setLinks("#slPanel");
+    };
+    
+    S.getMysticCellEntries_Data2 = function(data) {
+        // Check window state
+        var sp = slWindowState.split("-");
+        var ent1, ent2, st, s, row;
+
+        if (sp[0] !== "mystic" && sp[1] !== "entries") {
+            return;
+        }
+
+        var cell = sp[2];
+        
+        jQuery("#sl-tasks-table table tbody").empty();
+
+        for (c in data.tasks) {
+            s = data.tasks[c];
+            
+            if (s.cell != cell) {
+            	continue;
+            }
+
+            // Check if current user has log entry or watch indicators
+            ent1 = "";
+            ent2 = "";
+
+            if (s.has_entries == 1) {
+                ent1 = ' <img src="' + slImages.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+            }
+
+            if (s.has_watch == 1) {
+                ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+            }
+            
+
+            // Check for status issue indicator
+            st = S.getLocalizedStatus(s.status);
+
+            if (s.issue !== "" && s.issue !== null) {
+                st += " / " + S.getLocalizedStatusIssue(s.issue);
+            }
+            
+            row = '<tr>';
+            row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent1 + ent2 + '</td>';
+            row += '<td class="sl-' + s.status + '">' + st + '</td>';
+            row += '<td>' + s.lastUser + '</td>';
+            row += '<td>' + s.lastUpdated + '</td>';
+            row += '</tr>';
+
+            jQuery("#sl-tasks-table table tbody").append(row);
         }
 
         S.setLinks("#slPanel");
@@ -1961,6 +2955,161 @@ function ScoutsLogPlatformContent() {
 
         S.setLinks("#slPanel");
     };
+
+
+/**
+ * UI: Get Mystic Status Summary
+ * ----------------------------------------------------------------------------
+ */
+    S.getMysticStatusSummary = function(s, i) {
+        // Get window subtitle
+        var status = S.getLocalizedStatus(s);
+        
+        if (status !== "") {
+            // Update window state
+            slWindowState = "mystic-tasks-" + s;
+
+            if (typeof i !== "undefined" && i !== "") {
+                slWindowState += ":" + i;
+            }
+
+            // Update window history
+            if (slWindowHistoryNavigating === false) {
+                S.pushWindowHistory({ state: slWindowState, data: {title: "Mystic Tasks: " + status} });
+            }
+
+            slWindowHistoryNavigating = false;
+
+            // Send content request
+            S.getContent("mystic-open.htm", S.getMysticStatusSummary_Content);
+        }
+    };
+
+    S.getMysticStatusSummary_Content = function(data) {
+        // Check window state
+        var spp = slWindowState.split(":"),
+            sp = spp[0].split("-"),
+            si = spp[1] || "",
+            url,
+            st;
+
+        if (sp[0] !== "mystic" && sp[1] !== "tasks") {
+            return;
+        }
+
+        // Set panel content
+        jQuery("#slPanel div.slPanelContent").html(data);
+        jQuery("#slPanel").fadeIn();
+        jQuery("#slPanelShadow").fadeIn();
+
+        // Generate data URL
+        url = slScoutsLogAPIbase + "mystic/tasks/";
+
+        sp.shift();
+        sp.shift();
+
+        st = sp.join("-");
+
+        url += encodeURIComponent(st);
+
+        if (si !== "") {
+             url += "/issue/" + encodeURIComponent(si);
+        }
+
+        // Set status flag dropdown
+            jQuery("#sl-status").dropdown({
+                value: st,
+                change: function(status) {
+                    var spp2 = slWindowState.split(":");
+                    var sp2 = spp2[0].split("-");
+                    var si2 = spp2[1];
+
+                    S.getMysticStatusSummary(status, si2);
+                }
+            });
+
+            // Set issue flag dropdown
+            jQuery("#sl-issue").dropdown({
+                value: si,
+                change: function(issue) {
+                    var spp2 = slWindowState.split(":");
+                    var sp2 = spp2[0].split("-");
+                    sp2.shift();
+                    sp2.shift();
+
+                    var st2 = sp2.join("-");
+
+                    S.getMysticStatusSummary(st2, issue);
+                }
+            });
+            
+        // Set window title
+        var status = S.getLocalizedStatus(st);
+        jQuery("#slPanel h2 small").html("Mystic Tasks: " + status);
+
+        // Send data request through plugin
+        S.getJSON(
+            url,
+            S.getMysticStatusSummary_Data
+        );
+    };
+
+    S.getMysticStatusSummary_Data = function(data) {
+        // Check window state
+        var spp = slWindowState.split(":"),
+            sp = spp[0].split("-"),
+            c, s, cn, ent1 = "", ent2 = "",
+            st, row;
+
+        if (sp[0] !== "mystic" && sp[1] !== "tasks") {
+            return;
+        }
+
+        jQuery("#sl-main-table table tbody").empty();
+
+        for (c in data.tasks) {
+            s = data.tasks[c];
+
+            // Determine cell name
+            if (slLocale == "en") {
+                cn = s.cellName;
+            } else {
+                cn = s["cellName" + slLocale.toUpperCase()];
+            }
+
+            // Check if current user has log entry or watch indicators
+            ent2 = "";
+
+            if (s.has_entries == 1) {
+                ent2 = ' <img src="' + slImages.tick + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconEntries") + '" />';
+            }
+
+            if (s.has_watch == 1) {
+                ent2 = ' <img src="' + slImages.magnifier + '" class="sl-table-icon" title="' + S.getLocalizedString("labelIconWatch") + '" />';
+            }
+            
+
+            // Check for status issue indicator
+            st = S.getLocalizedStatus(s.status);
+
+            if (s.issue !== "" && s.issue !== null) {
+                st += " / " + S.getLocalizedStatusIssue(s.issue);
+            }
+            
+            row = '<tr>';
+            row += '<td><a class="sl-task" data-task="' + s.task + '">' + s.task + '</a> | <a class="sl-jump-task" data-task="' + s.task + '">' + S.getLocalizedString("actionJumpTask") + '</a>' + ent1 + ent2 + '</td>';
+            row += '<td><a class="sl-cell" data-cell="' + s.cell + '">' + cn + ' (' + s.cell + ')</a></td>';
+            row += '<td class="sl-' + s.status + '">' + st + '</td>';
+            row += '<td>' + s.lastUser + '</td>';
+            row += '<td>' + s.lastUpdated + '</td>';
+            row += '</tr>';
+
+            jQuery("#sl-main-table table tbody").append(row);
+        }
+
+        S.setLinks("#slPanel");
+    };
+
 
 
 /**
@@ -2855,18 +4004,20 @@ function ScoutsLogPlatformContent() {
         }
 
         // Add logo
-        var im = new Image();
-        im.height = 32;
-        im.width = 32;
-        im.src = slScoutsLogURIbase + "images/scouts-log.svg";
-        im.onload = function() {
-            S.captureImage2(cv, cx, cvA, im);
-        };
+        //var im = new Image();
+        //im.height = 32;
+        //im.width = 32;
+        //im.src = slScoutsLogURIbase + "images/scouts-log.svg";
+        //im.onload = function() {
+        //    S.captureImage2(cv, cx, cvA, im);
+        //};
+
+        S.captureImage2(cv, cx, cvA, null);
     };
 
     S.captureImage2 = function(cv, cx, cvA, im) {
         // Finish copying logo
-        cx.drawImage(im, cvA.width - 48, cvA.height - 48, 32, 32);
+        //cx.drawImage(im, cvA.width - 48, cvA.height - 48, 32, 32);
 
         // Save image data from working canvas
         jQuery("#sl-action-image").val(cv.toDataURL());
@@ -3483,6 +4634,25 @@ function ScoutsLogPlatformContent() {
                     title = S.getLocalizedString("windowHistoryTitle");
 
                     break;
+                case "mystic":
+                    if (sp[1] == "entries" || sp[1] == "tasks") {
+                        // Mystic Cell Actions
+
+                        title = h.data.title;
+                    } else {
+                        // Mystic Cell Summary
+                        sp.shift();
+
+                        var st = sp.join("-");
+
+                        if (typeof h.data.title !== "undefined" && h.data.title !== "") {
+                            title = h.data.title;
+                        } else {
+                            title = S.getLocalizedStatus(st);
+                        }
+                    }
+
+                    break;
                 case "status":
                     // Status Summary
                     var hdr = false;
@@ -3708,6 +4878,35 @@ function ScoutsLogPlatformContent() {
                     S.getContent("history.htm", S.getHistory_Content);
 
                     break;
+                case "mystic":
+                    if (sp[1] == "entries") {
+                        // Show Mystic Cell Details/Actions
+
+                        var c = sp[2];
+
+                        S.getMysticCellEntries(c);
+                    } else if (sp[1] == "tasks") {
+                        // Show Mystic Task Summary
+
+                        sp.shift();
+                        sp.shift();
+
+                        var st = sp.join("-");
+
+                        // Display status summary
+                        S.getMysticStatusSummary(st, spp[1]);
+
+                        break;
+                    } else {
+                        sp.shift();
+
+                        var st = sp.join("-");
+
+                        // Display mystic summary
+                        S.getMysticSummary(st);
+                    }
+
+                    break;
                 case "status":
                     // Get status value
                     var hdr = false;
@@ -3830,15 +5029,13 @@ function ScoutsLogPlatformContent() {
 }
 
 // Create ScoutsLog object and perform initialization
-if (typeof window.scoutsLog == "undefined") {
     window.scoutsLog = new ScoutsLogPlatformContent();
 
 
-	// Inject initialization into page
+    // Inject initialization into page
     var s = document.createElement("script");
     var sc = document.createTextNode("jQuery(document).ready(function() { window.scoutsLog.init(); });");
 
     s.appendChild(sc);
     
     (document.documentElement).appendChild(s);
-}

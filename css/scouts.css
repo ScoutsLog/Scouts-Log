@@ -34,7 +34,7 @@
     top: 10px;
     left: 30%;
     z-index: 1600;
-    transition: opacity 250ms;
+    transition: opacity 250ms, visibility 250ms;
 }
 
 #scoutsLogFloatingControls img {
@@ -130,6 +130,10 @@ div#sl-action-table {
     color: #0cf;
     text-decoration: underline;
     cursor: pointer;
+}
+
+.sl-table td a.sl-jump-user {
+    text-decoration: none;
 }
 
 .sl-table img {
@@ -279,8 +283,45 @@ div#sl-action-table {
     margin-top: 48px;
 }
 
+.slOptions ul.tabs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
 
+.slOptions ul.tabs > li {
+    float: left;
+    position: relative;
+    display: block;
+    margin-right: 16px;
+}
 
+.slOptions ul.tabs > li > a {
+    position: relative;
+    display: block;
+    padding: 8px 16px;
+    text-decoration: none;
+    border: 1px solid #666;
+    border-radius: 12px;
+    background-color: #000;
+    color: #ccc;
+    transition: background-color 100ms ease-in;
+}
+
+.slOptions ul.tabs > li > a:hover {
+    background-color: #7f7f7f;
+    color: #eee;
+}
+
+.slOptions ul.tabs > li > a:hover .sl-badge {
+    background-color: #000;
+}
+
+.slOptions ul.tabs > li.active > a {
+    background-color: #77d990;
+    border-color: #eee;
+    color: #121212;
+}
 
 /* ------------------------------------------------------------------------- */
 
@@ -303,7 +344,8 @@ div#sl-action-table {
 
 
 .sl-cell,
-.sl-history-cell {
+.sl-history-cell,
+.sl-mystic-cell {
     color: #aaf !important;
 }
 
@@ -325,7 +367,8 @@ div#sl-action-table {
 
 .sl-need-scythe,
 .sl-more {
-    color: #f89406 !important;
+    /* color: #f89406 !important; */
+    color: #427ffe !important;
 }
 
 .sl-watch,
@@ -344,6 +387,10 @@ div#sl-action-table {
     color: #62c462 !important;
 }
 
+.sl-jump-user {
+    color: #c9f !important;
+}
+
 
 /* ----------------------------------------------------------- */
 
@@ -352,12 +399,53 @@ div#sl-action-table {
     color: #5f8ff7;
 }
 
-#content .gameBoard .chatMsgContainer a.sl-jump-task {
-    color: #afa !important;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
 #scoutsLogButton {
     background-image: url("../images/scouts-log.svg");
 }
+
+/* ------------------------------------------------------------ */
+
+.sl-rating-bar {
+    display: inline-block;
+    height: 7px;
+    background-color: #09f;
+    border: 1px solid #646464;
+    vertical-align: middle;
+}
+
+.sl-rating-bar:nth-child(3) {
+    background-color: #22e991;
+}
+
+.sl-rating-bar:nth-child(5) {
+    background-color: #f66;
+}
+
+/* ----------------------------------------------------------- */
+
+#overviewCell .mystic-bar {
+    height: 33px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+#overviewCell .mystic-bar [name=status] {
+    float: left;
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 6px;
+    width: 165px;
+}
+
+#overviewCell .mystic-bar .mysticButton {
+    height: 25px;
+    width: 100px;
+    margin-top: 4px;
+    padding: 0;
+    font-size: 12px;
+    position: relative;
+    float: right;
+}
+
+
+
